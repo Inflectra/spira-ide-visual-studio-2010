@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Resources {
+namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010 {
     using System;
     
     

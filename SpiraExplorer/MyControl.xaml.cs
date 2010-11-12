@@ -12,7 +12,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace Inflectra.SpiraExplorer
+namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010
 {
     /// <summary>
     /// Interaction logic for MyControl.xaml

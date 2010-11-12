@@ -2,7 +2,7 @@
 // MUST match guids.h
 using System;
 
-namespace Inflectra.SpiraExplorer
+namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010
 {
     static class GuidList
     {

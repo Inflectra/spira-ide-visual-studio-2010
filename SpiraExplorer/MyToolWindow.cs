@@ -8,7 +8,7 @@ using System.Runtime.InteropServices;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Shell;
 
-namespace Inflectra.SpiraExplorer
+namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010
 {
     /// <summary>
     /// This class implements the tool window exposed by this package and hosts a user control.
