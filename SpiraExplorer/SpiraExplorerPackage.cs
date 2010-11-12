@@ -59,7 +59,7 @@ namespace Inflectra.SpiraExplorer
             ToolWindowPane window = this.FindToolWindow(typeof(MyToolWindow), 0, true);
             if ((null == window) || (null == window.Frame))
             {
-                throw new NotSupportedException(Resources.CanNotCreateWindow);
+                throw new NotSupportedException(Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Resources.CanNotCreateWindow);
             }
             IVsWindowFrame windowFrame = (IVsWindowFrame)window.Frame;
             Microsoft.VisualStudio.ErrorHandler.ThrowOnFailure(windowFrame.Show());

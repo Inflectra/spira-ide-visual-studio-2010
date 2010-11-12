@@ -8,6 +8,5 @@ namespace Inflectra.SpiraExplorer
     {
         public const uint cmdViewToolWindow =        0x100;
         public const uint cmdViewExplorerWindow =    0x101;
-
     };
 }
