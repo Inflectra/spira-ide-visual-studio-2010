@@ -115,9 +115,13 @@
     </COMReference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Forms\SpiraExplorer\cntlSpiraExplorer - Populate Tree.cs" />
-    <Compile Include="Forms\SpiraExplorer\cntlSpiraExplorer.xaml.cs">
+    <Compile Include="Forms\cntlSpiraExplorer\cntlSpiraExplorer - Populate Tree.cs" />
+    <Compile Include="Forms\cntlSpiraExplorer\cntlSpiraExplorer.xaml.cs">
       <DependentUpon>cntlSpiraExplorer.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\frmAssignProject\wpfAssignProject.xaml - FlowUp.cs" />
+    <Compile Include="Forms\frmAssignProject\frmAssignProject.xaml.cs">
+      <DependentUpon>frmAssignProject.xaml</DependentUpon>
     </Compile>
     <Compile Include="MyControl.xaml.cs">
       <DependentUpon>MyControl.xaml</DependentUpon>
@@ -177,7 +181,11 @@
     <Content Include="Resources\Package.ico" />
   </ItemGroup>
   <ItemGroup>
-    <Page Include="Forms\SpiraExplorer\cntlSpiraExplorer.xaml">
+    <Page Include="Forms\cntlSpiraExplorer\cntlSpiraExplorer.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Forms\frmAssignProject\frmAssignProject.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

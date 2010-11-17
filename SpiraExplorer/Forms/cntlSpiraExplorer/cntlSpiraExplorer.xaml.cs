@@ -7,6 +7,8 @@ using System.Windows.Media.Imaging;
 using Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business;
 using Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business.SpiraTeam_Client;
 using Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Properties;
+using Microsoft.VisualStudio.Shell;
+using Microsoft.VisualStudio.Shell.Interop;
 
 namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 {
@@ -18,6 +20,8 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 		private TreeViewItem _nodeNoSolution = null;
 		private TreeViewItem _nodeNoProjects = null;
 		private TreeViewItem _nodeError = null;
+		List<TreeViewArtifact> _treeNodeList;
+		EnvDTE.Events _EnvironEvents = null;
 		#endregion
 		#region Public Events
 		public event EventHandler<OpenItemEventArgs> OpenDetails;
@@ -53,6 +57,17 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 
 				//Load nodes.
 				this.CreateStandardNodes();
+
+				//Attach to the Environment and get loaded solution.
+				try
+				{
+					EnvDTE80.DTE2 dte = (EnvDTE80.DTE2)Package.GetGlobalService(typeof(SDTE));
+					if (dte.Solution.IsOpen)
+						this.setSolution((string)dte.Solution.Properties.Item("Name").Value);
+					else
+						this.setSolution(null);
+				}
+				catch { }
 			}
 			catch (Exception ex)
 			{
@@ -275,20 +290,6 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			{
 				//TODO: Log error.
 			}
-		}
-
-		/// <summary>Enumeration of the node's type.</summary>
-		//TODO: Change this to be a bitmask?
-		private enum ItemTypeEnumeration
-		{
-			None = 0,
-			Task = 1,
-			Incident = 2,
-			Requirement = 3,
-			Folder = 4,
-			HasItems = 10,
-			HasNoItems = 11,
-			Error = -999
 		}
 
 		/// <summary>Generates a filter for pulling information from the Spira server.</summary>
@@ -525,6 +526,88 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			public int NodeNumber;
 			public Connect.SpiraProject Project;
 			public Spira_ImportExport.RemoteVersion ClientVersion;
+		}
+
+		internal class TreeViewArtifact : TreeViewItem
+		{
+			//Added properties for the artifact type, ID, ad image.
+
+			public TreeViewArtifact()
+			{
+				this.Type = ArtifactTypeEnum.None;
+			}
+
+			/// <summary>The artifact's name.</summary>
+			public string Name
+			{
+				get;
+				set;
+			}
+
+			/// <summary>The ID of the artifact.</summary>
+			public int Id
+			{
+				get;
+				set;
+			}
+
+			/// <summary>The Type of the Artifact.</summary>
+			ArtifactTypeEnum Type
+			{
+				get;
+				set;
+			}
+
+			/// <summary>Readonly. The ID String of the artifact.</summary>
+			public string ArtifactIdString
+			{
+				get
+				{
+					switch (this.Type)
+					{
+						case ArtifactTypeEnum.Incident:
+							return "[IN:" + this.Id.ToString() + "]";
+						case ArtifactTypeEnum.Requirement:
+							return "[RQ:" + this.Id.ToString() + "]";
+						case ArtifactTypeEnum.Task:
+							return "[TK:" + this.Id.ToString() + "]";
+						default:
+							return "";
+					}
+				}
+			}
+
+			/// <summary>Readonly. Returns the imagesource for displaying the appropriate image in the TreeView.</summary>
+			public ImageSource ImageSource
+			{
+				get
+				{
+					//TODO: Set image resources.
+					switch (this.Type)
+					{
+						case ArtifactTypeEnum.Incident:
+							return null;
+						case ArtifactTypeEnum.Requirement:
+							return null;
+						case ArtifactTypeEnum.Task:
+							return null;
+						default:
+							return null;
+					}
+				}
+			}
+
+			/// <summary>Available types of TreeNodes.</summary>
+			public enum ArtifactTypeEnum
+			{
+				None = 0,
+				Task = 1,
+				Incident = 2,
+				Requirement = 3,
+				Folder = 4,
+				Project = 5,
+				Error = 1024
+			}
 		}
 		#endregion
 	}
