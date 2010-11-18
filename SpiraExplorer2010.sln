@@ -5,6 +5,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SpiraExplorer", "SpiraExplo
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Business", "Business\Business.csproj", "{256C278A-66AC-40CD-BB71-598586F6FA1C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SpiraExplorer.resources", "SpiraExplorer.resources\SpiraExplorer.resources.csproj", "{87F40C72-2AA5-4011-BAB2-29C6AD5C5B45}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -35,6 +37,16 @@ Global
 		{256C278A-66AC-40CD-BB71-598586F6FA1C}.Release|Mixed Platforms.Build.0 = Release|x86
 		{256C278A-66AC-40CD-BB71-598586F6FA1C}.Release|x86.ActiveCfg = Release|x86
 		{256C278A-66AC-40CD-BB71-598586F6FA1C}.Release|x86.Build.0 = Release|x86
+		{87F40C72-2AA5-4011-BAB2-29C6AD5C5B45}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{87F40C72-2AA5-4011-BAB2-29C6AD5C5B45}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{87F40C72-2AA5-4011-BAB2-29C6AD5C5B45}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{87F40C72-2AA5-4011-BAB2-29C6AD5C5B45}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{87F40C72-2AA5-4011-BAB2-29C6AD5C5B45}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{87F40C72-2AA5-4011-BAB2-29C6AD5C5B45}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{87F40C72-2AA5-4011-BAB2-29C6AD5C5B45}.Release|Any CPU.Build.0 = Release|Any CPU
+		{87F40C72-2AA5-4011-BAB2-29C6AD5C5B45}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{87F40C72-2AA5-4011-BAB2-29C6AD5C5B45}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{87F40C72-2AA5-4011-BAB2-29C6AD5C5B45}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

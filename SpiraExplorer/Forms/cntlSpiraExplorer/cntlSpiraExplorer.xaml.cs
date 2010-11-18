@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Resources;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
 using Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business;
 using Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business.SpiraTeam_Client;
 using Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Properties;
@@ -22,6 +22,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 		private TreeViewItem _nodeError = null;
 		List<TreeViewArtifact> _treeNodeList;
 		EnvDTE.Events _EnvironEvents = null;
+		private ResourceManager _resources = null;
 		#endregion
 		#region Public Events
 		public event EventHandler<OpenItemEventArgs> OpenDetails;
@@ -32,22 +33,26 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 		{
 			try
 			{
+				//Get the resources first..
+				this._resources = Business.StaticFuncs.getCultureResource;
+
+				//Overall initialization.
 				InitializeComponent();
 
 				//Set button images and events.
 				// - Config button
-				Image btnConfigImage = getImage("imgSettings", new Size(16, 16));
+				Image btnConfigImage = Business.StaticFuncs.getImage("imgSettings", new Size(16, 16));
 				btnConfigImage.Stretch = Stretch.None;
 				this.btnConfig.Content = btnConfigImage;
 				this.btnConfig.Click += new RoutedEventHandler(btnConfig_Click);
 				// - Show Completed button
-				Image btnCompleteImage = getImage("imgShowCompleted", new Size(16, 16));
+				Image btnCompleteImage = Business.StaticFuncs.getImage("imgShowCompleted", new Size(16, 16));
 				btnCompleteImage.Stretch = Stretch.None;
 				this.btnShowClosed.Content = btnCompleteImage;
 				this.btnShowClosed.IsEnabledChanged += new DependencyPropertyChangedEventHandler(toolButton_IsEnabledChanged);
 				this.btnShowClosed.Click += new RoutedEventHandler(btnRefresh_Click);
 				// - Refresh Button
-				Image btnRefreshImage = getImage("imgRefresh", new Size(16, 16));
+				Image btnRefreshImage = Business.StaticFuncs.getImage("imgRefresh", new Size(16, 16));
 				btnRefreshImage.Stretch = Stretch.None;
 				this.btnRefresh.Content = btnRefreshImage;
 				this.btnRefresh.Click += new RoutedEventHandler(btnRefresh_Click);
@@ -58,22 +63,58 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 				//Load nodes.
 				this.CreateStandardNodes();
 
-				//Attach to the Environment and get loaded solution.
-				try
-				{
-					EnvDTE80.DTE2 dte = (EnvDTE80.DTE2)Package.GetGlobalService(typeof(SDTE));
-					if (dte.Solution.IsOpen)
-						this.setSolution((string)dte.Solution.Properties.Item("Name").Value);
-					else
-						this.setSolution(null);
-				}
-				catch { }
+				//Attach to the Environment events and assign events.
+				this._EnvironEvents = ((EnvDTE80.DTE2)Package.GetGlobalService(typeof(SDTE))).Events;
+				this._EnvironEvents.SolutionEvents.Opened += new EnvDTE._dispSolutionEvents_OpenedEventHandler(SolutionEvents_Opened);
+				this._EnvironEvents.SolutionEvents.AfterClosing += new EnvDTE._dispSolutionEvents_AfterClosingEventHandler(SolutionEvents_AfterClosing);
+				this._EnvironEvents.SolutionEvents.Renamed += new EnvDTE._dispSolutionEvents_RenamedEventHandler(SolutionEvents_Renamed);
 			}
 			catch (Exception ex)
 			{
-				//TODO: Log error here.
+				//TODO: Log error.
+				throw new Exception("Could not attach to IDE.");
 			}
 		}
+
+		#region Environment Events
+		/// <summary>Hit when a solution is renamed.</summary>
+		/// <param name="OldName">The old name of the solution.</param>
+		private void SolutionEvents_Renamed(string OldName)
+		{
+			//Get the new name of the solution..
+			string NewName = (string)((EnvDTE80.DTE2)Package.GetGlobalService(typeof(SDTE))).Solution.Properties.Item("Name").Value;
+			if (!string.IsNullOrWhiteSpace(NewName))
+			{				//Modify the settings to transfer over projects.
+				if (Settings.Default.AssignedProjects.ContainsKey(OldName))
+				{
+					string strAssignedProjects = Settings.Default.AssignedProjects[OldName];
+					Settings.Default.AssignedProjects.Remove(OldName);
+					Settings.Default.AssignedProjects.Add(NewName, strAssignedProjects);
+					Settings.Default.Save();
+				}
+
+				//Reload projects..
+				this.setSolution(NewName);
+			}
+		}
+
+		/// <summary>Hit when the loaded solution is closed.</summary>
+		private void SolutionEvents_AfterClosing()
+		{
+			//Set to no solution loaded.
+			this.noSolutionLoaded();
+		}
+
+		/// <summary>Hit when a new solution is opened.</summary>
+		private void SolutionEvents_Opened()
+		{
+			if (Business.StaticFuncs.GetEnvironment.Solution.IsOpen)
+			{
+				string solName = (string)Business.StaticFuncs.GetEnvironment.Solution.Properties.Item("Name").Value;
+				this.setSolution(solName);
+			}
+		}
+		#endregion
 
 		#region Control Events
 		/// <summary>Hit when the user double-clicks on a tree node.</summary>
@@ -144,7 +185,6 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 				wpfAssignProject configWPF = new wpfAssignProject();
 
 				//Set the settings and solution name.
-				configWPF.setSettings(this._settingsFile);
 				configWPF.setSolution(this._solutionName);
 
 				if (configWPF.ShowDialog().Value)
@@ -160,57 +200,6 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			e.Handled = true;
 		}
 		#endregion
-
-		/// <summary>Converts a resource to a WPF image. Needed for application resources.</summary>
-		/// <param name="image">Bitmap of the image to convert.</param>
-		/// <returns>BitmapSource suitable for an Image control.</returns>
-		private BitmapSource getBMSource(System.Drawing.Bitmap image)
-		{
-			try
-			{
-				if (image != null)
-				{
-					IntPtr bmStream = image.GetHbitmap();
-					return System.Windows.Interop.Imaging.CreateBitmapSourceFromHBitmap(bmStream, IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromWidthAndHeight(image.Width, image.Height));
-				}
-				return null;
-			}
-			catch (Exception ex)
-			{
-				//TODO: Log error here.
-				return null;
-			}
-		}
-
-		/// <summary>Creates an Image control for a specified resource.</summary>
-		/// <param name="Key">The key name of the resource to use. Will search and use Product-dependent resources first.</param>
-		/// <param name="Size">Size of the desired image, or null.</param>
-		/// <param name="Stretch">Desired stretch setting of image, or null.</param>
-		/// <returns>Resulting image, or null if key is not found.</returns>
-		private Image getImage(string key, Size size)
-		{
-			try
-			{
-				Image retImage = new Image();
-				if (size != null)
-				{
-					retImage.Height = size.Height;
-					retImage.Width = size.Width;
-				}
-
-				BitmapSource image = null;
-				image = getBMSource((System.Drawing.Bitmap)this._resources.GetObject(key));
-
-				retImage.Source = image;
-
-				return retImage;
-			}
-			catch (Exception ex)
-			{
-				//TODO: Log error here.
-				return null;
-			}
-		}
 
 		/// <summary>Generates a node header containing the text and the image type.</summary>
 		/// <param name="HeaderText">The text for the header.</param>
@@ -417,7 +406,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 				StackPanel stckPnl = new StackPanel() { Orientation = Orientation.Horizontal, Margin = new Thickness(0, 2, 2, 2) };
 				if (!string.IsNullOrEmpty(imageKey))
 				{
-					stckPnl.Children.Add(getImage(imageKey, new Size(16, 16)));
+					stckPnl.Children.Add(Business.StaticFuncs.getImage(imageKey, new Size(16, 16)));
 				}
 				stckPnl.Children.Add(new TextBlock() { Text = Label, VerticalAlignment = VerticalAlignment.Center, Margin = new Thickness(3, 0, 0, 0) });
 
@@ -453,7 +442,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 					if (!string.IsNullOrEmpty(imageKey))
 					{
 						((StackPanel)inNode.Header).Children.RemoveAt(ctrlIndex);
-						((StackPanel)inNode.Header).Children.Insert(ctrlIndex, getImage(imageKey, new Size(16, 16)));
+						((StackPanel)inNode.Header).Children.Insert(ctrlIndex, Business.StaticFuncs.getImage(imageKey, new Size(16, 16)));
 					}
 					else
 					{

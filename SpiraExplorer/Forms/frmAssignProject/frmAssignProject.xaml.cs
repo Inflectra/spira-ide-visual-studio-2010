@@ -9,27 +9,28 @@ using System.Windows.Markup;
 using System.Windows.Media.Imaging;
 using System.Xml;
 
-namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio.WPF.Forms
+namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 {
 	/// <summary>
 	/// Interaction logic for wpfServerProject.xaml
 	/// </summary>
-	public partial class wpfAssignProject : Window
+	public partial class frmAssignProject : Window
 	{
-		//Boolean whether or not data was saved.
-		private bool hasChanged = false;
-		//Resources
+		#region Internal Vars
+		private bool _hasChanged = false;
 		private ResourceManager _resources = null;
+		private string _solname;
+		#endregion
 
 		/// <summary>Creates a new instance of the form. Should call setSpiraProjects() and setSoltion() after calling this.</summary>
-		internal wpfAssignProject()
+		internal frmAssignProject()
 		{
 			try
 			{
 				InitializeComponent();
 
 				//Get the resources.
-				this._resources = Connect.getCultureResource;
+				this._resources = Business.StaticFuncs.getCultureResource;
 
 				//Title
 				this.Title = this._resources.GetString("strAssignProjectTitle");
@@ -48,12 +49,12 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio.WPF.Forms
 				}
 
 				//Load logos and images.
-				this.imgLogo.Source = getImage("imgLogo", new Size()).Source;
+				this.imgLogo.Source = Business.StaticFuncs.getImage("imgLogo", new Size()).Source;
 				this.imgLogo.Height = imgLogo.Source.Height;
 				this.imgLogo.Width = imgLogo.Source.Width;
-				this.btnNew.Content = getImage("imgAdd", new Size(16, 16));
-				this.btnEdit.Content = getImage("imgEdit", new Size(16, 16));
-				this.btnDelete.Content = getImage("imgDelete", new Size(16, 16));
+				this.btnNew.Content = Business.StaticFuncs.getImage("imgAdd", new Size(16, 16));
+				this.btnEdit.Content = Business.StaticFuncs.getImage("imgEdit", new Size(16, 16));
+				this.btnDelete.Content = Business.StaticFuncs.getImage("imgDelete", new Size(16, 16));
 
 				//Set events.
 				this.btnEdit.IsEnabledChanged += new DependencyPropertyChangedEventHandler(btn_IsEnabledChanged);
@@ -68,6 +69,12 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio.WPF.Forms
 				this.btn_IsEnabledChanged(this.btnEdit, new DependencyPropertyChangedEventArgs());
 				this.btn_IsEnabledChanged(this.btnDelete, new DependencyPropertyChangedEventArgs());
 
+				//Get the solution name.
+				if (Business.StaticFuncs.GetEnvironment.Solution.IsOpen)
+					this._solname = (string)Business.StaticFuncs.GetEnvironment.Solution.Properties.Item("Name").Value;
+				else
+					this._solname = null;
+
 				//Set the caption.
 				this.setRTFCaption();
 			}
@@ -75,14 +82,6 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio.WPF.Forms
 			{
 				//TODO: Log Error.
 			}
-		}
-
-		/// <summary>Creates a new instance of the form, pre-populating the solution name.</summary>
-		/// <param name="solutionName">The name of the currently loaded Solution, null if none loaded.</param>
-		internal wpfAssignProject(string solutionName)
-			: base()
-		{
-			this.setSolution(solutionName);
 		}
 
 		#region Form Events
@@ -98,7 +97,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio.WPF.Forms
 
 				if (userSure == MessageBoxResult.Yes)
 				{
-					this.hasChanged = true;
+					this._hasChanged = true;
 					this.lstAvailProjects.Items.RemoveAt(this.lstAvailProjects.SelectedIndex);
 				}
 			}
@@ -115,7 +114,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio.WPF.Forms
 		{
 			try
 			{
-				if (this.hasChanged)
+				if (this._hasChanged)
 				{
 					MessageBoxResult OKtoClose = MessageBox.Show("Lose changes made to settings?", "Close?", MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.Cancel);
 					if (OKtoClose == MessageBoxResult.Yes)
@@ -159,7 +158,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio.WPF.Forms
 				selProjects = selProjects.Trim(Connect.SpiraProject.CHAR_RECORD);
 
 				this._Settings.SetValue("General", "Projects", availProjects);
-				this._Settings.SetValue(this._solName, "Projects", selProjects);
+				this._Settings.SetValue(this._solname, "Projects", selProjects);
 				this._Settings.Save();
 
 				this.DialogResult = true;
@@ -200,7 +199,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio.WPF.Forms
 					}
 				}
 
-				this.hasChanged = true;
+				this._hasChanged = true;
 			}
 			catch (Exception ex)
 			{
@@ -222,10 +221,10 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio.WPF.Forms
 					this.lstSelectProjects.Items.Add(selItem);
 				}
 
-				//Remove dplicates.
+				//Remove duplicates.
 				this.removeDuplicates();
 
-				this.hasChanged = true;
+				this._hasChanged = true;
 			}
 			catch (Exception ex)
 			{
@@ -297,7 +296,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio.WPF.Forms
 							this.lstAvailProjects.Items.Add(selProject);
 						}
 					}
-					this.hasChanged = true;
+					this._hasChanged = true;
 				}
 			}
 			catch (Exception ex)
@@ -318,7 +317,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio.WPF.Forms
 			}
 			catch (Exception ex)
 			{
-				Connect.logEventMessage("wpfAssignProject::btn_IsEnabledChanged", ex, System.Diagnostics.EventLogEntryType.Error);
+				Connect.logEventMessage("frmAssignProject::btn_IsEnabledChanged", ex, System.Diagnostics.EventLogEntryType.Error);
 			}
 		}
 
@@ -371,65 +370,6 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio.WPF.Forms
 		}
 		#endregion
 
-		/// <summary>Creates an Image control for a specified resource.</summary>
-		/// <param name="Key">The key name of the resource to use. Will search and use Product-dependent resources first.</param>
-		/// <param name="Size">Size of the desired image, or null.</param>
-		/// <param name="Stretch">Desired stretch setting of image, or null.</param>
-		/// <returns>Resulting image, or null if key is not found.</returns>
-		private Image getImage(string key, Size size)
-		{
-			try
-			{
-				Image retImage = new Image();
-				if (!size.IsEmpty && (size.Height != 0 && size.Width != 0))
-				{
-					retImage.Height = size.Height;
-					retImage.Width = size.Width;
-				}
-
-				BitmapSource image = null;
-				try
-				{
-					image = getBMSource((System.Drawing.Bitmap)this._resources.GetObject(key));
-				}
-				catch
-				{
-				}
-
-				retImage.Source = image;
-
-				return retImage;
-			}
-			catch (Exception ex)
-			{
-				//TODO: Log Error.
-				return new Image();
-			}
-		}
-
-		/// <summary>Converts a resource to a WPF image. Needed for application resources.</summary>
-		/// <param name="image">Bitmap of the image to convert.</param>
-		/// <returns>BitmapSource suitable for an Image control.</returns>
-		private BitmapSource getBMSource(Object image)
-		{
-			try
-			{
-				if (image != null && image is System.Drawing.Bitmap)
-				{
-					System.Drawing.Bitmap imageCast = (System.Drawing.Bitmap)image;
-					IntPtr bmStream = imageCast.GetHbitmap();
-					System.Windows.Int32Rect rect = new Int32Rect(0, 0, imageCast.Width, imageCast.Height);
-
-					return System.Windows.Interop.Imaging.CreateBitmapSourceFromHBitmap(bmStream, IntPtr.Zero, rect, BitmapSizeOptions.FromEmptyOptions());
-				}
-			}
-			catch (Exception ex)
-			{
-				//TODO: Log Error.
-			}
-			return null;
-		}
-
 		/// <summary>Removes any entries in the Available list that are also in the Selected list.</summary>
 		private void removeDuplicates()
 		{
@@ -463,14 +403,14 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio.WPF.Forms
 			try
 			{
 				string rtfText = "";
-				if (string.IsNullOrEmpty(this._solName))
+				if (string.IsNullOrEmpty(this._solname))
 				{
 					rtfText = this._resources.GetString("flowSelectNoSolution");
 				}
 				else
 				{
 					rtfText = this._resources.GetString("flowSelectSolution");
-					rtfText = rtfText.Replace("%solution%", this._solName);
+					rtfText = rtfText.Replace("%solution%", this._solname);
 				}
 
 				this.headerCaption.Document = (FlowDocument)XamlReader.Load(new XmlTextReader(new StringReader(rtfText)));
@@ -488,13 +428,13 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio.WPF.Forms
 			try
 			{
 				//We have the solution name, load up the projects associated, and remove them from the available.
-				this._solName = solName;
-				if (!string.IsNullOrEmpty(this._solName))
+				this._solname = solName;
+				if (!string.IsNullOrEmpty(this._solname))
 				{
-					this._solName = this._solName.Replace(' ', '_');
+					this._solname = this._solname.Replace(' ', '_');
 
 					this.lstSelectProjects.Items.Clear();
-					string strProjs = this._Settings.GetValue(this._solName, "Projects");
+					string strProjs = this._Settings.GetValue(this._solname, "Projects");
 					if (!string.IsNullOrEmpty(strProjs))
 					{
 						foreach (string strProj in strProjs.Split(Connect.SpiraProject.CHAR_RECORD))
@@ -502,7 +442,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio.WPF.Forms
 							Connect.SpiraProject Project = Connect.SpiraProject.GenerateFromString(strProj);
 							this.lstSelectProjects.Items.Add(Project);
 						}
-						//remove dupliates.
+						//remove duplicates.
 						this.removeDuplicates();
 					}
 					this.lstSelectProjects.IsEnabled = true;
