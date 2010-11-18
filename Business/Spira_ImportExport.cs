@@ -15,6 +15,9 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business
 		private SpiraTeam_Client.ImportExportClient _client;
 		private Exception _lastException;
 		private ClientStateEnum _state = ClientStateEnum.Idle;
+		private string _server;
+		private string _user;
+		private string _password;
 		#endregion
 
 		#region Events
@@ -24,6 +27,11 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business
 
 		public Spira_ImportExport(string server, string user, string password)
 		{
+			//Assign internal vars..
+			this._server = server;
+			this._user = user;
+			this._password = password;
+
 			//The endpoint address.
 			EndpointAddress EndPtAddr = new EndpointAddress(new Uri(server + SERVICE_URL));
 			//Create the soap client.
@@ -67,11 +75,16 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business
 
 			//Hook up events.
 			this._client.Connection_Authenticate2Completed += new EventHandler<SpiraTeam_Client.Connection_Authenticate2CompletedEventArgs>(_client_Connection_Authenticate2Completed);
+		}
 
+		/// <summary>Call to initiate connection to server.</summary>
+		public void Connect()
+		{
 			//Connect.
 			this._state = ClientStateEnum.Working;
 			this._lastException = null;
-			this._client.Connection_Authenticate2Async(user, password, "Visual Studio 2010 Addin", this);
+
+			this._client.Connection_Authenticate2Async(this._user, this._password, Business.StaticFuncs.getCultureResource.GetString("app_ReportName"), this);
 		}
 
 		/// <summary>Hit when the client's finished connecting.</summary>
@@ -108,7 +121,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business
 		}
 
 		/// <summary>The last error that occured.</summary>
-		public Exception LastError
+		public Exception ClientLastError
 		{
 			get
 			{
@@ -117,7 +130,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business
 		}
 
 		/// <summary>The current status of the client.</summary>
-		public ClientStateEnum Status
+		public ClientStateEnum ClientStatus
 		{
 			get
 			{
@@ -128,6 +141,13 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business
 				else
 					return ClientStateEnum.Idle;
 			}
+		}
+
+		/// <summary>Additional storage for reference on the client.</summary>
+		public TreeViewArtifact ClientNode
+		{
+			get;
+			set;
 		}
 		#endregion
 
@@ -177,6 +197,34 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business
 			Idle = 0,
 			Working = 1,
 			Error = 2
+		}
+
+		/// <summary>Allows the use of Self-Signed SSL certificates</summary>
+		public class PermissiveCertificatePolicy
+		{
+			string subjectName = "";
+			static PermissiveCertificatePolicy currentPolicy;
+
+			public PermissiveCertificatePolicy(string subjectName)
+			{
+				this.subjectName = subjectName;
+				ServicePointManager.ServerCertificateValidationCallback += new System.Net.Security.RemoteCertificateValidationCallback(RemoteCertValidate);
+			}
+
+			public static void Enact(string subjectName)
+			{
+				currentPolicy = new PermissiveCertificatePolicy(subjectName);
+			}
+
+			public bool RemoteCertValidate(object sender, X509Certificate cert, X509Chain chain, System.Net.Security.SslPolicyErrors error)
+			{
+				if (cert.Subject == subjectName || subjectName == "")
+				{
+					return true;
+				}
+
+				return false;
+			}
 		}
 	}
 }

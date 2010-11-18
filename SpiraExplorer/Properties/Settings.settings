@@ -5,5 +5,8 @@
     <Setting Name="AssignedProjects" Type="Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business.SerializableDictionary" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
+    <Setting Name="ShowUnassigned" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

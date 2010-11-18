@@ -235,11 +235,7 @@
   </data>
   <data name="strCompany" xml:space="preserve">
     <value>Inflectra</value>
-    <comment>Comapny name.</comment>
-  </data>
-  <data name="strIncidents" xml:space="preserve">
-    <value>Incidents</value>
-    <comment>For the TreeView - Incidents</comment>
+    <comment>Company name.</comment>
   </data>
   <data name="strMenuName" xml:space="preserve">
     <value>View</value>
@@ -272,8 +268,26 @@
   <data name="icoLogo_XP" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Spira_XP.ico;System.Drawing.Icon, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="icoLogo" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Spira_NoComp.ico;System.Drawing.Icon, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="app_ReportName" xml:space="preserve">
+    <value>Visual Studio 2010 Addin</value>
+    <comment>What to report to the API.</comment>
+  </data>
+  <data name="app_Tree_Incidents" xml:space="preserve">
+    <value>Incidents</value>
+  </data>
+  <data name="app_Tree_My" xml:space="preserve">
+    <value>My {0}</value>
+  </data>
+  <data name="app_Tree_Requirements" xml:space="preserve">
+    <value>Requirements</value>
+  </data>
+  <data name="app_Tree_Tasks" xml:space="preserve">
+    <value>Tasks</value>
+  </data>
+  <data name="app_Tree_Unassigned" xml:space="preserve">
+    <value>Unassigned {0}</value>
   </data>
 </root>

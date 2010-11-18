@@ -64,10 +64,16 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 				this.CreateStandardNodes();
 
 				//Attach to the Environment events and assign events.
-				this._EnvironEvents = ((EnvDTE80.DTE2)Package.GetGlobalService(typeof(SDTE))).Events;
+				this._EnvironEvents = Business.StaticFuncs.GetEnvironment.Events;
 				this._EnvironEvents.SolutionEvents.Opened += new EnvDTE._dispSolutionEvents_OpenedEventHandler(SolutionEvents_Opened);
 				this._EnvironEvents.SolutionEvents.AfterClosing += new EnvDTE._dispSolutionEvents_AfterClosingEventHandler(SolutionEvents_AfterClosing);
 				this._EnvironEvents.SolutionEvents.Renamed += new EnvDTE._dispSolutionEvents_RenamedEventHandler(SolutionEvents_Renamed);
+
+				//If a solution is loaded now, get the loaded solution.
+				if (Business.StaticFuncs.GetEnvironment.Solution.IsOpen)
+					this.setSolution((string)Business.StaticFuncs.GetEnvironment.Solution.Properties.Item("Name").Value);
+				else
+					this.setSolution(null);
 			}
 			catch (Exception ex)
 			{
@@ -251,27 +257,26 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 		{
 			try
 			{
-				//Enable the progress bar as we load data.
-				this.barLoading.Visibility = Visibility.Visible;
-				this._solutionName = solName;
-
-				if (string.IsNullOrEmpty(solName))
+				if (string.IsNullOrWhiteSpace(solName))
 				{
 					this.noSolutionLoaded();
 					this.barLoading.Visibility = Visibility.Collapsed;
 				}
 				else
 				{
-					//Get projects associated with this solution.
-					SerializableDictionary<string, string> availProjects = Settings.Default.AssignedProjects;
-					if (availProjects != null && availProjects.ContainsKey(solName) && !string.IsNullOrWhiteSpace(availProjects[solName]))
+					//Only get the projects if the solution name changed. (Avoid refreshing when solution name is unchanged.)
+					if (this._solutionName != solName)
 					{
-						this.loadProjects(availProjects[solName]);
-					}
-					else
-					{
-						this.noProjectsLoaded();
-						this.barLoading.Visibility = Visibility.Collapsed;
+						//Get projects associated with this solution.
+						SerializableDictionary<string, string> availProjects = Settings.Default.AssignedProjects;
+						if (availProjects != null && availProjects.ContainsKey(solName) && !string.IsNullOrWhiteSpace(availProjects[solName]))
+							this.loadProjects(availProjects[solName]);
+						else
+						{
+							this.noProjectsLoaded();
+							this.barLoading.Visibility = Visibility.Collapsed;
+						}
+						this._solutionName = solName;
 					}
 				}
 			}
@@ -517,87 +522,6 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			public Spira_ImportExport.RemoteVersion ClientVersion;
 		}
 
-		internal class TreeViewArtifact : TreeViewItem
-		{
-			//Added properties for the artifact type, ID, ad image.
-
-			public TreeViewArtifact()
-			{
-				this.Type = ArtifactTypeEnum.None;
-			}
-
-			/// <summary>The artifact's name.</summary>
-			public string Name
-			{
-				get;
-				set;
-			}
-
-			/// <summary>The ID of the artifact.</summary>
-			public int Id
-			{
-				get;
-				set;
-			}
-
-			/// <summary>The Type of the Artifact.</summary>
-			ArtifactTypeEnum Type
-			{
-				get;
-				set;
-			}
-
-			/// <summary>Readonly. The ID String of the artifact.</summary>
-			public string ArtifactIdString
-			{
-				get
-				{
-					switch (this.Type)
-					{
-						case ArtifactTypeEnum.Incident:
-							return "[IN:" + this.Id.ToString() + "]";
-						case ArtifactTypeEnum.Requirement:
-							return "[RQ:" + this.Id.ToString() + "]";
-						case ArtifactTypeEnum.Task:
-							return "[TK:" + this.Id.ToString() + "]";
-						default:
-							return "";
-					}
-				}
-			}
-
-			/// <summary>Readonly. Returns the imagesource for displaying the appropriate image in the TreeView.</summary>
-			public ImageSource ImageSource
-			{
-				get
-				{
-					//TODO: Set image resources.
-					switch (this.Type)
-					{
-						case ArtifactTypeEnum.Incident:
-							return null;
-						case ArtifactTypeEnum.Requirement:
-							return null;
-						case ArtifactTypeEnum.Task:
-							return null;
-						default:
-							return null;
-					}
-				}
-			}
-
-			/// <summary>Available types of TreeNodes.</summary>
-			public enum ArtifactTypeEnum
-			{
-				None = 0,
-				Task = 1,
-				Incident = 2,
-				Requirement = 3,
-				Folder = 4,
-				Project = 5,
-				Error = 1024
-			}
-		}
 		#endregion
 	}
 }
