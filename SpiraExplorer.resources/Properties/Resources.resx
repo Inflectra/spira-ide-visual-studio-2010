@@ -225,10 +225,6 @@
     <value>SpiraTeamAddin</value>
     <comment>Used for Addin short name.</comment>
   </data>
-  <data name="strAddinProgNamePretty" xml:space="preserve">
-    <value>SpiraTeam Visual Studio Addin</value>
-    <comment>Pretty string for the Addin Name</comment>
-  </data>
   <data name="strAssignProjectTitle" xml:space="preserve">
     <value>SpiraTeam Explorer Configuration</value>
     <comment>String used for the AssignForm's title bar.</comment>
@@ -289,5 +285,12 @@
   </data>
   <data name="app_Tree_Unassigned" xml:space="preserve">
     <value>Unassigned {0}</value>
+  </data>
+  <data name="app_NewProject_URLError" xml:space="preserve">
+    <value>Invalid URL</value>
+  </data>
+  <data name="app_NewProject_URLErrorMessage" xml:space="preserve">
+    <value>Your server url cannot contain a page in its address. URLshould be in the format:
+http://server/SpiraTeam/</value>
   </data>
 </root>

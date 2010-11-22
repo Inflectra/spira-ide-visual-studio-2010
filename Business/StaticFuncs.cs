@@ -2,8 +2,12 @@
 using System.Drawing;
 using System.Reflection;
 using System.Resources;
+using System.ServiceModel;
+using System.Text;
 using System.Windows;
 using System.Windows.Media.Imaging;
+using Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business.SpiraTeam_Client;
+using Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Properties;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 
@@ -83,6 +87,60 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business
 			}
 
 			return retImage;
+		}
+
+		/// <summary>Creates a web client for use.</summary>
+		/// <param name="serverAddress">The base address of the server.</param>
+		/// <returns>ImportExportClient</returns>
+		public static ImportExportClient CreateClient(string serverAddress)
+		{
+			ImportExportClient retClient = null;
+
+			try
+			{
+				//The endpoint address.
+				EndpointAddress EndPtAddr = new EndpointAddress(new Uri(serverAddress + Settings.Default.app_ServiceURI));
+				//Create the soap client.
+				BasicHttpBinding wsDualHttp = new BasicHttpBinding();
+				wsDualHttp.CloseTimeout = TimeSpan.FromMinutes(1);
+				wsDualHttp.OpenTimeout = TimeSpan.FromMinutes(1);
+				wsDualHttp.ReceiveTimeout = TimeSpan.FromMinutes(10);
+				wsDualHttp.SendTimeout = TimeSpan.FromMinutes(1);
+				wsDualHttp.BypassProxyOnLocal = false;
+				wsDualHttp.HostNameComparisonMode = HostNameComparisonMode.StrongWildcard;
+				wsDualHttp.MaxBufferPoolSize = Int32.MaxValue;
+				wsDualHttp.MaxReceivedMessageSize = Int32.MaxValue;
+				wsDualHttp.MessageEncoding = WSMessageEncoding.Text;
+				wsDualHttp.TextEncoding = Encoding.UTF8;
+				wsDualHttp.UseDefaultWebProxy = true;
+				wsDualHttp.ReaderQuotas.MaxDepth = Int32.MaxValue;
+				wsDualHttp.ReaderQuotas.MaxStringContentLength = Int32.MaxValue;
+				wsDualHttp.ReaderQuotas.MaxArrayLength = Int32.MaxValue;
+				wsDualHttp.ReaderQuotas.MaxBytesPerRead = Int32.MaxValue;
+				wsDualHttp.ReaderQuotas.MaxNameTableCharCount = Int32.MaxValue;
+				wsDualHttp.Security.Message.ClientCredentialType = BasicHttpMessageCredentialType.Certificate;
+				wsDualHttp.Security.Message.AlgorithmSuite = System.ServiceModel.Security.SecurityAlgorithmSuite.Default;
+				wsDualHttp.Security.Mode = BasicHttpSecurityMode.None;
+				//Configure for alternative connection types.
+				if (EndPtAddr.Uri.Scheme == "https")
+				{
+					wsDualHttp.Security.Mode = BasicHttpSecurityMode.Transport;
+					wsDualHttp.Security.Transport.ClientCredentialType = HttpClientCredentialType.None;
+
+					//Allow self-signed certificates
+					Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business.Spira_ImportExport.PermissiveCertificatePolicy.Enact("");
+				}
+
+				retClient = new SpiraTeam_Client.ImportExportClient(wsDualHttp, EndPtAddr);
+			}
+			catch (Exception ex)
+			{
+				//TODO: Log error.
+				retClient = null;
+			}
+
+			return retClient;
+
 		}
 	}
 }

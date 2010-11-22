@@ -1,9 +1,12 @@
 ﻿using System;
+using System.ComponentModel;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business;
+using Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business.SpiraTeam_Client;
 
 namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 {
@@ -12,6 +15,10 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 	/// </summary>
 	public partial class wpfNewSpiraProject : Window
 	{
+		#region Internal Vars
+		private ImportExportClient _client;
+		#endregion
+
 		public wpfNewSpiraProject()
 		{
 			try
@@ -92,32 +99,26 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 				bool tag = (bool)this.btnConnect.Tag;
 				if (tag)
 				{
-					//They want to cancel the connect.
-					try
-					{
-						this._client.CancelAsync(null);
-					}
-					catch
-					{ }
-					this._client.Dispose();
+					this._client = null;
 
 					//Set form.
-					this.barProg.IsIndeterminate = false;
-					this.btnConnect.Tag = false;
-					this.btnConnect.Content = "_Get Projects";
 					this.grdEntry.IsEnabled = true;
+					this.barProg.IsIndeterminate = false;
+					this.barProg.Value = 0;
+					this.btnConnect.Content = "_Get Projects";
+					this.btnConnect.Tag = false;
+					this.txtStatus.Text = "";
+					this.txtStatus.ToolTip = null;
 				}
 				else
 				{
-					if (this.txbServer.Text.ToLowerInvariant().EndsWith(".asmx") || this.txbServer.Text.ToLowerInvariant().EndsWith(".aspx"))
-					{
-						MessageBox.Show("Your server url cannot contain a page in its address.", "Invalid Server URL", MessageBoxButton.OK, MessageBoxImage.Exclamation);
-					}
+					if (this.txbServer.Text.ToLowerInvariant().EndsWith(".asmx") || this.txbServer.Text.ToLowerInvariant().EndsWith(".aspx") || this.txbServer.Text.ToLowerInvariant().EndsWith(".svc"))
+						MessageBox.Show(StaticFuncs.getCultureResource.GetString("app_NewProject_URLErrorMessage"), StaticFuncs.getCultureResource.GetString("app_NewProject_URLError"), MessageBoxButton.OK, MessageBoxImage.Exclamation);
 					else
 					{
 						//Start the connections.
 						this.barProg.IsIndeterminate = true;
-						this.barProg.Foreground = (Brush)new System.Windows.Media.BrushConverter().ConvertFrom(this._resources.GetString("barForeColor"));
+						this.barProg.Foreground = (Brush)new System.Windows.Media.BrushConverter().ConvertFrom(StaticFuncs.getCultureResource.GetString("barForeColor"));
 						this.grdEntry.IsEnabled = false;
 						this.btnConnect.Content = "_Cancel";
 						this.btnConnect.Tag = true;
@@ -126,80 +127,60 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 						this.grdAvailProjs.IsEnabled = false;
 
 						//Create new client.
-						ImportExport client = new ImportExport();
-						client.Connection_Authenticate2Completed += new Connection_Authenticate2CompletedEventHandler(client_ActionCompleted);
-						client.User_RetrieveByUserNameCompleted += new User_RetrieveByUserNameCompletedEventHandler(client_ActionCompleted);
-						client.Project_RetrieveCompleted += new Project_RetrieveCompletedEventHandler(client_ActionCompleted);
+						this._client = StaticFuncs.CreateClient(this.txbServer.Text.Trim());
+						this._client.Connection_Authenticate2Completed += new EventHandler<Connection_Authenticate2CompletedEventArgs>(_client_CommunicationFinished);
+						this._client.User_RetrieveByUserNameCompleted += new EventHandler<User_RetrieveByUserNameCompletedEventArgs>(_client_CommunicationFinished);
+						this._client.Project_RetrieveCompleted += new EventHandler<Project_RetrieveCompletedEventArgs>(_client_CommunicationFinished);
 
-						this._client = client;
-						this._client.CookieContainer = new System.Net.CookieContainer();
-						this._client.Url = new Uri(this.txbServer.Text + Connect.SpiraProject.URL_APIADD).AbsoluteUri;
-						this._client.Connection_Authenticate2Async(this.txbUserID.Text, this.txbUserPass.Password, this._resources.GetString("strAddinProgNamePretty"));
+						this._client.Connection_Authenticate2Async(this.txbUserID.Text, this.txbUserPass.Password, StaticFuncs.getCultureResource.GetString("app_ReportName"));
 					}
 				}
 			}
 			catch (Exception ex)
 			{
-				Connect.logEventMessage("wpfNewSpiraProject::btnConnect_Click", ex, System.Diagnostics.EventLogEntryType.Error);
+				//TODO: Log error.
 			}
 		}
 
-		/// <summary>Hit when the client finished a piece of work.</summary>
-		/// <param name="sender">The client.</param>
+		/// <summary>Hit when communication is finished with the server.</summary>
+		/// <param name="sender">ImportExportClient</param>
 		/// <param name="e">EventArgs</param>
-		private void client_ActionCompleted(object sender, EventArgs e)
+		private void _client_CommunicationFinished(object sender, AsyncCompletedEventArgs e)
 		{
-			try
+			if (e.Error != null)
 			{
-				if (e.GetType() == typeof(Connection_Authenticate2CompletedEventArgs))
+				try
 				{
-					Connection_Authenticate2CompletedEventArgs evt = (Connection_Authenticate2CompletedEventArgs)e;
-					if (evt.Error == null)
+					if (e.GetType() == typeof(Connection_Authenticate2CompletedEventArgs))
 					{
+						//Connection_Authenticate2CompletedEventArgs evt = e as Connection_Authenticate2CompletedEventArgs;
 						this.txtStatus.Text = "Getting user information...";
 						this._client.User_RetrieveByUserNameAsync(this.txbUserID.Text);
 					}
-					else
+					else if (e.GetType() == typeof(User_RetrieveByUserNameCompletedEventArgs))
 					{
-						this.btnConnect_Click(null, null);
-						//Just act like they canceled the service, then set error flag.
-						this.barProg.Foreground = System.Windows.Media.Brushes.Red;
-						this.barProg.Value = 1;
-						this.txtStatus.Text = "Could not connect!";
-						this.txtStatus.ToolTip = evt.Error.Message;
+						User_RetrieveByUserNameCompletedEventArgs evt = e as User_RetrieveByUserNameCompletedEventArgs;
+						if (evt != null)
+						{
+							this.txtStatus.Text = "Getting Projects...";
+							this.txbUserNum.Text = evt.Result.UserId.ToString();
+							this._client.Project_RetrieveAsync();
+						}
+						else
+							throw new Exception("Results are null.");
 					}
-				}
-				else if (e.GetType() == typeof(User_RetrieveByUserNameCompletedEventArgs))
-				{
-					User_RetrieveByUserNameCompletedEventArgs evt = (User_RetrieveByUserNameCompletedEventArgs)e;
-					if (evt.Error == null)
-					{
-						this.txtStatus.Text = "Getting Projects...";
-						this.txbUserNum.Text = evt.Result.UserId.ToString();
-						this._client.Project_RetrieveAsync();
-					}
-					else
-					{
-						this.btnConnect_Click(null, null);
-						//Just act like they canceled the service, then set error flag.
-						this.barProg.Foreground = System.Windows.Media.Brushes.Red;
-						this.barProg.Value = 1;
-						this.txtStatus.Text = "Could not get user info.";
-						this.txtStatus.ToolTip = evt.Error.Message;
-					}
-				}
-				else if (e.GetType() == typeof(Spira_ImportExport.Project_RetrieveCompletedEventArgs))
-				{
-					Project_RetrieveCompletedEventArgs evt = (Project_RetrieveCompletedEventArgs)e;
-					if (evt.Error == null)
+					else if (e.GetType() == typeof(Project_RetrieveCompletedEventArgs))
 					{
 						this.cmbProjectList.Items.Clear();
+
+						Project_RetrieveCompletedEventArgs evt = e as Project_RetrieveCompletedEventArgs;
+
 						//Load projects here.
-						if (evt.Result.Length > 0)
+						if (evt != null && evt.Result.Count > 0)
 						{
 							foreach (RemoteProject RemoteProj in evt.Result)
 							{
-								Connect.SpiraProject Project = new Connect.SpiraProject();
+								Business.SpiraProject Project = new Business.SpiraProject();
 								Project.ProjectID = RemoteProj.ProjectId.Value;
 								Project.ServerURL = new Uri(this.txbServer.Text);
 								Project.UserName = this.txbUserID.Text;
@@ -210,39 +191,39 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 							}
 							this.cmbProjectList.SelectedIndex = 0;
 							this.grdAvailProjs.IsEnabled = true;
-							this.grdEntry.IsEnabled = true;
-							this.barProg.IsIndeterminate = false;
-							this.barProg.Value = 0;
-							this.btnConnect.Content = "_Get Projects";
-							this.btnConnect.Tag = false;
-							this.txtStatus.Text = "";
-							this.txtStatus.ToolTip = null;
 						}
 						else
 						{
 							int num = this.cmbProjectList.Items.Add("-- No Projects Available --");
 							this.cmbProjectList.SelectedIndex = num;
-							//Reset form.
-							this.grdEntry.IsEnabled = true;
-							this.barProg.IsIndeterminate = false;
-							this.btnConnect.Content = "_Get Projects";
-							this.btnConnect.Tag = false;
 						}
-					}
-					else
-					{
+
+						//Reset form.
 						this.btnConnect_Click(null, null);
-						//Just act like they canceled the service, then set error flag.
-						this.barProg.Foreground = System.Windows.Media.Brushes.Red;
-						this.barProg.Value = 1;
-						this.txtStatus.Text = "Could not get projects.";
-						this.txtStatus.ToolTip = evt.Error.Message;
 					}
 				}
+				catch (Exception ex)
+				{
+					//TODO: Log error.
+					//Reset form.
+					this.btnConnect_Click(null, null);
+					//Just act like they canceled the service, then set error flag.
+					this.barProg.Foreground = System.Windows.Media.Brushes.Red;
+					this.barProg.Value = 1;
+					this.txtStatus.Text = "Error connecting.";
+					this.txtStatus.ToolTip = ex.Message;
+				}
 			}
-			catch (Exception ex)
+			else
 			{
-				Connect.logEventMessage("wpfNewSpiraProject::client_ActionCompleted", ex, System.Diagnostics.EventLogEntryType.Error);
+				//TODO: Log error.
+				//Reset form.
+				this.btnConnect_Click(null, null);
+				//Just act like they canceled the service, then set error flag.
+				this.barProg.Foreground = System.Windows.Media.Brushes.Red;
+				this.barProg.Value = 1;
+				this.txtStatus.Text = "Could not connect!";
+				this.txtStatus.ToolTip = e.Error.Message;
 			}
 		}
 
