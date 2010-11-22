@@ -12,8 +12,6 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 	/// </summary>
 	public partial class wpfNewSpiraProject : Window
 	{
-		private ImportExport _client = null;
-
 		public wpfNewSpiraProject()
 		{
 			try
@@ -63,7 +61,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 				//If they selected a valid project, let them save.
 				if (this.cmbProjectList.SelectedItem != null)
 				{
-					if (this.cmbProjectList.SelectedItem.GetType() == typeof(Connect.SpiraProject))
+					if (this.cmbProjectList.SelectedItem.GetType() == typeof(Business.SpiraProject))
 					{
 						this.btnSave.IsEnabled = true;
 					}
@@ -79,7 +77,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			}
 			catch (Exception ex)
 			{
-				Connect.logEventMessage("wpfNewSpiraProject::cmbProjectList_SelectionChanged", ex, System.Diagnostics.EventLogEntryType.Error);
+				//TODO: Log error.
 			}
 		}
 

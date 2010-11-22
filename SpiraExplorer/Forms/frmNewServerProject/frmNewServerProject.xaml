@@ -8,57 +8,83 @@
 	ShowInTaskbar="False"
 	SizeToContent="Height"
 	WindowStartupLocation="CenterOwner">
-	
+
 	<DockPanel LastChildFill="True" Margin="10">
+		<!-- Status Bar -->
 		<StatusBar DockPanel.Dock="Bottom" Padding="1">
 			<StatusBarItem Height="Auto" Margin="0" Padding="0">
 				<TextBlock Name="txtStatus" Height="Auto" Padding="0" Margin="0"></TextBlock>
 			</StatusBarItem>
 		</StatusBar>
-		<StackPanel Orientation="Vertical">
-			<GroupBox>
-				<GroupBox.Header>
-					<Label FontWeight="Bold" Height="Auto" VerticalAlignment="Center">Server Information:</Label>
-				</GroupBox.Header>
-				<GroupBox.Content>
-					<StackPanel Orientation="Vertical">
-						<Grid Name="grdEntry">
-							<Grid.ColumnDefinitions>
-								<ColumnDefinition Width="Auto"/>
-								<ColumnDefinition Width="*" />
-							</Grid.ColumnDefinitions>
-							<Grid.RowDefinitions>
-								<RowDefinition Height="Auto" />
-								<RowDefinition Height="Auto" />
-								<RowDefinition Height="Auto" />
-							</Grid.RowDefinitions>
-							<Label Grid.Column="0" Grid.Row="0" HorizontalContentAlignment="Right">Server URL:</Label>
-							<TextBox Margin="2" Name="txbServer" HorizontalAlignment="Stretch" Grid.Column="1" Grid.Row="0"  VerticalAlignment="Center" />
-							<Label Grid.Column="0" Grid.Row="1" HorizontalContentAlignment="Right">User ID:</Label>
-							<TextBox Margin="2" Name="txbUserID" HorizontalAlignment="Stretch" Grid.Column="1" Grid.Row="1" VerticalAlignment="Center"/>
-							<TextBlock Visibility="Collapsed" Name="txbUserNum" IsEnabled="False"></TextBlock>
-							<Label Grid.Column="0" Grid.Row="2" HorizontalContentAlignment="Right">Password:</Label>
-							<PasswordBox Margin="2" Name="txbUserPass" HorizontalAlignment="Stretch" Grid.Column="1" Grid.Row="2" VerticalAlignment="Center" PasswordChar="·"/>
-						</Grid>
-						<DockPanel LastChildFill="False" Margin="0,5,0,5">
-							<Button DockPanel.Dock="Right" Name="btnConnect">_Get Projects</Button>
-						</DockPanel>
-						<ProgressBar Name="barProg" IsIndeterminate="True" Height="7" Opacity="1" Maximum="1" Margin="1" IsTabStop="False" IsEnabled="True"></ProgressBar>
-					</StackPanel>
-				</GroupBox.Content>
-			</GroupBox>
-			<GroupBox IsEnabled="False" Name="grdAvailProjs">
-				<GroupBox.Header>
-					<Label FontWeight="Bold" Height="Auto" VerticalAlignment="Center">Available Projects:</Label>
-				</GroupBox.Header>
-				<GroupBox.Content>
-					<ComboBox HorizontalAlignment="Stretch" Name="cmbProjectList"></ComboBox>
-				</GroupBox.Content>
-			</GroupBox>
+		<!-- Save / Cancel Buttons -->
+		<GroupBox DockPanel.Dock="Bottom" BorderBrush="Transparent" VerticalContentAlignment="Center" >
 			<StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch" FlowDirection="RightToLeft" Margin="0,0,0,4">
 				<Button HorizontalAlignment="Right" Margin="0,5,5,0" Name="btnCancel" Click="btnCancel_Click">_Cancel</Button>
 				<Button HorizontalAlignment="Right" Margin="5,5,0,0" IsEnabled="False" Name="btnSave" Click="btnSave_Click">_Save</Button>
 			</StackPanel>
-		</StackPanel>
+		</GroupBox>
+		<!-- Server Information -->
+		<Grid DockPanel.Dock="Top">
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="*" />
+			</Grid.ColumnDefinitions>
+			<Grid.RowDefinitions>
+				<RowDefinition Height="Auto" />
+				<RowDefinition Height="Auto" />
+			</Grid.RowDefinitions>
+			<!-- Connect Information -->
+			<GroupBox Grid.Column="0" Grid.Row="0">
+				<GroupBox.Header>
+					<TextBlock FontWeight="Bold" Height="Auto" VerticalAlignment="Center">Server Information:</TextBlock>
+				</GroupBox.Header>
+				<GroupBox.Content>
+					<Grid Name="grdEntry">
+						<Grid.ColumnDefinitions>
+							<ColumnDefinition Width="Auto"/>
+							<ColumnDefinition Width="*" />
+						</Grid.ColumnDefinitions>
+						<Grid.RowDefinitions>
+							<RowDefinition Height="Auto" />
+							<RowDefinition Height="Auto" />
+							<RowDefinition Height="Auto" />
+							<RowDefinition Height="Auto" />
+						</Grid.RowDefinitions>
+						<!-- Server URL -->
+						<TextBlock Grid.Column="0" Grid.Row="0" HorizontalAlignment="Right">Server URL:</TextBlock>
+						<TextBox Margin="2" Name="txbServer" HorizontalAlignment="Stretch" Grid.Column="1" Grid.Row="0"  VerticalAlignment="Center" />
+						<!-- Server User -->
+						<TextBlock Grid.Column="0" Grid.Row="1" HorizontalAlignment="Right">User ID:</TextBlock>
+						<TextBox Margin="2" Name="txbUserID" HorizontalAlignment="Stretch" Grid.Column="1" Grid.Row="1" VerticalAlignment="Center"/>
+						<!-- Server Password -->
+						<TextBlock Grid.Column="0" Grid.Row="2" HorizontalAlignment="Right">Password:</TextBlock>
+						<PasswordBox Margin="2" Name="txbUserPass" HorizontalAlignment="Stretch" Grid.Column="1" Grid.Row="2" VerticalAlignment="Center" PasswordChar="·"/>
+						<TextBlock Visibility="Collapsed" Name="txbUserNum" IsEnabled="False"></TextBlock>
+						<!-- Progress & Connect Button -->
+						<Grid Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="2">
+							<Grid.ColumnDefinitions>
+								<ColumnDefinition Width="*" />
+							</Grid.ColumnDefinitions>
+							<Grid.RowDefinitions>
+								<RowDefinition Height="Auto"/>
+								<RowDefinition Height="Auto"/>
+							</Grid.RowDefinitions>
+							<!-- Connect Button -->
+							<Button Grid.Column="0" Grid.Row="0" Name="btnConnect" HorizontalAlignment="Right">_Get Projects</Button>
+							<!-- Progress Bar -->
+							<ProgressBar Grid.Column="0" Grid.Row="1" Name="barProg" IsIndeterminate="True" Height="7" Opacity="1" Maximum="1" Margin="1" IsTabStop="False" IsEnabled="True" />
+						</Grid>
+					</Grid>
+				</GroupBox.Content>
+			</GroupBox>
+			<!-- Available Projects -->
+			<GroupBox Grid.Column="0" Grid.Row="1" IsEnabled="False" Name="grdAvailProjs">
+				<GroupBox.Header>
+					<TextBlock FontWeight="Bold" Height="Auto" VerticalAlignment="Center">Available Projects:</TextBlock>
+				</GroupBox.Header>
+				<GroupBox.Content>
+					<ComboBox HorizontalAlignment="Stretch" Name="cmbProjectList" />
+				</GroupBox.Content>
+			</GroupBox>
+		</Grid>
 	</DockPanel>
 </Window>
