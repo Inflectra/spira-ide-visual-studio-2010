@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Resources;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Markup;
 using System.Windows.Media.Imaging;
 using System.Xml;
+using Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Properties;
 
 namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 {
@@ -17,8 +17,8 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 	public partial class frmAssignProject : Window
 	{
 		#region Internal Vars
+		private List<Business.SpiraProject> _Projects;
 		private bool _hasChanged = false;
-		private ResourceManager _resources = null;
 		private string _solname;
 		#endregion
 
@@ -29,15 +29,12 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			{
 				InitializeComponent();
 
-				//Get the resources.
-				this._resources = Business.StaticFuncs.getCultureResource;
-
 				//Title
-				this.Title = this._resources.GetString("strAssignProjectTitle");
+				this.Title = Business.StaticFuncs.getCultureResource.GetString("strAssignProjectTitle");
 				//Icon
 				try
 				{
-					System.Drawing.Icon ico = (System.Drawing.Icon)this._resources.GetObject("icoLogo");
+					System.Drawing.Icon ico = (System.Drawing.Icon)Business.StaticFuncs.getCultureResource.GetObject("icoLogo");
 					MemoryStream icoStr = new MemoryStream();
 					ico.Save(icoStr);
 					icoStr.Seek(0, SeekOrigin.Begin);
@@ -71,7 +68,10 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 
 				//Get the solution name.
 				if (Business.StaticFuncs.GetEnvironment.Solution.IsOpen)
+				{
 					this._solname = (string)Business.StaticFuncs.GetEnvironment.Solution.Properties.Item("Name").Value;
+					this.loadSolution();
+				}
 				else
 					this._solname = null;
 
@@ -92,7 +92,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 		{
 			try
 			{
-				string sureMsg = "Are you sure you want to delete project:" + Environment.NewLine + ((Connect.SpiraProject)this.lstAvailProjects.SelectedItem).ToString();
+				string sureMsg = "Are you sure you want to delete project:" + Environment.NewLine + ((Business.SpiraProject)this.lstAvailProjects.SelectedItem).ToString();
 				MessageBoxResult userSure = MessageBox.Show(sureMsg, "Remove Project?", MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.Yes);
 
 				if (userSure == MessageBoxResult.Yes)
@@ -144,22 +144,26 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 				string selProjects = "";
 				string availProjects = "";
 
-				foreach (Connect.SpiraProject proj in this.lstAvailProjects.Items)
+				foreach (Business.SpiraProject proj in this.lstAvailProjects.Items)
 				{
-					availProjects += Connect.SpiraProject.GenerateToString(proj) + Connect.SpiraProject.CHAR_RECORD;
+					availProjects += Business.SpiraProject.GenerateToString(proj) + Business.SpiraProject.CHAR_RECORD;
 				}
-				foreach (Connect.SpiraProject proj in this.lstSelectProjects.Items)
+				foreach (Business.SpiraProject proj in this.lstSelectProjects.Items)
 				{
-					string projstr = Connect.SpiraProject.GenerateToString(proj) + Connect.SpiraProject.CHAR_RECORD;
+					string projstr = Business.SpiraProject.GenerateToString(proj) + Business.SpiraProject.CHAR_RECORD;
 					availProjects += projstr;
 					selProjects += projstr;
 				}
-				availProjects = availProjects.Trim(Connect.SpiraProject.CHAR_RECORD);
-				selProjects = selProjects.Trim(Connect.SpiraProject.CHAR_RECORD);
+				availProjects = availProjects.Trim(Business.SpiraProject.CHAR_RECORD);
+				selProjects = selProjects.Trim(Business.SpiraProject.CHAR_RECORD);
 
-				this._Settings.SetValue("General", "Projects", availProjects);
-				this._Settings.SetValue(this._solname, "Projects", selProjects);
-				this._Settings.Save();
+				//Save the selected projects to the settings.
+				//this._Settings.SetValue("General", "Projects", availProjects);
+				if (Settings.Default.AssignedProjects.ContainsKey(this._solname))
+					Settings.Default.AssignedProjects[this._solname] = selProjects;
+				else
+					Settings.Default.AssignedProjects.Add(this._solname, selProjects);
+				Settings.Default.Save();
 
 				this.DialogResult = true;
 			}
@@ -177,18 +181,18 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			try
 			{
 				//Like removing duplicates, but in reverse.
-				List<Connect.SpiraProject> SelProjs = new List<Connect.SpiraProject>();
-				foreach (Connect.SpiraProject proj in this.lstSelectProjects.SelectedItems)
+				List<Business.SpiraProject> SelProjs = new List<Business.SpiraProject>();
+				foreach (Business.SpiraProject proj in this.lstSelectProjects.SelectedItems)
 				{
 					this.lstAvailProjects.Items.Add(proj);
 					SelProjs.Add(proj);
 				}
 
-				foreach (Connect.SpiraProject proj in SelProjs)
+				foreach (Business.SpiraProject proj in SelProjs)
 				{
 					for (int i = 0; i < this.lstSelectProjects.Items.Count; )
 					{
-						if (proj.IsEqualTo((Connect.SpiraProject)this.lstSelectProjects.Items[i]))
+						if (proj.IsEqualTo((Business.SpiraProject)this.lstSelectProjects.Items[i]))
 						{
 							this.lstSelectProjects.Items.RemoveAt(i);
 						}
@@ -247,7 +251,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 				if (button.Name == "btnEdit")
 				{
 					//Get the item selected.
-					Connect.SpiraProject proj = (Connect.SpiraProject)this.lstAvailProjects.SelectedItem;
+					Business.SpiraProject proj = (Business.SpiraProject)this.lstAvailProjects.SelectedItem;
 					frmAddProject.txbServer.Text = proj.ServerURL.AbsoluteUri;
 					frmAddProject.txbUserID.Text = proj.UserName;
 					frmAddProject.txbUserPass.Password = proj.UserPass;
@@ -259,13 +263,13 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 				{
 					if (frmAddProject.cmbProjectList.SelectedItem != null)
 					{
-						Connect.SpiraProject selProject = (Connect.SpiraProject)frmAddProject.cmbProjectList.SelectedItem;
+						Business.SpiraProject selProject = (Business.SpiraProject)frmAddProject.cmbProjectList.SelectedItem;
 
 						//Add it to the available list if there's no existing ones.
 						bool AddToSelected = false;
 						for (int i = 0; i < this.lstAvailProjects.Items.Count; )
 						{
-							if (((Connect.SpiraProject)this.lstAvailProjects.Items[i]).IsEqualTo(selProject))
+							if (((Business.SpiraProject)this.lstAvailProjects.Items[i]).IsEqualTo(selProject))
 							{
 								this.lstAvailProjects.Items.RemoveAt(i);
 							}
@@ -276,7 +280,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 						}
 						for (int i = 0; i < this.lstSelectProjects.Items.Count; )
 						{
-							if (((Connect.SpiraProject)this.lstSelectProjects.Items[i]).IsEqualTo(selProject))
+							if (((Business.SpiraProject)this.lstSelectProjects.Items[i]).IsEqualTo(selProject))
 							{
 								this.lstSelectProjects.Items.RemoveAt(i);
 								AddToSelected = true;
@@ -317,7 +321,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			}
 			catch (Exception ex)
 			{
-				Connect.logEventMessage("frmAssignProject::btn_IsEnabledChanged", ex, System.Diagnostics.EventLogEntryType.Error);
+				//TODO: Log error.
 			}
 		}
 
@@ -375,12 +379,12 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 		{
 			try
 			{
-				foreach (Connect.SpiraProject proj in this.lstSelectProjects.Items)
+				foreach (Business.SpiraProject proj in this.lstSelectProjects.Items)
 				{
 					//Loop through the ones available..
 					for (int i = 0; i < this.lstAvailProjects.Items.Count; )
 					{
-						if (((Connect.SpiraProject)this.lstAvailProjects.Items[i]).IsEqualTo(proj))
+						if (((Business.SpiraProject)this.lstAvailProjects.Items[i]).IsEqualTo(proj))
 						{
 							this.lstAvailProjects.Items.RemoveAt(i);
 						}
@@ -405,11 +409,11 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 				string rtfText = "";
 				if (string.IsNullOrEmpty(this._solname))
 				{
-					rtfText = this._resources.GetString("flowSelectNoSolution");
+					rtfText = Business.StaticFuncs.getCultureResource.GetString("flowSelectNoSolution");
 				}
 				else
 				{
-					rtfText = this._resources.GetString("flowSelectSolution");
+					rtfText = Business.StaticFuncs.getCultureResource.GetString("flowSelectSolution");
 					rtfText = rtfText.Replace("%solution%", this._solname);
 				}
 
@@ -423,27 +427,30 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 
 		/// <summary>Sets the solution name for configuring the form's display.</summary>
 		/// <param name="solName">The name of the currently-loaded solution, null if none open.</param>
-		private void setSolution(string solName)
+		private void loadSolution()
 		{
 			try
 			{
 				//We have the solution name, load up the projects associated, and remove them from the available.
-				this._solname = solName;
 				if (!string.IsNullOrEmpty(this._solname))
 				{
 					this._solname = this._solname.Replace(' ', '_');
 
 					this.lstSelectProjects.Items.Clear();
-					string strProjs = this._Settings.GetValue(this._solname, "Projects");
-					if (!string.IsNullOrEmpty(strProjs))
+					if (Settings.Default.AssignedProjects.ContainsKey(this._solname))
 					{
-						foreach (string strProj in strProjs.Split(Connect.SpiraProject.CHAR_RECORD))
+						string strProjs = Settings.Default.AssignedProjects[this._solname];
+
+						if (!string.IsNullOrWhiteSpace(strProjs))
 						{
-							Connect.SpiraProject Project = Connect.SpiraProject.GenerateFromString(strProj);
-							this.lstSelectProjects.Items.Add(Project);
+							foreach (string strProj in strProjs.Split(Business.SpiraProject.CHAR_RECORD))
+							{
+								Business.SpiraProject Project = Business.SpiraProject.GenerateFromString(strProj);
+								this.lstSelectProjects.Items.Add(Project);
+							}
+							//remove duplicates.
+							this.removeDuplicates();
 						}
-						//remove duplicates.
-						this.removeDuplicates();
 					}
 					this.lstSelectProjects.IsEnabled = true;
 				}
@@ -454,6 +461,5 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 				//TODO: Log Error.
 			}
 		}
-
 	}
 }

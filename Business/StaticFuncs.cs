@@ -5,6 +5,7 @@ using System.Resources;
 using System.Windows;
 using System.Windows.Media.Imaging;
 using Microsoft.VisualStudio.Shell;
+using Microsoft.VisualStudio.Shell.Interop;
 
 namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business
 {

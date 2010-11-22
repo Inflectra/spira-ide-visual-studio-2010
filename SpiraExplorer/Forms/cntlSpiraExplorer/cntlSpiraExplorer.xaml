@@ -34,7 +34,7 @@
 					</Grid>
 				</HierarchicalDataTemplate>
 			</TreeView.Resources>
-			<TreeViewItem Header="Test" Selected="TreeViewItem_Selected" IsExpanded="True">
+			<TreeViewItem Header="Test" IsExpanded="True">
 				<TreeViewItem Header="Test 2" IsSelected="True" />
 			</TreeViewItem>
 		</TreeView>

@@ -25,9 +25,9 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        public global::Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business.SerializableDictionary AssignedProjects {
+        public global::Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business.SerializableDictionary<string,string> AssignedProjects {
             get {
-                return ((global::Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business.SerializableDictionary)(this["AssignedProjects"]));
+                return ((global::Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business.SerializableDictionary<string,string>)(this["AssignedProjects"]));
             }
             set {
                 this["AssignedProjects"] = value;
@@ -43,6 +43,18 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Properties {
             }
             set {
                 this["ShowUnassigned"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool ShowCompleted {
+            get {
+                return ((bool)(this["ShowCompleted"]));
+            }
+            set {
+                this["ShowCompleted"] = value;
             }
         }
     }

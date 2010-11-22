@@ -51,6 +51,8 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Design" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.ServiceModel" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="PresentationCore" />
@@ -119,9 +121,11 @@
     <Compile Include="Forms\cntlSpiraExplorer\cntlSpiraExplorer.xaml.cs">
       <DependentUpon>cntlSpiraExplorer.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Forms\frmAssignProject\wpfAssignProject.xaml - FlowUp.cs" />
     <Compile Include="Forms\frmAssignProject\frmAssignProject.xaml.cs">
       <DependentUpon>frmAssignProject.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\frmNewServerProject\frmNewServerProject.xaml.cs">
+      <DependentUpon>frmNewServerProject.xaml</DependentUpon>
     </Compile>
     <Compile Include="MyControl.xaml.cs">
       <DependentUpon>MyControl.xaml</DependentUpon>
@@ -186,6 +190,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Forms\frmAssignProject\frmAssignProject.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Forms\frmNewServerProject\frmNewServerProject.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

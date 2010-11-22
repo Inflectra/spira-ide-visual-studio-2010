@@ -2,6 +2,10 @@
 using System;
 using System.ServiceModel;
 using System.Text;
+using Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business.SpiraTeam_Client;
+using System.Collections.Generic;
+using System.Net;
+using System.Security.Cryptography.X509Certificates;
 namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business
 {
 	public partial class Spira_ImportExport : IDisposable
@@ -226,5 +230,67 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business
 				return false;
 			}
 		}
+
+		#region Static Functions
+		/// <summary>Generates a filter for pulling information from the Spira server.</summary>
+		/// <param name="UserNum">The user number of the data to pull for.</param>
+		/// <param name="IncludeComplete">Whether or not to include completed/closed items.</param>
+		/// <param name="IncTypeCode">The string type code of the artifact. "TK", "IN", "RQ"</param>
+		/// <returns>A RemoteFilter set.</returns>
+		public static List<RemoteFilter> GenerateFilter(int UserNum, bool IncludeComplete, string IncTypeCode)
+		{
+			try
+			{
+				RemoteFilter userFilter = new RemoteFilter() { PropertyName = "OwnerId", IntValue = UserNum };
+				RemoteFilter statusFilter = new RemoteFilter();
+				if (!IncludeComplete)
+				{
+					switch (IncTypeCode.ToUpperInvariant())
+					{
+						case "IN":
+							{
+								statusFilter = new RemoteFilter() { PropertyName = "IncidentStatusId", IntValue = -2 };
+							}
+							break;
+
+						case "TK":
+							{
+								MultiValueFilter multiValue = new MultiValueFilter();
+								multiValue.Values = new List<int> { 1, 2, 4, 5 };
+								statusFilter = new RemoteFilter() { PropertyName = "TaskStatusId", MultiValue = multiValue };
+							}
+							break;
+
+						case "RQ":
+							{
+								MultiValueFilter multiValue = new MultiValueFilter();
+								multiValue.Values = new List<int> { 1, 2, 3, 5, 7 };
+								statusFilter = new RemoteFilter() { PropertyName = "ScopeLevelId", MultiValue = multiValue };
+							}
+							break;
+					}
+				}
+
+				return new List<RemoteFilter> { userFilter, statusFilter };
+			}
+			catch (Exception ex)
+			{
+				//TODO: Error logging.
+				return null;
+			}
+		}
+
+		/// <summary>Generates a RemoteSort to be used on client calls.</summary>
+		/// <returns>RemoteSort</returns>
+		public static RemoteSort GenerateSort()
+		{
+			RemoteSort sort = new RemoteSort();
+			sort.PropertyName = "UserId";
+			sort.SortAscending = true;
+
+			return sort;
+		}
+		#endregion
+
 	}
 }

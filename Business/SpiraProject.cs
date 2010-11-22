@@ -168,19 +168,37 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business
 			{
 				try
 				{
-					ImportExport client = new ImportExport();
-					client.Url = this.ServerURL.AbsoluteUri + URL_APIADD;
-					client.CookieContainer = new System.Net.CookieContainer();
-					client.Connection_Authenticate2(this.UserName, this.UserPass, "Spira_VSIDE Label");
-					client.Connection_ConnectToProject(this.ProjectID);
-					//Get priject name.
-					this.ProjectName = client.Project_RetrieveById(this.ProjectID).Name;
-					//Get user ID.
-					this.UserID = client.User_RetrieveByUserName(this.UserName).UserId.Value;
-
+					Business.Spira_ImportExport client = new Spira_ImportExport(this.ServerURL.ToString(), this.UserName, this.UserPass);
+					client.ConnectionError += new EventHandler<Spira_ImportExport.ConnectionException>(_client_RefreshError);
+					client.ConnectionReady += new EventHandler(_client_RefreshConnection);
+					client.Connect();
 				}
 				catch
 				{ }
+			}
+		}
+
+		/// <summary>Hit when we're trying to refresh the project's name, and we get an error.</summary>
+		/// <param name="sender">Spira_ImportExport</param>
+		/// <param name="e">Spira_ImportExport.ConnectionException</param>
+		private void _client_RefreshError(object sender, Spira_ImportExport.ConnectionException e)
+		{
+			//Do nothing, we're still in error.
+		}
+
+		/// <summary>Hit when we're trying to refresh the project's name, and we get an error.</summary>
+		/// <param name="sender">Spira_ImportExport</param>
+		/// <param name="e">EventArgs</param>
+		private void _client_RefreshConnection(object sender, EventArgs e)
+		{
+			Spira_ImportExport client = sender as Spira_ImportExport;
+
+			if (client != null)
+			{
+				//Get project name & User ID.
+				client.Client.Connection_ConnectToProject(this.ProjectID);
+				this.ProjectName = client.Client.Project_RetrieveById(this.ProjectID).Name;
+				this.UserID = client.Client.User_RetrieveByUserName(this.UserName).UserId.Value;
 			}
 		}
 	}

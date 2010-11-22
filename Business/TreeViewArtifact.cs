@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Windows.Controls;
+﻿using System.Windows.Controls;
+using System.Windows.Media;
 
 namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business
 {
@@ -17,13 +14,6 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business
 
 		/// <summary>The artifact's name.</summary>
 		public string ArtifactName
-		{
-			get;
-			set;
-		}
-
-		/// <summary>The item that this treeview item is displaying.</summary>
-		public object ArtifactObject
 		{
 			get;
 			set;
@@ -55,14 +45,14 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business
 		{
 			get
 			{
-				switch (this.Type)
+				switch (this.ArtifactType)
 				{
 					case ArtifactTypeEnum.Incident:
-						return "[IN:" + this.Id.ToString() + "]";
+						return "[IN:" + this.ArtifactId.ToString() + "]";
 					case ArtifactTypeEnum.Requirement:
-						return "[RQ:" + this.Id.ToString() + "]";
+						return "[RQ:" + this.ArtifactId.ToString() + "]";
 					case ArtifactTypeEnum.Task:
-						return "[TK:" + this.Id.ToString() + "]";
+						return "[TK:" + this.ArtifactId.ToString() + "]";
 					default:
 						return "";
 				}
@@ -95,6 +85,27 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business
 		{
 			get;
 			set;
+		}
+
+		/// <summary>Readonly. Returns the parent project node (or null if ot found.)</summary>
+		public TreeViewArtifact ArtifactParentProject
+		{
+			get
+			{
+				TreeViewArtifact retNode = null;
+
+				if (this.Parent != null)
+				{
+					TreeViewArtifact checkNode = this.Parent as TreeViewArtifact;
+					while (checkNode != null && checkNode.ArtifactType != ArtifactTypeEnum.Project)
+					{
+						checkNode = checkNode.Parent as TreeViewArtifact;
+					}
+					retNode = checkNode;
+				}
+
+				return retNode;
+			}
 		}
 
 		/// <summary>Available types of TreeNodes.</summary>
