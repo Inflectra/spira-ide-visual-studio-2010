@@ -3,9 +3,7 @@ using System.Collections.Generic;
 using System.Net;
 using System.Security.Cryptography.X509Certificates;
 using System.ServiceModel;
-using System.Text;
 using Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business.SpiraTeam_Client;
-using Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Properties;
 
 namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business
 {
@@ -75,10 +73,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business
 		{
 			get
 			{
-				if (this._isConnected)
-					return this._client;
-				else
-					return null;
+				return this._client;
 			}
 		}
 

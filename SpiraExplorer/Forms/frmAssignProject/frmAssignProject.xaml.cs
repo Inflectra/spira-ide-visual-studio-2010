@@ -7,6 +7,7 @@ using System.Windows.Documents;
 using System.Windows.Markup;
 using System.Windows.Media.Imaging;
 using System.Xml;
+using Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business;
 using Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Properties;
 
 namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
@@ -88,7 +89,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 		/// <summary>Hit when the user decides they want to delete a project.</summary>
 		/// <param name="sender">btnDelete</param>
 		/// <param name="e">Event Args</param>
-		void btnDelete_Click(object sender, RoutedEventArgs e)
+		private void btnDelete_Click(object sender, RoutedEventArgs e)
 		{
 			try
 			{
@@ -110,7 +111,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 		/// <summary>Hit when the Cencel button on the form is clicked.</summary>
 		/// <param name="sender">btnCancel</param>
 		/// <param name="e">Event Args</param>
-		void btnCancel_Click(object sender, RoutedEventArgs e)
+		private void btnCancel_Click(object sender, RoutedEventArgs e)
 		{
 			try
 			{
@@ -136,33 +137,32 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 		/// <summary>Hit when the Save button is clicked.</summary>
 		/// <param name="sender">btnSave</param>
 		/// <param name="e">Event Args</param>
-		void btnSave_Click(object sender, RoutedEventArgs e)
+		private void btnSave_Click(object sender, RoutedEventArgs e)
 		{
 			try
 			{
 				//The user wanted to save. Save our settings and raise the closeform event.
 				string selProjects = "";
-				string availProjects = "";
+				SerializableList<string> availProjects = new SerializableList<string>();
 
 				foreach (Business.SpiraProject proj in this.lstAvailProjects.Items)
 				{
-					availProjects += Business.SpiraProject.GenerateToString(proj) + Business.SpiraProject.CHAR_RECORD;
+					availProjects.Add(Business.SpiraProject.GenerateToString(proj));
 				}
 				foreach (Business.SpiraProject proj in this.lstSelectProjects.Items)
 				{
 					string projstr = Business.SpiraProject.GenerateToString(proj) + Business.SpiraProject.CHAR_RECORD;
-					availProjects += projstr;
+					availProjects.Add(projstr);
 					selProjects += projstr;
 				}
-				availProjects = availProjects.Trim(Business.SpiraProject.CHAR_RECORD);
 				selProjects = selProjects.Trim(Business.SpiraProject.CHAR_RECORD);
 
 				//Save the selected projects to the settings.
-				//this._Settings.SetValue("General", "Projects", availProjects);
 				if (Settings.Default.AssignedProjects.ContainsKey(this._solname))
 					Settings.Default.AssignedProjects[this._solname] = selProjects;
 				else
 					Settings.Default.AssignedProjects.Add(this._solname, selProjects);
+				Settings.Default.AllProjects = availProjects;
 				Settings.Default.Save();
 
 				this.DialogResult = true;
@@ -176,7 +176,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 		/// <summary>Remove the selected projects from the 'Selected' list.</summary>
 		/// <param name="sender">The btnRemove</param>
 		/// <param name="e">Event Args</param>
-		void btnRemove_Click(object sender, RoutedEventArgs e)
+		private void btnRemove_Click(object sender, RoutedEventArgs e)
 		{
 			try
 			{
@@ -214,7 +214,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 		/// <summary>Hit when the user wants to assign a serverproject.</summary>
 		/// <param name="sender">btnAdd</param>
 		/// <param name="e">Event Args</param>
-		void btnAdd_Click(object sender, RoutedEventArgs e)
+		private void btnAdd_Click(object sender, RoutedEventArgs e)
 		{
 			try
 			{
@@ -239,14 +239,15 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 		/// <summary>Hit when the user wants to add/edit a serverproject.</summary>
 		/// <param name="sender">btnNew / btnEdit</param>
 		/// <param name="e">Event Args</param>
-		void btnNewEdit_Click(object sender, RoutedEventArgs e)
+		private void btnNewEdit_Click(object sender, RoutedEventArgs e)
 		{
 			try
 			{
 				Button button = (Button)sender;
 
 				//Create the form.
-				wpfNewSpiraProject frmAddProject = new wpfNewSpiraProject();
+				frmNewSpiraProject frmAddProject = new frmNewSpiraProject();
+				frmAddProject.Owner = this;
 
 				if (button.Name == "btnEdit")
 				{
@@ -312,7 +313,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 		/// <summary>Hit when a button IsEnabled is changed.</summary>
 		/// <param name="sender">btnEdit / btnDelete</param>
 		/// <param name="e">Event Args</param>
-		void btn_IsEnabledChanged(object sender, DependencyPropertyChangedEventArgs e)
+		private void btn_IsEnabledChanged(object sender, DependencyPropertyChangedEventArgs e)
 		{
 			try
 			{
@@ -431,21 +432,24 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 		{
 			try
 			{
+				//Load up all projects into the first listbox.
+				this.lstAvailProjects.Items.Clear();
+				foreach (string proj in Settings.Default.AllProjects)
+					this.lstAvailProjects.Items.Add(Business.SpiraProject.GenerateFromString(proj));
+
 				//We have the solution name, load up the projects associated, and remove them from the available.
 				if (!string.IsNullOrEmpty(this._solname))
 				{
-					this._solname = this._solname.Replace(' ', '_');
-
 					this.lstSelectProjects.Items.Clear();
 					if (Settings.Default.AssignedProjects.ContainsKey(this._solname))
 					{
 						string strProjs = Settings.Default.AssignedProjects[this._solname];
-
 						if (!string.IsNullOrWhiteSpace(strProjs))
 						{
 							foreach (string strProj in strProjs.Split(Business.SpiraProject.CHAR_RECORD))
 							{
-								Business.SpiraProject Project = Business.SpiraProject.GenerateFromString(strProj);
+								Business.SpiraProj
+									ect Project = Business.SpiraProject.GenerateFromString(strProj);
 								this.lstSelectProjects.Items.Add(Project);
 							}
 							//remove duplicates.

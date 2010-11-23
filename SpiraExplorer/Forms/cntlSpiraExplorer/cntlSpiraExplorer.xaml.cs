@@ -56,7 +56,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 				this.btnRefresh.Click += new RoutedEventHandler(btnRefresh_Click);
 				this.btnRefresh.IsEnabledChanged += new DependencyPropertyChangedEventHandler(toolButton_IsEnabledChanged);
 				// - Set bar color.
-				this.barLoading.Foreground = (Brush)new System.Windows.Media.BrushConverter().ConvertFrom(this._resources.GetString("barForeColor"));
+				this.barLoading.Foreground = (Brush)new System.Windows.Media.BrushConverter().ConvertFrom(this._resources.GetString("app_Colors_StyledBarColor"));
 
 				//Load nodes.
 				this.CreateStandardNodes();
@@ -190,8 +190,11 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 
 				if (configProj.ShowDialog().Value)
 				{
-					//Reload projects.
-					this.setSolution(this._solutionName);
+					//If a solution is loaded now, get the loaded solution.
+					if (Business.StaticFuncs.GetEnvironment.Solution.IsOpen)
+						this.setSolution((string)Business.StaticFuncs.GetEnvironment.Solution.Properties.Item("Name").Value);
+					else
+						this.setSolution(null);
 				}
 			}
 			catch (Exception ex)

@@ -59,6 +59,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 				this.barLoading.Visibility = Visibility.Visible;
 
 				//Erase what's in the treeview already.
+				this.trvProject.Items.Clear();
 				this.trvProject.ItemsSource = this._Projects;
 				this.trvProject.Items.Refresh();
 				//Clear the client collection.
@@ -125,7 +126,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 					TreeViewArtifact folderRequirementsMy = new TreeViewArtifact();
 					Business.Spira_ImportExport clientReqMy = new Business.Spira_ImportExport(((Business.SpiraProject)Project.ArtifactTag).ServerURL.ToString(), ((Business.SpiraProject)Project.ArtifactTag).UserName, ((Business.SpiraProject)Project.ArtifactTag).UserPass);
 					folderRequirementsMy.ArtifactName = string.Format(Business.StaticFuncs.getCultureResource.GetString("app_Tree_My"), folderRequirements.ArtifactName);
-					folderRequirementsMy.ArtifactType = TreeViewArtifact.ArtifactTypeEnum.Incident;
+					folderRequirementsMy.ArtifactType = TreeViewArtifact.ArtifactTypeEnum.Requirement;
 					folderRequirementsMy.ArtifactIsFolder = true;
 					clientReqMy.ConnectionReady += new EventHandler(_client_ConnectionReady);
 					clientReqMy.ConnectionError += new EventHandler<Business.Spira_ImportExport.ConnectionException>(_client_ConnectionError);
@@ -149,8 +150,8 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 					{
 						TreeViewArtifact folderRequirementsUn = new TreeViewArtifact();
 						Business.Spira_ImportExport clientReqUn = new Business.Spira_ImportExport(((Business.SpiraProject)Project.ArtifactTag).ServerURL.ToString(), ((Business.SpiraProject)Project.ArtifactTag).UserName, ((Business.SpiraProject)Project.ArtifactTag).UserPass);
-						folderRequirementsUn.ArtifactName = string.Format(Business.StaticFuncs.getCultureResource.GetString("app_Tree_Unassigned"), folderIncidents.ArtifactName);
-						folderRequirementsUn.ArtifactType = TreeViewArtifact.ArtifactTypeEnum.Incident;
+						folderRequirementsUn.ArtifactName = string.Format(Business.StaticFuncs.getCultureResource.GetString("app_Tree_Unassigned"), folderRequirements.ArtifactName);
+						folderRequirementsUn.ArtifactType = TreeViewArtifact.ArtifactTypeEnum.Requirement;
 						folderRequirementsUn.ArtifactIsFolder = true;
 						clientReqUn.ConnectionReady += new EventHandler(_client_ConnectionReady);
 						clientReqUn.ConnectionError += new EventHandler<Business.Spira_ImportExport.ConnectionException>(_client_ConnectionError);
@@ -174,7 +175,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 					TreeViewArtifact folderTasksMy = new TreeViewArtifact();
 					Business.Spira_ImportExport clientTskMy = new Business.Spira_ImportExport(((Business.SpiraProject)Project.ArtifactTag).ServerURL.ToString(), ((Business.SpiraProject)Project.ArtifactTag).UserName, ((Business.SpiraProject)Project.ArtifactTag).UserPass);
 					folderTasksMy.ArtifactName = string.Format(Business.StaticFuncs.getCultureResource.GetString("app_Tree_My"), folderTasks.ArtifactName);
-					folderTasksMy.ArtifactType = TreeViewArtifact.ArtifactTypeEnum.Incident;
+					folderTasksMy.ArtifactType = TreeViewArtifact.ArtifactTypeEnum.Task;
 					folderTasksMy.ArtifactIsFolder = true;
 					clientTskMy.ConnectionReady += new EventHandler(_client_ConnectionReady);
 					clientTskMy.ConnectionError += new EventHandler<Business.Spira_ImportExport.ConnectionException>(_client_ConnectionError);
@@ -199,7 +200,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 						TreeViewArtifact folderTasksUn = new TreeViewArtifact();
 						Business.Spira_ImportExport clientTskUn = new Business.Spira_ImportExport(((Business.SpiraProject)Project.ArtifactTag).ServerURL.ToString(), ((Business.SpiraProject)Project.ArtifactTag).UserName, ((Business.SpiraProject)Project.ArtifactTag).UserPass);
 						folderTasksUn.ArtifactName = string.Format(Business.StaticFuncs.getCultureResource.GetString("app_Tree_Unassigned"), folderTasks.ArtifactName);
-						folderTasksUn.ArtifactType = TreeViewArtifact.ArtifactTypeEnum.Incident;
+						folderTasksUn.ArtifactType = TreeViewArtifact.ArtifactTypeEnum.Task;
 						folderTasksUn.ArtifactIsFolder = true;
 						clientTskUn.ConnectionReady += new EventHandler(_client_ConnectionReady);
 						clientTskUn.ConnectionError += new EventHandler<Business.Spira_ImportExport.ConnectionException>(_client_ConnectionError);
@@ -496,10 +497,13 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 		{
 			try
 			{
+				this._solutionName = null;
+				this.trvProject.ItemsSource = null;
 				this.trvProject.Items.Clear();
 				this.trvProject.Items.Add(this._nodeNoSolution);
 				this.btnShowClosed.IsEnabled = false;
 				this.btnRefresh.IsEnabled = false;
+				this.barLoading.Visibility = System.Windows.Visibility.Collapsed;
 			}
 			catch (Exception ex)
 			{
@@ -512,6 +516,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 		{
 			try
 			{
+				this.trvProject.ItemsSource = null;
 				this.trvProject.Items.Clear();
 				this.trvProject.Items.Add(this._nodeNoProjects);
 				this.btnShowClosed.IsEnabled = false;

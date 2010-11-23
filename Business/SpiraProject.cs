@@ -1,4 +1,5 @@
 ﻿using System;
+using Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business.SpiraTeam_Client;
 
 namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business
 {
@@ -163,42 +164,23 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business
 		/// <summary>Refreshes project name if necessary.</summary>
 		private void refreshProject()
 		{
-			//only run if it's not set.
+			//Only run if it's not set.
 			if ((this.ProjectName == "Project" || string.IsNullOrEmpty(this.ProjectName)) || this.UserID == -1)
 			{
 				try
 				{
-					Business.Spira_ImportExport client = new Spira_ImportExport(this.ServerURL.ToString(), this.UserName, this.UserPass);
-					client.ConnectionError += new EventHandler<Spira_ImportExport.ConnectionException>(_client_RefreshError);
-					client.ConnectionReady += new EventHandler(_client_RefreshConnection);
-					client.Connect();
+					ImportExportClient client = StaticFuncs.CreateClient(this.ServerURL.ToString());
+
+					//Connect and get the project information.
+					if (client.Connection_Authenticate2(this.UserName, this.UserPass, StaticFuncs.getCultureResource.GetString("app_ReportName")))
+					{
+						//Connected, get project and user information.
+						this.ProjectName = client.Project_RetrieveById(this.ProjectID).Name;
+						this.UserID = client.User_RetrieveByUserName(this.UserName).UserId.Value;
+					}
 				}
 				catch
 				{ }
-			}
-		}
-
-		/// <summary>Hit when we're trying to refresh the project's name, and we get an error.</summary>
-		/// <param name="sender">Spira_ImportExport</param>
-		/// <param name="e">Spira_ImportExport.ConnectionException</param>
-		private void _client_RefreshError(object sender, Spira_ImportExport.ConnectionException e)
-		{
-			//Do nothing, we're still in error.
-		}
-
-		/// <summary>Hit when we're trying to refresh the project's name, and we get an error.</summary>
-		/// <param name="sender">Spira_ImportExport</param>
-		/// <param name="e">EventArgs</param>
-		private void _client_RefreshConnection(object sender, EventArgs e)
-		{
-			Spira_ImportExport client = sender as Spira_ImportExport;
-
-			if (client != null)
-			{
-				//Get project name & User ID.
-				client.Client.Connection_ConnectToProject(this.ProjectID);
-				this.ProjectName = client.Client.Project_RetrieveById(this.ProjectID).Name;
-				this.UserID = client.Client.User_RetrieveByUserName(this.UserName).UserId.Value;
 			}
 		}
 	}

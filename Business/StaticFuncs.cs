@@ -121,6 +121,8 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business
 				wsDualHttp.Security.Message.ClientCredentialType = BasicHttpMessageCredentialType.Certificate;
 				wsDualHttp.Security.Message.AlgorithmSuite = System.ServiceModel.Security.SecurityAlgorithmSuite.Default;
 				wsDualHttp.Security.Mode = BasicHttpSecurityMode.None;
+				wsDualHttp.AllowCookies = true;
+				wsDualHttp.TransferMode = TransferMode.Streamed;
 				//Configure for alternative connection types.
 				if (EndPtAddr.Uri.Scheme == "https")
 				{

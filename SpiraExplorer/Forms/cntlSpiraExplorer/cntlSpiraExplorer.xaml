@@ -2,9 +2,9 @@
 	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 	xmlns:local="clr-namespace:Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business;assembly=Business"
-	Height="300" Width="300">
+	Height="Auto" Width="Auto">
 
-	<DockPanel LastChildFill="True">
+	<DockPanel LastChildFill="True" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
 		<ToolBar Height="Auto" DockPanel.Dock="Top" VerticalAlignment="Top">
 			<Button Name="btnRefresh" ToolTip="Refresh Listings" ></Button>
 			<Separator />

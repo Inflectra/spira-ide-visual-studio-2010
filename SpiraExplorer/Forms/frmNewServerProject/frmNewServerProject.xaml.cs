@@ -11,15 +11,15 @@ using Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business.SpiraTeam_Cli
 namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 {
 	/// <summary>
-	/// Interaction logic for wpfNewSpiraProject.xaml
+	/// Interaction logic for frmNewSpiraProject.xaml
 	/// </summary>
-	public partial class wpfNewSpiraProject : Window
+	public partial class frmNewSpiraProject : Window
 	{
 		#region Internal Vars
 		private ImportExportClient _client;
 		#endregion
 
-		public wpfNewSpiraProject()
+		public frmNewSpiraProject()
 		{
 			try
 			{
@@ -41,7 +41,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 				}
 
 				//Set initial colors and form status.
-				this.barProg.Foreground = (Brush)new System.Windows.Media.BrushConverter().ConvertFrom(Business.StaticFuncs.getCultureResource.GetString("barForeColor"));
+				this.barProg.Foreground = (Brush)new System.Windows.Media.BrushConverter().ConvertFrom(Business.StaticFuncs.getCultureResource.GetString("app_Colors_StyledBarNormal"));
 				this.barProg.IsIndeterminate = false;
 				this.barProg.Value = 0;
 				this.grdAvailProjs.IsEnabled = false;
@@ -93,7 +93,9 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 		/// <param name="e">RoutedEventArgs</param>
 		private void btnConnect_Click(object sender, RoutedEventArgs e)
 		{
-			e.Handled = true;
+			if (e != null)
+				e.Handled = true;
+
 			try
 			{
 				bool tag = (bool)this.btnConnect.Tag;
@@ -118,7 +120,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 					{
 						//Start the connections.
 						this.barProg.IsIndeterminate = true;
-						this.barProg.Foreground = (Brush)new System.Windows.Media.BrushConverter().ConvertFrom(StaticFuncs.getCultureResource.GetString("barForeColor"));
+						this.barProg.Foreground = (Brush)new System.Windows.Media.BrushConverter().ConvertFrom(StaticFuncs.getCultureResource.GetString("app_Colors_StyledBarColor"));
 						this.grdEntry.IsEnabled = false;
 						this.btnConnect.Content = "_Cancel";
 						this.btnConnect.Tag = true;
@@ -147,15 +149,27 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 		/// <param name="e">EventArgs</param>
 		private void _client_CommunicationFinished(object sender, AsyncCompletedEventArgs e)
 		{
-			if (e.Error != null)
+			if (e.Error == null)
 			{
 				try
 				{
 					if (e.GetType() == typeof(Connection_Authenticate2CompletedEventArgs))
 					{
-						//Connection_Authenticate2CompletedEventArgs evt = e as Connection_Authenticate2CompletedEventArgs;
-						this.txtStatus.Text = "Getting user information...";
-						this._client.User_RetrieveByUserNameAsync(this.txbUserID.Text);
+						Connection_Authenticate2CompletedEventArgs evt = e as Connection_Authenticate2CompletedEventArgs;
+						if (evt.Result)
+						{
+							this.txtStatus.Text = "Getting user information...";
+							this._client.User_RetrieveByUserNameAsync(this.txbUserID.Text);
+						}
+						else
+						{
+							//Failed login.
+							this.btnConnect_Click(null, null);
+							//Just act like they canceled the service, then set error flag.
+							this.barProg.Foreground = (Brush)new System.Windows.Media.BrushConverter().ConvertFrom(StaticFuncs.getCultureResource.GetString("app_Colors_StyledBarError"));
+							this.barProg.Value = 1;
+							this.txtStatus.Text = "Invalid username or password.";
+						}
 					}
 					else if (e.GetType() == typeof(User_RetrieveByUserNameCompletedEventArgs))
 					{
@@ -208,7 +222,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 					//Reset form.
 					this.btnConnect_Click(null, null);
 					//Just act like they canceled the service, then set error flag.
-					this.barProg.Foreground = System.Windows.Media.Brushes.Red;
+					this.barProg.Foreground = (Brush)new System.Windows.Media.BrushConverter().ConvertFrom(StaticFuncs.getCultureResource.GetString("app_Colors_StyledBarError"));
 					this.barProg.Value = 1;
 					this.txtStatus.Text = "Error connecting.";
 					this.txtStatus.ToolTip = ex.Message;
@@ -220,7 +234,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 				//Reset form.
 				this.btnConnect_Click(null, null);
 				//Just act like they canceled the service, then set error flag.
-				this.barProg.Foreground = System.Windows.Media.Brushes.Red;
+				this.barProg.Foreground = (Brush)new System.Windows.Media.BrushConverter().ConvertFrom(StaticFuncs.getCultureResource.GetString("app_Colors_StyledBarError"));
 				this.barProg.Value = 1;
 				this.txtStatus.Text = "Could not connect!";
 				this.txtStatus.ToolTip = e.Error.Message;

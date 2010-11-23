@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Runtime.InteropServices;
 using Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms;
+using Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Properties;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 
@@ -36,6 +37,18 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010
 		public SpiraExplorerPackage()
 		{
 			Trace.WriteLine(string.Format(CultureInfo.CurrentCulture, "Entering constructor for: {0}", this.ToString()));
+
+			//Get settings ready..
+			if (Settings.Default.AssignedProjects == null)
+			{
+				Settings.Default.AssignedProjects = new Business.SerializableDictionary<string, string>();
+				Settings.Default.Save();
+			}
+			if (Settings.Default.AllProjects == null)
+			{
+				Settings.Default.AllProjects = new Business.SerializableList<string>();
+				Settings.Default.Save();
+			}
 		}
 
 		/// <summary>
