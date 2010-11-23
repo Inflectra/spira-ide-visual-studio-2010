@@ -448,8 +448,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 						{
 							foreach (string strProj in strProjs.Split(Business.SpiraProject.CHAR_RECORD))
 							{
-								Business.SpiraProj
-									ect Project = Business.SpiraProject.GenerateFromString(strProj);
+								Business.SpiraProject Project = Business.SpiraProject.GenerateFromString(strProj);
 								this.lstSelectProjects.Items.Add(Project);
 							}
 							//remove duplicates.
