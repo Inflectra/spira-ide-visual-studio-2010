@@ -25,7 +25,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business
 				string resAssName = "";
 				foreach (string resName in satelliteAssembly.GetManifestResourceNames())
 				{
-					if (resName == "SpiraExplorer.resources.Properties.Resources.resources")
+					if (resName.ToLowerInvariant().Trim() == "Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Resources.Properties.Resources.resources".ToLowerInvariant())
 						resAssName = resName.Substring(0, resName.LastIndexOf("."));
 				}
 

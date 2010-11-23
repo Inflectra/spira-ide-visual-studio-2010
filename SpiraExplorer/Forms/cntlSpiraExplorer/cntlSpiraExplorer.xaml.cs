@@ -76,7 +76,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			catch (Exception ex)
 			{
 				//TODO: Log error.
-				throw new Exception("Could not attach to IDE.");
+				throw new Exception("Could not attach to IDE.", ex);
 			}
 		}
 

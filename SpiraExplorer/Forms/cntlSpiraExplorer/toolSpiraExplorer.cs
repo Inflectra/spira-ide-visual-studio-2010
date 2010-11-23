@@ -1,8 +1,6 @@
-﻿using System;
-using System.Runtime.InteropServices;
-using Microsoft.VisualStudio.Shell;
+﻿using Microsoft.VisualStudio.Shell;
 
-namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010
+namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 {
 	/// <summary>
 	/// This class implements the tool window exposed by this package and hosts a user control.
@@ -13,13 +11,13 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010
 	/// This class derives from the ToolWindowPane class provided from the MPF in order to use its 
 	/// implementation of the IVsUIElementPane interface.
 	/// </summary>
-	[Guid("cfe746fb-e114-49da-8cb5-d2f8a1b0274e")]
-	public class MyToolWindow : ToolWindowPane
+	//[Guid("cfe746fb-e114-49da-8cb5-d2f8a1b0274e")]
+	public class toolSpiraExplorer : ToolWindowPane
 	{
 		/// <summary>
 		/// Standard constructor for the tool window.
 		/// </summary>
-		public MyToolWindow() :
+		public toolSpiraExplorer() :
 			base(null)
 		{
 			// Set the window title reading it from the resources.
@@ -32,11 +30,10 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010
 			this.BitmapResourceID = 301;
 			this.BitmapIndex = 1;
 
-			string test = "";
 			// This is the user control hosted by the tool window; Note that, even if this class implements IDisposable,
 			// we are not calling Dispose on this object. This is because ToolWindowPane calls Dispose on 
 			// the object returned by the Content property.
-			base.Content = new MyControl();
+			base.Content = new cntlSpiraExplorer();
 		}
 	}
 }

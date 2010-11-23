@@ -3,6 +3,7 @@ using System.ComponentModel.Design;
 using System.Diagnostics;
 using System.Globalization;
 using System.Runtime.InteropServices;
+using Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 
@@ -21,7 +22,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010
 	[PackageRegistration(UseManagedResourcesOnly = true)] // This attribute tells the PkgDef creation utility (CreatePkgDef.exe) that this class is a package.
 	[InstalledProductRegistration("#110", "#112", "1.0", IconResourceID = 400)] // This attribute is used to register the information needed to show the this package in the Help/About dialog of Visual Studio.
 	[ProvideMenuResource("Menus.ctmenu", 1)] // This attribute is needed to let the shell know that this package exposes some menus.
-	[ProvideToolWindow(typeof(MyToolWindow))] // This attribute registers a tool window exposed by this package.
+	[ProvideToolWindow(typeof(toolSpiraExplorer))] // This attribute registers a tool window exposed by this package.
 	[Guid(GuidList.guidSpiraExplorerPkgString)]
 	public sealed class SpiraExplorerPackage : Package
 	{
@@ -47,7 +48,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010
 			// Get the instance number 0 of this tool window. This window is single instance so this instance
 			// is actually the only one.
 			// The last flag is set to true so that if the tool window does not exists it will be created.
-			ToolWindowPane window = this.FindToolWindow(typeof(MyToolWindow), 0, true);
+			ToolWindowPane window = this.FindToolWindow(typeof(toolSpiraExplorer), 0, true);
 			if ((null == window) || (null == window.Frame))
 			{
 				throw new NotSupportedException(Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Resources.CanNotCreateWindow);
