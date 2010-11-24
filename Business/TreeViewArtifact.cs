@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Media;
+using Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business.Forms;
 
 namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business
 {
@@ -148,12 +149,22 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business
 		{
 			get
 			{
+				UIElement tipReturn = null;
 				switch (this.ArtifactType)
 				{
 					case ArtifactTypeEnum.Incident:
-						cntlTTipIncident tipInc = new cntlTTipIncident();
+						tipReturn = new cntlTTipIncident();
+						((cntlTTipIncident)tipReturn).DataItem = this;
+						break;
 
+					case ArtifactTypeEnum.Requirement:
+						break;
+
+					case ArtifactTypeEnum.Task:
+						break;
 				}
+
+				return tipReturn;
 			}
 		}
 

@@ -44,10 +44,7 @@
     <AssemblyOriginatorKeyFile>Key.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Controls\cntlToolTipWindows\cntlTTipIncident.xaml.cs">
-      <DependentUpon>cntlTTipIncident.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Controls\cntlToolTipWindows\cntlTTipIncident2.xaml.cs" />
+    <Compile Include="Controls\cntlToolTipWindows\cntlTTipIncident.xaml.cs" />
     <Compile Include="SerializableList.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Settings.Designer.cs">
@@ -82,6 +79,7 @@
     <Reference Include="EnvDTE90a, Version=9.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
       <EmbedInteropTypes>True</EmbedInteropTypes>
     </Reference>
+    <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.VisualStudio.OLE.Interop, Version=7.1.40304.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
       <HintPath>..\..\..\..\..\..\..\Program Files (x86)\Microsoft Visual Studio 2010 SDK\VisualStudioIntegration\Common\Assemblies\v2.0\Microsoft.VisualStudio.OLE.Interop.dll</HintPath>
     </Reference>
@@ -245,12 +243,6 @@
       <Name>SpiraExplorer.resources</Name>
       <Private>False</Private>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <ApplicationDefinition Include="cntlToolTipWindows\cntlTTipIncident.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </ApplicationDefinition>
   </ItemGroup>
   <ItemGroup>
     <Page Include="Controls\cntlToolTipWindows\cntlTTipIncident.xaml">

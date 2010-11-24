@@ -33,6 +33,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business.Forms
 		public TreeViewArtifact DataItem
 		{
 			get;
+			set;
 		}
 
 		/// <summary>Readonly. Gets the string of estimated effort.</summary>
