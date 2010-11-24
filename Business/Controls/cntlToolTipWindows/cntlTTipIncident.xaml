@@ -1,0 +1,82 @@
+﻿<UserControl x:Class="Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business.Forms.cntlTTipIncident"
+			 xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+			 xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+			 mc:Ignorable="d" 
+			 d:DesignHeight="300" d:DesignWidth="300"
+			 Height="Auto" Width="Auto">
+	<Grid>
+		<Grid.ColumnDefinitions>
+			<ColumnDefinition Width="Auto" />
+			<ColumnDefinition Width="Auto" />
+			<ColumnDefinition Width="*" />
+		</Grid.ColumnDefinitions>
+		<Grid.RowDefinitions>
+			<RowDefinition Height="Auto" />
+			<RowDefinition Height="Auto" />
+			<RowDefinition Height="Auto" />
+			<RowDefinition Height="3" /> <!-- Spacer -->
+			<RowDefinition Height="Auto" />
+			<RowDefinition Height="Auto" />
+			<RowDefinition Height="Auto" />
+			<RowDefinition Height="Auto" />
+			<RowDefinition Height="Auto" />
+			<RowDefinition Height="3" /> <!-- Spacer -->
+			<RowDefinition Height="Auto" />
+			<RowDefinition Height="Auto" />
+			<RowDefinition Height="Auto" />
+		</Grid.RowDefinitions>
+		<!-- Icons -->
+		<Image Grid.Column="0" Grid.Row="0" Grid.RowSpan="3" Name="imgProject" Height="16" Width="16" VerticalAlignment="Top" Margin="2,5,5,5" />
+		<Image Grid.Column="0" Grid.Row="4" Grid.RowSpan="5" Name="imgIncident" Height="16" Width="16" VerticalAlignment="Top" Margin="2,5,5,5" />
+		<Image Grid.Column="0" Grid.Row="10" Grid.RowSpan="3" Name="imgRelease" Height="16" Width="16" VerticalAlignment="Top" Margin="2,5,5,5" />
+		<!-- Labels -->
+		<TextBlock Grid.Column="1" Grid.Row="0" Name="txtItemId" Text="Incident ID:" />
+		<TextBlock Grid.Column="1" Grid.Row="1" Name="txtProject" Text="Project:" />
+		<TextBlock Grid.Column="1" Grid.Row="2" Name="txtOwner" Text="Owner:" />
+		<TextBlock Grid.Column="1" Grid.Row="4" Name="txtStatusType" Text="Status/Type:" />
+		<TextBlock Grid.Column="1" Grid.Row="5" Name="txtEstimate" Text="Est. Effort:" />
+		<TextBlock Grid.Column="1" Grid.Row="6" Name="txtProjected" Text="Proj. Effort:" />
+		<TextBlock Grid.Column="1" Grid.Row="7" Name="txtPriority" Text="Priority:" />
+		<TextBlock Grid.Column="1" Grid.Row="8" Name="txtSeverity" Text="Severity:" />
+		<TextBlock Grid.Column="1" Grid.Row="10" Name="txtDetected" Text="Detected Rel.:" />
+		<TextBlock Grid.Column="1" Grid.Row="11" Name="txtResolved" Text="Resolved Rel.:" />
+		<TextBlock Grid.Column="1" Grid.Row="12" Name="txtVerified" Text="Verified Rel.:" />
+		<!-- Data Items -->
+		<TextBlock Grid.Column="2" Grid.Row="0">
+			<Run Text="[IN:" />
+			<Run Text="{Binding Path=DataItem.ArtifactId,Mode=OneWay}" />
+			<Run Text="]" />
+		</TextBlock>
+		<TextBlock Grid.Column="2" Grid.Row="1" Text="{Binding Path=DataItem.ArtifactTag.ArtifactParentProject.ArtifactName,Mode=OneWay}" />
+		<TextBlock Grid.Column="2" Grid.Row="2" Text="{Binding Path=DataItem.ArtifactTag.OwnerName,Mode=OneWay}" />
+		<TextBlock Grid.Column="2" Grid.Row="4">
+			<Run Text="{Binding Path=DataItem.ArtifactTag.IncidentStatusName,Mode=OneWay}" />
+			<Run Text=" / " />
+			<Run Text="{Binding Path=DataItem.ArtifactTag.IncidentTypeName,Mode=OneWay}" />
+		</TextBlock>
+		<TextBlock Grid.Column="2" Grid.Row="5" Text="{Binding Path=EstEffort,Mode=OneWay}" />
+		<TextBlock Grid.Column="2" Grid.Row="6" Text="{Binding Path=EstEffort,Mode=OneWay}" />
+		<TextBlock Grid.Column="2" Grid.Row="7" Text="{Binding Path=DataItem.ArtifactTag.PriorityName,Mode=OneWay}" />
+		<TextBlock Grid.Column="2" Grid.Row="8" Text="{Binding Path=DataItem.ArtifactTag.SeverityName,Mode=OneWay}" />
+		<TextBlock Grid.Column="2" Grid.Row="10">
+			<Run Text="{Binding Path=DataItem.ArtifactTag.DetectedReleaseVersionNumber,Mode=OneWay}" />
+			<Run Text=" [RL:" />
+			<Run Text="{Binding Path=DataItem.ArtifactTag.DetectedReleaseId,Mode=OneWay}" />
+			<Run Text="]" />
+		</TextBlock>
+		<TextBlock Grid.Column="2" Grid.Row="11">
+			<Run Text="{Binding Path=DataItem.ArtifactTag.ResolvedReleaseVersionNumber,Mode=OneWay}" />
+			<Run Text=" [RL:" />
+			<Run Text="{Binding Path=DataItem.ArtifactTag.ResolvedReleaseId,Mode=OneWay}" />
+			<Run Text="]" />
+		</TextBlock>
+		<TextBlock Grid.Column="2" Grid.Row="12">
+			<Run Text="{Binding Path=DataItem.ArtifactTag.VerifiedReleaseVersionNumber,Mode=OneWay}" />
+			<Run Text=" [RL:" />
+			<Run Text="{Binding Path=DataItem.ArtifactTag.VerifiedReleaseId,Mode=OneWay}" />
+			<Run Text="]" />
+		</TextBlock>
+	</Grid>
+</UserControl>

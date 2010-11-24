@@ -183,6 +183,9 @@
   <data name="imgIncident" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\imgIncident.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="imgProject" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\imgProject.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
   <data name="imgInfoWPF" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\img_Info.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
@@ -209,6 +212,9 @@
   </data>
   <data name="imgTask" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\imgTask.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="imgRelease" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\imgRelease.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="imgWarningWPF" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\ico_Warning.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -300,5 +306,41 @@ http://server/SpiraTeam/</value>
   <data name="app_Colors_StyledBarNormal" xml:space="preserve">
     <value>#FF01D328</value>
     <comment>The default 'green' color of the progress bars.</comment>
+  </data>
+  <data name="app_General_HoursAbbr" xml:space="preserve">
+    <value>hrs.</value>
+  </data>
+  <data name="app_Incident_DetectedRelease" xml:space="preserve">
+    <value>Detected Release</value>
+  </data>
+  <data name="app_Incident_EstEffort" xml:space="preserve">
+    <value>Estimated Effort</value>
+  </data>
+  <data name="app_Incident_Id" xml:space="preserve">
+    <value>Incident ID</value>
+  </data>
+  <data name="app_Incident_Owner" xml:space="preserve">
+    <value>Owner</value>
+  </data>
+  <data name="app_Incident_Priority" xml:space="preserve">
+    <value>Priority</value>
+  </data>
+  <data name="app_Incident_ProjEffort" xml:space="preserve">
+    <value>Projected Effort</value>
+  </data>
+  <data name="app_Incident_ResolvedRelease" xml:space="preserve">
+    <value>Resolved Release</value>
+  </data>
+  <data name="app_Incident_Severity" xml:space="preserve">
+    <value>Severity</value>
+  </data>
+  <data name="app_Incident_StatusType" xml:space="preserve">
+    <value>Status / Type</value>
+  </data>
+  <data name="app_Incident_VerifiedRelease" xml:space="preserve">
+    <value>Verified Release</value>
+  </data>
+  <data name="app_Project" xml:space="preserve">
+    <value>Project</value>
   </data>
 </root>

@@ -1,15 +1,17 @@
-﻿using System.Windows.Controls;
+﻿using System.Collections.Generic;
+using System.Windows;
 using System.Windows.Media;
 
 namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business
 {
-	public class TreeViewArtifact : TreeViewItem
+	public class TreeViewArtifact
 	{
 		//Added properties for the artifact type, ID, ad image.
 
 		public TreeViewArtifact()
 		{
 			this.ArtifactType = ArtifactTypeEnum.None;
+			this.Items = new List<object>();
 		}
 
 		/// <summary>The artifact's name.</summary>
@@ -41,21 +43,36 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business
 		}
 
 		/// <summary>Readonly. The ID String of the artifact.</summary>
-		public string ArtifactIdString
+		public string ArtifactDisplay
 		{
 			get
 			{
-				switch (this.ArtifactType)
+				string retName = this.ArtifactName;
+
+				if (this.ArtifactIsFolder)
 				{
-					case ArtifactTypeEnum.Incident:
-						return "[IN:" + this.ArtifactId.ToString() + "]";
-					case ArtifactTypeEnum.Requirement:
-						return "[RQ:" + this.ArtifactId.ToString() + "]";
-					case ArtifactTypeEnum.Task:
-						return "[TK:" + this.ArtifactId.ToString() + "]";
-					default:
-						return "";
+					if (this.ArtifactType != ArtifactTypeEnum.None && this.Items.Count > 0)
+						retName += " (" + this.Items.Count.ToString() + ")";
 				}
+				else
+				{
+					switch (this.ArtifactType)
+					{
+						case ArtifactTypeEnum.Incident:
+							retName += " [IN:" + this.ArtifactId.ToString() + "]";
+							break;
+
+						case ArtifactTypeEnum.Requirement:
+							retName += " [RQ:" + this.ArtifactId.ToString() + "]";
+							break;
+
+						case ArtifactTypeEnum.Task:
+							retName += " [TK:" + this.ArtifactId.ToString() + "]";
+							break;
+					}
+				}
+
+				return retName;
 			}
 		}
 
@@ -64,19 +81,32 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business
 		{
 			get
 			{
-				//TODO: Set image resources.
-				//TODO: Use the IsFolder to create the image.
-				switch (this.ArtifactType)
-				{
-					case ArtifactTypeEnum.Incident:
-						return null;
-					case ArtifactTypeEnum.Requirement:
-						return null;
-					case ArtifactTypeEnum.Task:
-						return null;
-					default:
-						return null;
-				}
+				if (this.ArtifactType == ArtifactTypeEnum.Project)
+					return StaticFuncs.getImage("imgProject", new System.Windows.Size(16, 16)).Source;
+				else if (this.ArtifactIsFolder)
+					switch (this.ArtifactType)
+					{
+						case ArtifactTypeEnum.Incident:
+							return StaticFuncs.getImage("imgFolderIncident", new System.Windows.Size(16, 16)).Source;
+						case ArtifactTypeEnum.Requirement:
+							return StaticFuncs.getImage("imgFolderRequirement", new System.Windows.Size(16, 16)).Source;
+						case ArtifactTypeEnum.Task:
+							return StaticFuncs.getImage("imgFolderTask", new System.Windows.Size(16, 16)).Source;
+						default:
+							return StaticFuncs.getImage("imgFolder", new System.Windows.Size(16, 16)).Source;
+					}
+				else
+					switch (this.ArtifactType)
+					{
+						case ArtifactTypeEnum.Incident:
+							return StaticFuncs.getImage("imgIncident", new System.Windows.Size(16, 16)).Source;
+						case ArtifactTypeEnum.Requirement:
+							return StaticFuncs.getImage("imgRequirement", new System.Windows.Size(16, 16)).Source;
+						case ArtifactTypeEnum.Task:
+							return StaticFuncs.getImage("imgTask", new System.Windows.Size(16, 16)).Source;
+						default:
+							return null;
+					}
 			}
 		}
 
@@ -87,7 +117,13 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business
 			set;
 		}
 
-		/// <summary>Readonly. Returns the parent project node (or null if ot found.)</summary>
+		public TreeViewArtifact Parent
+		{
+			get;
+			set;
+		}
+
+		/// <summary>Readonly. Returns the parent project node (or null if not found.)</summary>
 		public TreeViewArtifact ArtifactParentProject
 		{
 			get
@@ -103,8 +139,21 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business
 					}
 					retNode = checkNode;
 				}
-
 				return retNode;
+			}
+		}
+
+		/// <summary>Readonly. Returns a UI element that is used for the tooltip.</summary>
+		public UIElement ArtifactTooltip
+		{
+			get
+			{
+				switch (this.ArtifactType)
+				{
+					case ArtifactTypeEnum.Incident:
+						cntlTTipIncident tipInc = new cntlTTipIncident();
+
+				}
 			}
 		}
 
@@ -117,6 +166,28 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business
 			Requirement = 3,
 			Project = 4,
 			Error = 1024
+		}
+
+		/// <summary>Items contained within the current item.</summary>
+		public List<object> Items
+		{
+			get;
+			set;
+		}
+
+		/// <summary>Default indexer.</summary>
+		/// <param name="index">The number of the item.</param>
+		/// <returns>Child at index.</returns>
+		public object this[int index]
+		{
+			get
+			{
+				return this.Items[index];
+			}
+			set
+			{
+				this.Items[index] = value;
+			}
 		}
 	}
 }

@@ -145,6 +145,8 @@
     <None Include="Resources\2_bmp.bmp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Resources\imgProject.png" />
+    <None Include="Resources\imgRelease.png" />
     <Content Include="Resources\Spira.ico" />
     <None Include="Resources\Spira_NoComp.ico" />
     <None Include="Resources\Spira_XP.ico" />
@@ -166,6 +168,7 @@
       <Install>true</Install>
     </BootstrapperPackage>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>

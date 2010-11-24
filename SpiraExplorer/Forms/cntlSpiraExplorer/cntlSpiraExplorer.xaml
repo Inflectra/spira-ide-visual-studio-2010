@@ -4,6 +4,28 @@
 	xmlns:local="clr-namespace:Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business;assembly=Business"
 	Height="Auto" Width="Auto">
 
+	<UserControl.Resources>
+		<DataTemplate DataType="{x:Type local:TreeViewArtifact}">
+			<TreeViewItem>
+				<TreeViewItem.Header>
+					<Grid>
+						<Grid.ColumnDefinitions>
+							<ColumnDefinition Width="16px" />
+							<ColumnDefinition Width="*" />
+						</Grid.ColumnDefinitions>
+						<Grid.RowDefinitions>
+							<RowDefinition Height="Auto" />
+						</Grid.RowDefinitions>
+						<Image Grid.Column="0" Grid.Row="0" Height="16px" Width="16px" Source="{Binding Path=ImageSource}" />
+						<TextBlock Grid.Column="1" Grid.Row="0" Margin="5,0,0,0">
+							<Run Text="{Binding Path=Name}" />
+							<Run Text="{Binding Path=ArtifactIdString}"/>
+						</TextBlock>
+					</Grid>
+				</TreeViewItem.Header>
+			</TreeViewItem>
+		</DataTemplate>
+	</UserControl.Resources>
 	<DockPanel LastChildFill="True" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
 		<ToolBar Height="Auto" DockPanel.Dock="Top" VerticalAlignment="Top">
 			<Button Name="btnRefresh" ToolTip="Refresh Listings" ></Button>
@@ -15,8 +37,8 @@
 		<ProgressBar DockPanel.Dock="Bottom" Height="10" IsIndeterminate="True" Foreground="Orange" Visibility="Hidden" Name="barLoading" />
 		<TreeView Name="trvProject" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" MinHeight="150">
 			<TreeView.Resources>
-				<HierarchicalDataTemplate DataType="{x:Type local:TreeViewArtifact}">
-					<Grid>
+				<HierarchicalDataTemplate DataType="{x:Type local:TreeViewArtifact}" ItemsSource="{Binding Path=Items}">
+					<Grid Margin="0,2,0,2">
 						<Grid.ColumnDefinitions>
 							<ColumnDefinition Width="16px" />
 							<ColumnDefinition Width="*" />
@@ -24,10 +46,27 @@
 						<Grid.RowDefinitions>
 							<RowDefinition Height="Auto" />
 						</Grid.RowDefinitions>
-						<!-- Image -->
-						<Image Grid.Column="0" Grid.Row="0" Height="16px" Width="16px" Source="{Binding Path=ImageSource}" />
-						<!-- Label -->
-						<TextBlock Grid.Column="1" Grid.Row="0" Margin="5,0,0,0" Text="{Binding Path=ArtifactIdString}" />
+						<Image Grid.Column="0" Grid.Row="0" Height="16px" Width="16px" Source="{Binding Path=ArtifactImageSource, Mode=OneWay}" />
+						<TextBlock Grid.Column="1" Grid.Row="0" Margin="5,0,0,0" Text="{Binding Path=ArtifactDisplay,Mode=OneWay}" />
+						<Grid.ToolTip>
+							<GroupBox Content="{Binding Path=ArtifactTooltip,Mode=OneWay}">
+								<GroupBox.Header>
+									<Grid>
+										<Grid.ColumnDefinitions>
+											<ColumnDefinition Width="Auto" />
+										</Grid.ColumnDefinitions>
+										<Grid.RowDefinitions>
+											<RowDefinition Height="Auto" />
+										</Grid.RowDefinitions>
+										<!-- Image and Title -->
+										<StackPanel Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Orientation="Horizontal">
+											<Image Height="16" Width="16" Source="{Binding Path=ArtifactImageSource,Mode=OneWay}" />
+											<TextBlock Margin="5,0,0,0" Text="{Binding Path=ArtifactName}" FontSize="12" FontWeight="Bold" />
+										</StackPanel>
+									</Grid>
+								</GroupBox.Header>
+							</GroupBox>
+						</Grid.ToolTip>
 					</Grid>
 				</HierarchicalDataTemplate>
 			</TreeView.Resources>
