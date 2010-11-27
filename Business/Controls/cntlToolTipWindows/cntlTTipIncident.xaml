@@ -10,6 +10,7 @@
 		<Grid.ColumnDefinitions>
 			<ColumnDefinition Width="Auto" />
 			<ColumnDefinition Width="Auto" />
+			<ColumnDefinition Width="7" /> <!-- Spacer -->
 			<ColumnDefinition Width="*" />
 		</Grid.ColumnDefinitions>
 		<Grid.RowDefinitions>
@@ -32,50 +33,50 @@
 		<Image Grid.Column="0" Grid.Row="4" Grid.RowSpan="5" Name="imgIncident" Height="16" Width="16" VerticalAlignment="Top" Margin="2,5,5,5" />
 		<Image Grid.Column="0" Grid.Row="10" Grid.RowSpan="3" Name="imgRelease" Height="16" Width="16" VerticalAlignment="Top" Margin="2,5,5,5" />
 		<!-- Labels -->
-		<TextBlock Grid.Column="1" Grid.Row="0" Name="txtItemId" Text="Incident ID:" />
-		<TextBlock Grid.Column="1" Grid.Row="1" Name="txtProject" Text="Project:" />
-		<TextBlock Grid.Column="1" Grid.Row="2" Name="txtOwner" Text="Owner:" />
-		<TextBlock Grid.Column="1" Grid.Row="4" Name="txtStatusType" Text="Status/Type:" />
-		<TextBlock Grid.Column="1" Grid.Row="5" Name="txtEstimate" Text="Est. Effort:" />
-		<TextBlock Grid.Column="1" Grid.Row="6" Name="txtProjected" Text="Proj. Effort:" />
-		<TextBlock Grid.Column="1" Grid.Row="7" Name="txtPriority" Text="Priority:" />
-		<TextBlock Grid.Column="1" Grid.Row="8" Name="txtSeverity" Text="Severity:" />
-		<TextBlock Grid.Column="1" Grid.Row="10" Name="txtDetected" Text="Detected Rel.:" />
-		<TextBlock Grid.Column="1" Grid.Row="11" Name="txtResolved" Text="Resolved Rel.:" />
-		<TextBlock Grid.Column="1" Grid.Row="12" Name="txtVerified" Text="Verified Rel.:" />
+		<TextBlock Grid.Column="1" Grid.Row="0" Name="txtItemId" Text="Incident ID:" FontStyle="Italic" />
+		<TextBlock Grid.Column="1" Grid.Row="1" Name="txtProject" Text="Project:" FontStyle="Italic" />
+		<TextBlock Grid.Column="1" Grid.Row="2" Name="txtOwner" Text="Owner:" FontStyle="Italic" />
+		<TextBlock Grid.Column="1" Grid.Row="4" Name="txtStatusType" Text="Status/Type:" FontStyle="Italic" />
+		<TextBlock Grid.Column="1" Grid.Row="5" Name="txtEstimate" Text="Est. Effort:" FontStyle="Italic" />
+		<TextBlock Grid.Column="1" Grid.Row="6" Name="txtProjected" Text="Proj. Effort:" FontStyle="Italic" />
+		<TextBlock Grid.Column="1" Grid.Row="7" Name="txtPriority" Text="Priority:" FontStyle="Italic" />
+		<TextBlock Grid.Column="1" Grid.Row="8" Name="txtSeverity" Text="Severity:" FontStyle="Italic" />
+		<TextBlock Grid.Column="1" Grid.Row="10" Name="txtDetected" Text="Detected Rel.:" FontStyle="Italic" />
+		<TextBlock Grid.Column="1" Grid.Row="11" Name="txtResolved" Text="Resolved Rel.:" FontStyle="Italic" />
+		<TextBlock Grid.Column="1" Grid.Row="12" Name="txtVerified" Text="Verified Rel.:" FontStyle="Italic" />
 		<!-- Data Items -->
-		<TextBlock Grid.Column="2" Grid.Row="0">
+		<TextBlock Grid.Column="3" Grid.Row="0">
 			<Run Text="[IN:" />
-			<Run Text="{Binding Path=DataItem.ArtifactId,Mode=OneWay}" />
+			<Run Name="dataArtifactId" />
 			<Run Text="]" />
 		</TextBlock>
-		<TextBlock Grid.Column="2" Grid.Row="1" Text="{Binding Path=DataItem.ArtifactTag.ArtifactParentProject.ArtifactName,Mode=OneWay}" />
-		<TextBlock Grid.Column="2" Grid.Row="2" Text="{Binding Path=DataItem.ArtifactTag.OwnerName,Mode=OneWay}" />
-		<TextBlock Grid.Column="2" Grid.Row="4">
-			<Run Text="{Binding Path=DataItem.ArtifactTag.IncidentStatusName,Mode=OneWay}" />
+		<TextBlock Name="dataProjectName" Grid.Column="3" Grid.Row="1" />
+		<TextBlock Name="dataOwnerName" Grid.Column="3" Grid.Row="2" />
+		<TextBlock Grid.Column="3" Grid.Row="4">
+			<Run Name="dataStatusName" />
 			<Run Text=" / " />
-			<Run Text="{Binding Path=DataItem.ArtifactTag.IncidentTypeName,Mode=OneWay}" />
+			<Run Name="dataTypeName" />
 		</TextBlock>
-		<TextBlock Grid.Column="2" Grid.Row="5" Text="{Binding Path=EstEffort,Mode=OneWay}" />
-		<TextBlock Grid.Column="2" Grid.Row="6" Text="{Binding Path=EstEffort,Mode=OneWay}" />
-		<TextBlock Grid.Column="2" Grid.Row="7" Text="{Binding Path=DataItem.ArtifactTag.PriorityName,Mode=OneWay}" />
-		<TextBlock Grid.Column="2" Grid.Row="8" Text="{Binding Path=DataItem.ArtifactTag.SeverityName,Mode=OneWay}" />
-		<TextBlock Grid.Column="2" Grid.Row="10">
-			<Run Text="{Binding Path=DataItem.ArtifactTag.DetectedReleaseVersionNumber,Mode=OneWay}" />
+		<TextBlock Name="dataEstEffort" Grid.Column="3" Grid.Row="5" />
+		<TextBlock Name="dataProjEffort" Grid.Column="3" Grid.Row="6" />
+		<TextBlock Name="dataPriorityName" Grid.Column="3" Grid.Row="7" />
+		<TextBlock Name="dataSeverityName" Grid.Column="3" Grid.Row="8" />
+		<TextBlock Grid.Column="3" Grid.Row="10">
+			<Run Name="dataDetVerNum" />
 			<Run Text=" [RL:" />
-			<Run Text="{Binding Path=DataItem.ArtifactTag.DetectedReleaseId,Mode=OneWay}" />
+			<Run Name="dataDetVerId" />
 			<Run Text="]" />
 		</TextBlock>
-		<TextBlock Grid.Column="2" Grid.Row="11">
-			<Run Text="{Binding Path=DataItem.ArtifactTag.ResolvedReleaseVersionNumber,Mode=OneWay}" />
+		<TextBlock Grid.Column="3" Grid.Row="11">
+			<Run Name="dataResVerNum" />
 			<Run Text=" [RL:" />
-			<Run Text="{Binding Path=DataItem.ArtifactTag.ResolvedReleaseId,Mode=OneWay}" />
+			<Run Name="dataResVerId" />
 			<Run Text="]" />
 		</TextBlock>
-		<TextBlock Grid.Column="2" Grid.Row="12">
-			<Run Text="{Binding Path=DataItem.ArtifactTag.VerifiedReleaseVersionNumber,Mode=OneWay}" />
+		<TextBlock Grid.Column="3" Grid.Row="12">
+			<Run Name="dataVerVerNum" />
 			<Run Text=" [RL:" />
-			<Run Text="{Binding Path=DataItem.ArtifactTag.VerifiedReleaseId,Mode=OneWay}" />
+			<Run Name="dataVerVerId" />
 			<Run Text="]" />
 		</TextBlock>
 	</Grid>

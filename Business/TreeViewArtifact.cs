@@ -150,18 +150,21 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business
 			get
 			{
 				UIElement tipReturn = null;
-				switch (this.ArtifactType)
+				if (!this.ArtifactIsFolder)
 				{
-					case ArtifactTypeEnum.Incident:
-						tipReturn = new cntlTTipIncident();
-						((cntlTTipIncident)tipReturn).DataItem = this;
-						break;
+					switch (this.ArtifactType)
+					{
+						case ArtifactTypeEnum.Incident:
+							tipReturn = new cntlTTipIncident();
+							((cntlTTipIncident)tipReturn).DataItem = this;
+							break;
 
-					case ArtifactTypeEnum.Requirement:
-						break;
+						case ArtifactTypeEnum.Requirement:
+							break;
 
-					case ArtifactTypeEnum.Task:
-						break;
+						case ArtifactTypeEnum.Task:
+							break;
+					}
 				}
 
 				return tipReturn;

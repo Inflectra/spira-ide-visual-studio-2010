@@ -7,6 +7,9 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business.Forms
 	/// </summary>
 	public partial class cntlTTipIncident : UserControl
 	{
+		private TreeViewArtifact _dataitem;
+
+		/// <summary>Creates a new instance of the control.</summary>
 		public cntlTTipIncident()
 		{
 			InitializeComponent();
@@ -29,29 +32,59 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business.Forms
 			this.txtVerified.Text = StaticFuncs.getCultureResource.GetString("app_Incident_VerifiedRelease") + ":";
 		}
 
+		/// <summary>Creates a new instance of the control, setting the data item.</summary>
+		/// <param name="ArtifactData">The TreeViewArtifact data item.</param>
+		public cntlTTipIncident(TreeViewArtifact ArtifactData)
+			: base()
+		{
+			this.DataItem = ArtifactData;
+		}
+
 		/// <summary>Holds a reference to the treeviewitem we're displaying.</summary>
 		public TreeViewArtifact DataItem
 		{
-			get;
-			set;
-		}
-
-		/// <summary>Readonly. Gets the string of estimated effort.</summary>
-		public string EstEffort
-		{
 			get
 			{
-				return (((int)((dynamic)this.DataItem.ArtifactTag).EstimatedEffort) / 60).ToString() + " " + StaticFuncs.getCultureResource.GetString("app_General_HoursAbbr");
+				return this._dataitem;
+			}
+			set
+			{
+				this._dataitem = value;
+				this.loadDisplayData();
 			}
 		}
 
-		/// <summary>Readonly. Gets the string of projected effort.</summary>
-		public string ProjEffort
+		/// <summary>Loads values from our Artifact item into the display fields.</summary>
+		private void loadDisplayData()
 		{
-			get
+			this.dataArtifactId.Text = this.DataItem.ArtifactId.ToString();
+			this.dataProjectName.Text = this.DataItem.ArtifactParentProject.ArtifactName;
+			this.dataOwnerName.Text = ((dynamic)this.DataItem.ArtifactTag).OwnerName;
+			this.dataStatusName.Text = ((dynamic)this.DataItem.ArtifactTag).IncidentStatusName;
+			this.dataTypeName.Text = ((dynamic)this.DataItem.ArtifactTag).IncidentTypeName;
+			this.dataEstEffort.Text = this.getTime(((dynamic)this.DataItem.ArtifactTag).EstimatedEffort);
+			this.dataProjEffort.Text = this.getTime(((dynamic)this.DataItem.ArtifactTag).ProjectedEffort);
+			this.dataPriorityName.Text = ((dynamic)this.DataItem.ArtifactTag).PriorityName;
+			this.dataSeverityName.Text = ((dynamic)this.DataItem.ArtifactTag).SeverityName;
+			this.dataDetVerNum.Text = ((dynamic)this.DataItem.ArtifactTag).DetectedReleaseVersionNumber;
+			this.dataDetVerId.Text = (((dynamic)this.DataItem.ArtifactTag).DetectedReleaseId).ToString();
+			this.dataResVerNum.Text = ((dynamic)this.DataItem.ArtifactTag).ResolvedReleaseVersionNumber;
+			this.dataResVerId.Text = (((dynamic)this.DataItem.ArtifactTag).ResolvedReleaseId).ToString();
+			this.dataVerVerNum.Text = ((dynamic)this.DataItem.ArtifactTag).VerifiedReleaseVersionNumber;
+			this.dataVerVerId.Text = (((dynamic)this.DataItem.ArtifactTag).DetectedReleaseId).ToString();
+		}
+
+		/// <summary>Takes a nullable integer, and returs a useful time-string.</summary>
+		/// <param name="Minutes">The number of minutes.</param>
+		/// <returns>String formatted with the # of hours.</returns>
+		private string getTime(int? Minutes)
+		{
+			if (Minutes.HasValue)
 			{
-				return (((int)((dynamic)this.DataItem.ArtifactTag).ProjectedEffort) / 60).ToString() + " " + StaticFuncs.getCultureResource.GetString("app_General_HoursAbbr");
+				return (Minutes / 60).ToString() + " " + StaticFuncs.getCultureResource.GetString("app_General_HoursAbbr");
 			}
+			else
+				return "";
 		}
 	}
 }
