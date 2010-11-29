@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Media;
 using Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business.Forms;
@@ -191,6 +192,34 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business
 		{
 			get;
 			set;
+		}
+
+		public string isInError
+		{
+			get
+			{
+				string retValue = "False";
+
+				if (this.ArtifactTag != null)
+				{
+					if (this.ArtifactTag.GetType() == typeof(SpiraTeam_Client.RemoteIncident))
+					{
+						SpiraTeam_Client.RemoteIncident item = (SpiraTeam_Client.RemoteIncident)this.ArtifactTag;
+						if ((item.StartDate.HasValue && item.StartDate < DateTime.Now) && item.CompletionPercent == 0)
+							retValue = "True";
+					}
+					else if (this.ArtifactTag.GetType() == typeof(SpiraTeam_Client.RemoteTask))
+					{
+						SpiraTeam_Client.RemoteTask item = (SpiraTeam_Client.RemoteTask)this.ArtifactTag;
+						if (item.StartDate.HasValue && item.StartDate < DateTime.Now && item.TaskStatusId == 1)
+							retValue = "True";
+						if (item.EndDate.HasValue && item.EndDate < DateTime.Now)
+							retValue = "True";
+					}
+				}
+
+				return retValue;
+			}
 		}
 
 		/// <summary>Default indexer.</summary>
