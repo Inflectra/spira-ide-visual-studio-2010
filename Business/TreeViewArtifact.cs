@@ -160,9 +160,13 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business
 							break;
 
 						case ArtifactTypeEnum.Requirement:
+							tipReturn = new cntlTTipRequirement();
+							((cntlTTipRequirement)tipReturn).DataItem = this;
 							break;
 
 						case ArtifactTypeEnum.Task:
+							tipReturn = new cntlTTipTask();
+							((cntlTTipTask)tipReturn).DataItem = this;
 							break;
 					}
 				}

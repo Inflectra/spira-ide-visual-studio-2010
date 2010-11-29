@@ -21,11 +21,11 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business.Forms
 			//Set strings.
 			this.txtItemId.Text = StaticFuncs.getCultureResource.GetString("app_Incident_Id") + ":";
 			this.txtProject.Text = StaticFuncs.getCultureResource.GetString("app_Project") + ":";
-			this.txtOwner.Text = StaticFuncs.getCultureResource.GetString("app_Incident_Owner") + ":";
+			this.txtOwner.Text = StaticFuncs.getCultureResource.GetString("app_General_Owner") + ":";
 			this.txtStatusType.Text = StaticFuncs.getCultureResource.GetString("app_Incident_StatusType") + ":";
 			this.txtEstimate.Text = StaticFuncs.getCultureResource.GetString("app_Incident_EstEffort") + ":";
-			this.txtProjected.Text = StaticFuncs.getCultureResource.GetString("app_Incident_ProjEffort") + ":";
-			this.txtPriority.Text = StaticFuncs.getCultureResource.GetString("app_Incident_Priority") + ":";
+			this.txtProjected.Text = StaticFuncs.getCultureResource.GetString("app_General_ProjEffort") + ":";
+			this.txtPriority.Text = StaticFuncs.getCultureResource.GetString("app_General_Priority") + ":";
 			this.txtSeverity.Text = StaticFuncs.getCultureResource.GetString("app_Incident_Severity") + ":";
 			this.txtDetected.Text = StaticFuncs.getCultureResource.GetString("app_Incident_DetectedRelease") + ":";
 			this.txtResolved.Text = StaticFuncs.getCultureResource.GetString("app_Incident_ResolvedRelease") + ":";
@@ -66,12 +66,9 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business.Forms
 			this.dataProjEffort.Text = this.getTime(((dynamic)this.DataItem.ArtifactTag).ProjectedEffort);
 			this.dataPriorityName.Text = ((dynamic)this.DataItem.ArtifactTag).PriorityName;
 			this.dataSeverityName.Text = ((dynamic)this.DataItem.ArtifactTag).SeverityName;
-			this.dataDetVerNum.Text = ((dynamic)this.DataItem.ArtifactTag).DetectedReleaseVersionNumber;
-			this.dataDetVerId.Text = (((dynamic)this.DataItem.ArtifactTag).DetectedReleaseId).ToString();
-			this.dataResVerNum.Text = ((dynamic)this.DataItem.ArtifactTag).ResolvedReleaseVersionNumber;
-			this.dataResVerId.Text = (((dynamic)this.DataItem.ArtifactTag).ResolvedReleaseId).ToString();
-			this.dataVerVerNum.Text = ((dynamic)this.DataItem.ArtifactTag).VerifiedReleaseVersionNumber;
-			this.dataVerVerId.Text = (((dynamic)this.DataItem.ArtifactTag).DetectedReleaseId).ToString();
+			this.dataDetVer.Text = ((dynamic)this.DataItem.ArtifactTag).DetectedReleaseVersionNumber + " " + this.getVersionIdNumber(((dynamic)this.DataItem.ArtifactTag).DetectedReleaseId);
+			this.dataResVer.Text = ((dynamic)this.DataItem.ArtifactTag).ResolvedReleaseVersionNumber + " " + this.getVersionIdNumber(((dynamic)this.DataItem.ArtifactTag).ResolvedReleaseId);
+			this.dataVerVer.Text = ((dynamic)this.DataItem.ArtifactTag).VerifiedReleaseVersionNumber + " " + this.getVersionIdNumber(((dynamic)this.DataItem.ArtifactTag).VerifiedReleaseId);
 		}
 
 		/// <summary>Takes a nullable integer, and returs a useful time-string.</summary>
@@ -83,6 +80,17 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business.Forms
 			{
 				return (Minutes / 60).ToString() + " " + StaticFuncs.getCultureResource.GetString("app_General_HoursAbbr");
 			}
+			else
+				return "";
+		}
+
+		/// <summary>Takes a nullable integer, and returns just the number in string format.</summary>
+		/// <param name="Number">The number to convert.</param>
+		/// <returns>A string containing the number.</returns>
+		private string getVersionIdNumber(int? Number)
+		{
+			if (Number.HasValue)
+				return "[RL:" + Number.Value.ToString() + "]";
 			else
 				return "";
 		}

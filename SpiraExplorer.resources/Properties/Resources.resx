@@ -201,6 +201,9 @@
   <data name="imgRefresh" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\imgRefresh.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="imgTaskTime" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\imgTaskTime.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
   <data name="imgRequirement" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\imgRequirement.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
@@ -319,13 +322,13 @@ http://server/SpiraTeam/</value>
   <data name="app_Incident_Id" xml:space="preserve">
     <value>Incident ID</value>
   </data>
-  <data name="app_Incident_Owner" xml:space="preserve">
+  <data name="app_General_Owner" xml:space="preserve">
     <value>Owner</value>
   </data>
-  <data name="app_Incident_Priority" xml:space="preserve">
+  <data name="app_General_Priority" xml:space="preserve">
     <value>Priority</value>
   </data>
-  <data name="app_Incident_ProjEffort" xml:space="preserve">
+  <data name="app_General_ProjEffort" xml:space="preserve">
     <value>Projected Effort</value>
   </data>
   <data name="app_Incident_ResolvedRelease" xml:space="preserve">
@@ -342,5 +345,38 @@ http://server/SpiraTeam/</value>
   </data>
   <data name="app_Project" xml:space="preserve">
     <value>Project</value>
+  </data>
+  <data name="app_General_Release" xml:space="preserve">
+    <value>Release</value>
+  </data>
+  <data name="app_General_Status" xml:space="preserve">
+    <value>Status</value>
+  </data>
+  <data name="app_Requirement_ID" xml:space="preserve">
+    <value>Requirement ID</value>
+  </data>
+  <data name="app_Requirement_PlannedEff" xml:space="preserve">
+    <value>Planned Effort</value>
+  </data>
+  <data name="app_Task_ID" xml:space="preserve">
+    <value>Task ID</value>
+  </data>
+  <data name="app_Task_ActualEffort" xml:space="preserve">
+    <value>Actual Effort</value>
+  </data>
+  <data name="app_Task_AssociatedRelease" xml:space="preserve">
+    <value>Assigned Release</value>
+  </data>
+  <data name="app_Task_AssociatedRequirement" xml:space="preserve">
+    <value>Assigned Requirement</value>
+  </data>
+  <data name="app_Task_EndDate" xml:space="preserve">
+    <value>End Date</value>
+  </data>
+  <data name="app_Task_RemainingEffort" xml:space="preserve">
+    <value>Remaining Effort</value>
+  </data>
+  <data name="app_Task_StartDate" xml:space="preserve">
+    <value>Start Date</value>
   </data>
 </root>
