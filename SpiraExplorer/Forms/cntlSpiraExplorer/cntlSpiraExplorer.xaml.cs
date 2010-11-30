@@ -6,8 +6,6 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business;
 using Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Properties;
-using Microsoft.VisualStudio.Shell;
-using Microsoft.VisualStudio.Shell.Interop;
 
 namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 {
@@ -18,8 +16,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 		string _solutionName = null;
 		private TreeViewItem _nodeNoSolution = null;
 		private TreeViewItem _nodeNoProjects = null;
-		List<TreeViewArtifact> _treeNodeList;
-		EnvDTE.Events _EnvironEvents = null;
+		private List<TreeViewArtifact> _treeNodeList;
 		private ResourceManager _resources = null;
 		#endregion
 		#region Public Events
@@ -61,64 +58,18 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 				//Load nodes.
 				this.CreateStandardNodes();
 
-				//Attach to the Environment events and assign events.
-				this._EnvironEvents = Business.StaticFuncs.GetEnvironment.Events;
-				this._EnvironEvents.SolutionEvents.Opened += new EnvDTE._dispSolutionEvents_OpenedEventHandler(SolutionEvents_Opened);
-				this._EnvironEvents.SolutionEvents.AfterClosing += new EnvDTE._dispSolutionEvents_AfterClosingEventHandler(SolutionEvents_AfterClosing);
-				this._EnvironEvents.SolutionEvents.Renamed += new EnvDTE._dispSolutionEvents_RenamedEventHandler(SolutionEvents_Renamed);
-
 				//If a solution is loaded now, get the loaded solution.
 				if (Business.StaticFuncs.GetEnvironment.Solution.IsOpen)
-					this.setSolution((string)Business.StaticFuncs.GetEnvironment.Solution.Properties.Item("Name").Value);
+					this.loadSolution((string)Business.StaticFuncs.GetEnvironment.Solution.Properties.Item("Name").Value);
 				else
-					this.setSolution(null);
+					this.loadSolution(null);
 			}
 			catch (Exception ex)
 			{
 				//TODO: Log error.
-				throw new Exception("Could not attach to IDE.", ex);
+				throw ex;
 			}
 		}
-
-		#region Environment Events
-		/// <summary>Hit when a solution is renamed.</summary>
-		/// <param name="OldName">The old name of the solution.</param>
-		private void SolutionEvents_Renamed(string OldName)
-		{
-			//Get the new name of the solution..
-			string NewName = (string)((EnvDTE80.DTE2)Package.GetGlobalService(typeof(SDTE))).Solution.Properties.Item("Name").Value;
-			if (!string.IsNullOrWhiteSpace(NewName))
-			{				//Modify the settings to transfer over projects.
-				if (Settings.Default.AssignedProjects.ContainsKey(OldName))
-				{
-					string strAssignedProjects = Settings.Default.AssignedProjects[OldName];
-					Settings.Default.AssignedProjects.Remove(OldName);
-					Settings.Default.AssignedProjects.Add(NewName, strAssignedProjects);
-					Settings.Default.Save();
-				}
-
-				//Reload projects..
-				this.setSolution(NewName);
-			}
-		}
-
-		/// <summary>Hit when the loaded solution is closed.</summary>
-		private void SolutionEvents_AfterClosing()
-		{
-			//Set to no solution loaded.
-			this.noSolutionLoaded();
-		}
-
-		/// <summary>Hit when a new solution is opened.</summary>
-		private void SolutionEvents_Opened()
-		{
-			if (Business.StaticFuncs.GetEnvironment.Solution.IsOpen)
-			{
-				string solName = (string)Business.StaticFuncs.GetEnvironment.Solution.Properties.Item("Name").Value;
-				this.setSolution(solName);
-			}
-		}
-		#endregion
 
 		#region Control Events
 		/// <summary>Hit when the user double-clicks on a tree node.</summary>
@@ -145,7 +96,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 		{
 			try
 			{
-				this.setSolution(this._solutionName);
+				this.loadSolution(this._solutionName);
 			}
 			catch (Exception ex)
 			{
@@ -192,9 +143,9 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 				{
 					//If a solution is loaded now, get the loaded solution.
 					if (Business.StaticFuncs.GetEnvironment.Solution.IsOpen)
-						this.setSolution((string)Business.StaticFuncs.GetEnvironment.Solution.Properties.Item("Name").Value);
+						this.loadSolution((string)Business.StaticFuncs.GetEnvironment.Solution.Properties.Item("Name").Value);
 					else
-						this.setSolution(null);
+						this.loadSolution(null);
 				}
 			}
 			catch (Exception ex)
@@ -207,14 +158,13 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 
 		/// <summary>Tells the control that a new solution was loaded.</summary>
 		/// <param name="solName">The current Solution name.</param>
-		private void setSolution(string solName)
+		public void loadSolution(string solName)
 		{
 			try
 			{
 				if (string.IsNullOrWhiteSpace(solName))
 				{
 					this.noSolutionLoaded();
-					this.barLoading.Visibility = Visibility.Collapsed;
 				}
 				else
 				{
@@ -228,7 +178,6 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 						else
 						{
 							this.noProjectsLoaded();
-							this.barLoading.Visibility = Visibility.Collapsed;
 						}
 						this._solutionName = solName;
 					}

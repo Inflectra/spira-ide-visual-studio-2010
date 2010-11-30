@@ -3,6 +3,7 @@ using System.ComponentModel.Design;
 using System.Diagnostics;
 using System.Globalization;
 using System.Runtime.InteropServices;
+using EnvDTE;
 using Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms;
 using Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Properties;
 using Microsoft.VisualStudio.Shell;
@@ -27,13 +28,10 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010
 	[Guid(GuidList.guidSpiraExplorerPkgString)]
 	public sealed class SpiraExplorerPackage : Package
 	{
-		/// <summary>
-		/// Default constructor of the package.
-		/// Inside this method you can place any initialization code that does not require 
-		/// any Visual Studio service because at this point the package object is created but 
-		/// not sited yet inside Visual Studio environment. The place to do all the other 
-		/// initialization is the Initialize method.
-		/// </summary>
+		private EnvDTE.Events _EnvironEvents;
+		SolutionEvents _SolEvents;
+
+		/// <summary>Default constructor of the package. Inside this method you can place any initialization code that does not require any Visual Studio service because at this point the package object is created but not sited yet inside Visual Studio environment. The place to do all the other initialization is the Initialize method.</summary>
 		public SpiraExplorerPackage()
 		{
 			Trace.WriteLine(string.Format(CultureInfo.CurrentCulture, "Entering constructor for: {0}", this.ToString()));
@@ -85,6 +83,76 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010
 				CommandID toolwndCommandID = new CommandID(GuidList.guidSpiraExplorerCmdSet, (int)PkgCmdIDList.cmdViewExplorerWindow);
 				MenuCommand menuToolWin = new MenuCommand(ShowToolWindow, toolwndCommandID);
 				mcs.AddCommand(menuToolWin);
+			}
+
+			//Attach to the environment to get events..
+			this._EnvironEvents = Business.StaticFuncs.GetEnvironment.Events;
+			this._SolEvents = Business.StaticFuncs.GetEnvironment.Events.SolutionEvents;
+			if (this._EnvironEvents != null && this._SolEvents != null)
+			{
+				this._SolEvents.Opened += new EnvDTE._dispSolutionEvents_OpenedEventHandler(SolutionEvents_Opened);
+				this._SolEvents.AfterClosing += new EnvDTE._dispSolutionEvents_AfterClosingEventHandler(SolutionEvents_AfterClosing);
+				this._SolEvents.Renamed += new EnvDTE._dispSolutionEvents_RenamedEventHandler(SolutionEvents_Renamed);
+			}
+		}
+
+		/// <summary>Hit when an open solution is renamed.</summary>
+		/// <param name="OldName">The old name of the solution.</param>
+		void SolutionEvents_Renamed(string OldName)
+		{
+			//Get the new name of the solution..
+			if (Business.StaticFuncs.GetEnvironment.Solution.IsOpen)
+			{
+				string NewName = (string)Business.StaticFuncs.GetEnvironment.Solution.Properties.Item("Name").Value;
+				if (!string.IsNullOrWhiteSpace(NewName))
+				{
+					//Modify the settings to transfer over projects.
+					if (Settings.Default.AssignedProjects.ContainsKey(OldName))
+					{
+						string strAssignedProjects = Settings.Default.AssignedProjects[OldName];
+						Settings.Default.AssignedProjects.Remove(OldName);
+						if (Settings.Default.AssignedProjects.ContainsKey(NewName))
+							Settings.Default.AssignedProjects[NewName] = strAssignedProjects;
+						else
+							Settings.Default.AssignedProjects.Add(NewName, strAssignedProjects);
+						Settings.Default.Save();
+					}
+
+					//Reload projects..
+					ToolWindowPane window = this.FindToolWindow(typeof(toolSpiraExplorer), 0, false);
+					if (window != null)
+					{
+						cntlSpiraExplorer toolWindow = (cntlSpiraExplorer)window.Content;
+						toolWindow.loadSolution(NewName);
+					}
+				}
+			}
+		}
+
+		/// <summary>Hit when the open solution is closed.</summary>
+		void SolutionEvents_AfterClosing()
+		{
+			//Get the window.
+			ToolWindowPane window = this.FindToolWindow(typeof(toolSpiraExplorer), 0, false);
+			if (window != null)
+			{
+				cntlSpiraExplorer toolWindow = (cntlSpiraExplorer)window.Content;
+				toolWindow.loadSolution(null);
+			}
+		}
+
+		/// <summary>Hit when a solution is opened.</summary>
+		void SolutionEvents_Opened()
+		{
+			if (Business.StaticFuncs.GetEnvironment.Solution.IsOpen)
+			{
+				//Get the window.
+				ToolWindowPane window = this.FindToolWindow(typeof(toolSpiraExplorer), 0, false);
+				if (window != null)
+				{
+					cntlSpiraExplorer toolWindow = (cntlSpiraExplorer)window.Content;
+					toolWindow.loadSolution((string)Business.StaticFuncs.GetEnvironment.Solution.Properties.Item("Name").Value);
+				}
 			}
 		}
 		#endregion

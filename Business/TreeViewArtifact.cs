@@ -23,7 +23,17 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business
 			set;
 		}
 
-		/// <summary>Used for additional storage. (Like a client, for example.)</summary>
+		/// <summary>Used for additional storage. (Like a client, for example.) Can hold various items:
+		/// null						- No data associated with this item.
+		/// boolean						- For a folder, determines whether or not this folder contains
+		///								  MY artifact (true) or Unassigned artifacts (false). After the
+		///								  associated client is finished pulling data.
+		/// Spira_ImportExportClient	- For a folder, is the client that is actively going out to get
+		///								  information for populating itself. After this client is 
+		///								  finished, will be changed to the boolean above.
+		///	RemoteArtifact				- For individual items, the populated RemoteArtifact.
+		///	SpiraProject				- For projects, the associated SpiraProject.
+		/// </summary>
 		public object ArtifactTag
 		{
 			get;
