@@ -45,18 +45,10 @@
 		<TextBlock Grid.Column="1" Grid.Row="11" Name="txtResolved" Text="Resolved Rel.:" FontStyle="Italic" />
 		<TextBlock Grid.Column="1" Grid.Row="12" Name="txtVerified" Text="Verified Rel.:" FontStyle="Italic" />
 		<!-- Data Items -->
-		<TextBlock Grid.Column="3" Grid.Row="0">
-			<Run Text="[IN:" />
-			<Run Name="dataArtifactId" />
-			<Run Text="]" />
-		</TextBlock>
+		<TextBlock Grid.Column="3" Grid.Row="0"><Run Text="[IN:" /><Run Name="dataArtifactId" /><Run Text="]" /></TextBlock>
 		<TextBlock Name="dataProjectName" Grid.Column="3" Grid.Row="1" />
 		<TextBlock Name="dataOwnerName" Grid.Column="3" Grid.Row="2" />
-		<TextBlock Grid.Column="3" Grid.Row="4">
-			<Run Name="dataStatusName" />
-			<Run Text=" / " />
-			<Run Name="dataTypeName" />
-		</TextBlock>
+		<TextBlock Grid.Column="3" Grid.Row="4"><Run Name="dataStatusName" /><Run Text=" / " /><Run Name="dataTypeName" /></TextBlock>
 		<TextBlock Name="dataEstEffort" Grid.Column="3" Grid.Row="5" />
 		<TextBlock Name="dataProjEffort" Grid.Column="3" Grid.Row="6" />
 		<TextBlock Name="dataPriorityName" Grid.Column="3" Grid.Row="7" />

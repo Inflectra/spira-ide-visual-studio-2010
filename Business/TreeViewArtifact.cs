@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Media;
 using Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business.Forms;
 
@@ -161,7 +162,9 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business
 			get
 			{
 				UIElement tipReturn = null;
+
 				if (!this.ArtifactIsFolder)
+				#region Individual Artifacts
 				{
 					switch (this.ArtifactType)
 					{
@@ -179,9 +182,94 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business
 							tipReturn = new cntlTTipTask();
 							((cntlTTipTask)tipReturn).DataItem = this;
 							break;
+
+						case ArtifactTypeEnum.Project:
+							if (this.ArtifactTag.GetType() == typeof(SpiraProject))
+							{
+								tipReturn = new cntlTTipProject();
+								((cntlTTipProject)tipReturn).DataItem = (SpiraProject)this.ArtifactTag;
+							}
+							break;
 					}
 				}
+				#endregion
+				else
+				#region Folder Items
+				{
+					TextBlock txtMessage = new TextBlock();
+					txtMessage.TextWrapping = TextWrapping.Wrap;
+					txtMessage.Width = 200;
 
+					//Set the internal textblock to something silly.
+					switch (this.ArtifactType)
+					{
+						case ArtifactTypeEnum.Incident:
+							if (this.ArtifactTag.GetType() == typeof(bool))
+							{
+								if ((bool)this.ArtifactTag)
+									txtMessage.Text = StaticFuncs.getCultureResource.GetString("app_Tree_FolderMyIncidents");
+								else
+									txtMessage.Text = StaticFuncs.getCultureResource.GetString("app_Tree_FolderUnIncidents");
+								txtMessage.Text += Environment.NewLine + StaticFuncs.getCultureResource.GetString("app_Tree_FolderHiIncidents");
+
+							}
+							else
+								txtMessage.Text = StaticFuncs.getCultureResource.GetString("app_Tree_FolderGettingData");
+							tipReturn = txtMessage;
+							break;
+
+						case ArtifactTypeEnum.Requirement:
+							if (this.ArtifactTag.GetType() == typeof(bool))
+							{
+								if ((bool)this.ArtifactTag)
+									txtMessage.Text = StaticFuncs.getCultureResource.GetString("app_Tree_FolderMyRequirements");
+								else
+									txtMessage.Text = StaticFuncs.getCultureResource.GetString("app_Tree_FolderUnRequirements");
+							}
+							else
+								txtMessage.Text = StaticFuncs.getCultureResource.GetString("app_Tree_FolderGettingData");
+							tipReturn = txtMessage;
+							break;
+
+						case ArtifactTypeEnum.Task:
+							if (this.ArtifactTag.GetType() == typeof(bool))
+							{
+								if ((bool)this.ArtifactTag)
+									txtMessage.Text = StaticFuncs.getCultureResource.GetString("app_Tree_FolderMyTasks");
+								else
+									txtMessage.Text = StaticFuncs.getCultureResource.GetString("app_Tree_FolderUnTasks");
+								txtMessage.Text += Environment.NewLine + StaticFuncs.getCultureResource.GetString("app_Tree_FolderHiTasks");
+							}
+							else
+								txtMessage.Text = StaticFuncs.getCultureResource.GetString("app_Tree_FolderGettingData");
+							tipReturn = txtMessage;
+							break;
+
+						case ArtifactTypeEnum.Error:
+							txtMessage.Foreground = new SolidColorBrush(Colors.DarkRed);
+							if (this.ArtifactTag.GetType() == typeof(Exception))
+							{
+								txtMessage.Text = StaticFuncs.getCultureResource.GetString("app_General_CommunicationError") + Environment.NewLine;
+								txtMessage.Text += ((Exception)this.ArtifactTag).Message;
+							}
+							else
+								txtMessage.Text = StaticFuncs.getCultureResource.GetString("app_General_CommunicationError");
+							tipReturn = txtMessage;
+							break;
+
+						case ArtifactTypeEnum.None:
+							if (this.ArtifactName == StaticFuncs.getCultureResource.GetString("app_Tree_Incidents"))
+								txtMessage.Text = StaticFuncs.getCultureResource.GetString("app_Tree_FolderIncidents");
+							else if (this.ArtifactName == StaticFuncs.getCultureResource.GetString("app_Tree_Requirements"))
+								txtMessage.Text = StaticFuncs.getCultureResource.GetString("app_Tree_FolderRequirements");
+							else if (this.ArtifactName == StaticFuncs.getCultureResource.GetString("app_Tree_Tasks"))
+								txtMessage.Text = StaticFuncs.getCultureResource.GetString("app_Tree_FolderTasks");
+							tipReturn = txtMessage;
+							break;
+
+					}
+				}
+				#endregion
 				return tipReturn;
 			}
 		}

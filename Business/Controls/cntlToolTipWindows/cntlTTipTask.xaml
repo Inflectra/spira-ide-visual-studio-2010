@@ -49,11 +49,7 @@
 		<TextBlock Grid.Column="1" Grid.Row="14" Name="tstActEff" Text="Act. Effort:" FontStyle="Italic" />
 		<TextBlock Grid.Column="1" Grid.Row="15" Name="tstRemEff" Text="Rem. Effort:" FontStyle="Italic" />
 		<!-- Data Items -->
-		<TextBlock Grid.Column="3" Grid.Row="0">
-			<Run Text="[TK:" />
-			<Run Name="dataArtifactId" />
-			<Run Text="]" />
-		</TextBlock>
+		<TextBlock Grid.Column="3" Grid.Row="0"><Run Text="[TK:" /><Run Name="dataArtifactId" /><Run Text="]" /></TextBlock>
 		<TextBlock Name="dataProjectName" Grid.Column="3" Grid.Row="1" />
 		<TextBlock Name="dataOwnerName" Grid.Column="3" Grid.Row="2" />
 		<TextBlock Name="dataPriorityName" Grid.Column="3" Grid.Row="4" />

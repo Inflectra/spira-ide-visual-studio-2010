@@ -202,8 +202,9 @@
     <ProjectReference Include="..\SpiraExplorer.resources\SpiraExplorer.resources.csproj">
       <Project>{87F40C72-2AA5-4011-BAB2-29C6AD5C5B45}</Project>
       <Name>SpiraExplorer.resources</Name>
-      <VSIXSubPath>/en-US/</VSIXSubPath>
       <Private>True</Private>
+      <EmbedInteropTypes>False</EmbedInteropTypes>
+      <VSIXSubPath>/en-US/</VSIXSubPath>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup />

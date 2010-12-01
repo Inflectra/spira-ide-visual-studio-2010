@@ -24,7 +24,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010
 	[PackageRegistration(UseManagedResourcesOnly = true)] // This attribute tells the PkgDef creation utility (CreatePkgDef.exe) that this class is a package.
 	[InstalledProductRegistration("#110", "#112", "1.0", IconResourceID = 400)] // This attribute is used to register the information needed to show the this package in the Help/About dialog of Visual Studio.
 	[ProvideMenuResource("Menus.ctmenu", 1)] // This attribute is needed to let the shell know that this package exposes some menus.
-	[ProvideToolWindow(typeof(toolSpiraExplorer))] // This attribute registers a tool window exposed by this package.
+	[ProvideToolWindow(typeof(toolSpiraExplorer), MultiInstances = false, Window = "3ae79031-e1bc-11d0-8f78-00a0c9110057")] // This attribute registers a tool window exposed by this package.
 	[Guid(GuidList.guidSpiraExplorerPkgString)]
 	public sealed class SpiraExplorerPackage : Package
 	{
@@ -49,11 +49,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010
 			}
 		}
 
-		/// <summary>
-		/// This function is called when the user clicks the menu item that shows the 
-		/// tool window. See the Initialize method to see how the menu item is associated to 
-		/// this function using the OleMenuCommandService service and the MenuCommand class.
-		/// </summary>
+		/// <summary>This function is called when the user clicks the menu item that shows the tool window. See the Initialize method to see how the menu item is associated to this function using the OleMenuCommandService service and the MenuCommand class.</summary>
 		private void ShowToolWindow(object sender, EventArgs e)
 		{
 			// Get the instance number 0 of this tool window. This window is single instance so this instance
@@ -95,10 +91,12 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010
 				this._SolEvents.Renamed += new EnvDTE._dispSolutionEvents_RenamedEventHandler(SolutionEvents_Renamed);
 			}
 		}
+		#endregion
 
+		#region Environment Events
 		/// <summary>Hit when an open solution is renamed.</summary>
 		/// <param name="OldName">The old name of the solution.</param>
-		void SolutionEvents_Renamed(string OldName)
+		private void SolutionEvents_Renamed(string OldName)
 		{
 			//Get the new name of the solution..
 			if (Business.StaticFuncs.GetEnvironment.Solution.IsOpen)
@@ -130,7 +128,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010
 		}
 
 		/// <summary>Hit when the open solution is closed.</summary>
-		void SolutionEvents_AfterClosing()
+		private void SolutionEvents_AfterClosing()
 		{
 			//Get the window.
 			ToolWindowPane window = this.FindToolWindow(typeof(toolSpiraExplorer), 0, false);
@@ -142,7 +140,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010
 		}
 
 		/// <summary>Hit when a solution is opened.</summary>
-		void SolutionEvents_Opened()
+		private void SolutionEvents_Opened()
 		{
 			if (Business.StaticFuncs.GetEnvironment.Solution.IsOpen)
 			{

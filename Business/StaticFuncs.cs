@@ -15,28 +15,35 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business
 {
 	public static class StaticFuncs
 	{
+		private static ResourceManager _internalManager;
+
 		/// <summary>Readonly. Returns the resource manager for the loaded library.</summary>
 		public static ResourceManager getCultureResource
 		{
 			get
 			{
-				Assembly addinAssembly = Assembly.GetExecutingAssembly();
-				Assembly satelliteAssembly = addinAssembly.GetSatelliteAssembly(System.Globalization.CultureInfo.GetCultureInfo("en-US"));
-				string resAssName = "";
-				foreach (string resName in satelliteAssembly.GetManifestResourceNames())
+				if (StaticFuncs._internalManager == null)
 				{
-					if (resName.ToLowerInvariant().Trim() == "Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Resources.Properties.Resources.resources".ToLowerInvariant())
-						resAssName = resName.Substring(0, resName.LastIndexOf("."));
+					Assembly addinAssembly = Assembly.GetExecutingAssembly();
+					Assembly satelliteAssembly = addinAssembly.GetSatelliteAssembly(System.Globalization.CultureInfo.GetCultureInfo("en-US"));
+					string resAssName = "";
+					foreach (string resName in satelliteAssembly.GetManifestResourceNames())
+					{
+						if (resName.ToLowerInvariant().Trim() == "Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Resources.Properties.Resources.resources".ToLowerInvariant())
+							resAssName = resName.Substring(0, resName.LastIndexOf("."));
+					}
+
+					try
+					{
+						StaticFuncs._internalManager = new ResourceManager(resAssName, satelliteAssembly);
+					}
+					catch
+					{
+						StaticFuncs._internalManager = null;
+					}
 				}
 
-				try
-				{
-					return new ResourceManager(resAssName, satelliteAssembly);
-				}
-				catch
-				{
-					return null;
-				}
+				return StaticFuncs._internalManager;
 			}
 		}
 

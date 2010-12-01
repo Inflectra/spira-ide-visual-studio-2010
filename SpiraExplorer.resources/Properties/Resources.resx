@@ -379,4 +379,52 @@ http://server/SpiraTeam/</value>
   <data name="app_Task_StartDate" xml:space="preserve">
     <value>Start Date</value>
   </data>
+  <data name="app_General_CommunicationError" xml:space="preserve">
+    <value>An error occurred while communicating with the SpiraTeam server.</value>
+  </data>
+  <data name="app_Project_Name" xml:space="preserve">
+    <value>Project Name:</value>
+  </data>
+  <data name="app_Project_ServerLogin" xml:space="preserve">
+    <value>Server User:</value>
+  </data>
+  <data name="app_Project_ServerUrl" xml:space="preserve">
+    <value>Server URL:</value>
+  </data>
+  <data name="app_Tree_FolderGettingData" xml:space="preserve">
+    <value>This folder is still retrieving data from the server.</value>
+  </data>
+  <data name="app_Tree_FolderHiIncidents" xml:space="preserve">
+    <value>Items italicized in red are at 0% completion and are beyond their start-date.</value>
+  </data>
+  <data name="app_Tree_FolderHiTasks" xml:space="preserve">
+    <value>Items italicized in red are past their due-date.</value>
+  </data>
+  <data name="app_Tree_FolderIncidents" xml:space="preserve">
+    <value>This folder contains incidents related to this Project.</value>
+  </data>
+  <data name="app_Tree_FolderMyIncidents" xml:space="preserve">
+    <value>This folder contains all incidents assigned to you.</value>
+  </data>
+  <data name="app_Tree_FolderMyRequirements" xml:space="preserve">
+    <value>This folder contains all requirements assigned to you.</value>
+  </data>
+  <data name="app_Tree_FolderMyTasks" xml:space="preserve">
+    <value>This folder contains all tasks assigned to you.</value>
+  </data>
+  <data name="app_Tree_FolderUnIncidents" xml:space="preserve">
+    <value>This folder contains all incidents that are unassigned.</value>
+  </data>
+  <data name="app_Tree_FolderUnRequirements" xml:space="preserve">
+    <value>This folder contains all requirements that are unassigned.</value>
+  </data>
+  <data name="app_Tree_FolderUnTasks" xml:space="preserve">
+    <value>This folder contains all tasks that are unassigned.</value>
+  </data>
+  <data name="app_Tree_FolderRequirements" xml:space="preserve">
+    <value>Requirements that are a part of this project.</value>
+  </data>
+  <data name="app_Tree_FolderTasks" xml:space="preserve">
+    <value>Tasks that are a part of this project.</value>
+  </data>
 </root>

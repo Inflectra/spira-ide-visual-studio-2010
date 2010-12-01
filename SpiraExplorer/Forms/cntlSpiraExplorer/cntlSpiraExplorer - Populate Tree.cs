@@ -345,7 +345,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 					_client.ClientNode.ArtifactType = TreeViewArtifact.ArtifactTypeEnum.Error;
 					_client.ClientNode.Items.Clear();
 					//TODO: Create tooltip for error.
-					//client.ClientNode.ToolTip = null;
+					_client.ClientNode.ArtifactTag = e.error;
 					//Refresh treeview.
 					this._numActiveClients--;
 					this.refreshTree();
