@@ -91,7 +91,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 				}
 
 				//Now refresh this one if necessary.
-				if (itemToRefresh.ArtifactType != TreeViewArtifact.ArtifactTypeEnum.None || itemToRefresh.ArtifactType != TreeViewArtifact.ArtifactTypeEnum.Project)
+				if (itemToRefresh.ArtifactType != TreeViewArtifact.ArtifactTypeEnum.None && itemToRefresh.ArtifactType != TreeViewArtifact.ArtifactTypeEnum.Project)
 				{
 					//Generate a new client to go get data for.
 					Spira_ImportExport clientRefresh = new Spira_ImportExport(((SpiraProject)itemToRefresh.ArtifactParentProject.ArtifactTag).ServerURL.ToString(), ((SpiraProject)itemToRefresh.ArtifactParentProject.ArtifactTag).UserName, ((SpiraProject)itemToRefresh.ArtifactParentProject.ArtifactTag).UserPass);
