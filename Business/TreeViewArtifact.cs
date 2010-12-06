@@ -130,6 +130,13 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business
 			set;
 		}
 
+		/// <summary>Sets wither or not the folder is containing 'my' items, or 'unassigned' items.</summary>
+		public bool ArtifactIsFolderMine
+		{
+			get;
+			set;
+		}
+
 		public TreeViewArtifact Parent
 		{
 			get;
@@ -163,7 +170,23 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business
 			{
 				UIElement tipReturn = null;
 
-				if (!this.ArtifactIsFolder)
+				if (this.ArtifactIsError)
+				{
+					TextBlock txtMessage = new TextBlock();
+					txtMessage.TextWrapping = TextWrapping.Wrap;
+					txtMessage.Width = 200;
+					txtMessage.Foreground = new SolidColorBrush(Colors.DarkRed);
+
+					if (this.ArtifactTag.GetType() == typeof(Exception))
+					{
+						txtMessage.Text = StaticFuncs.getCultureResource.GetString("app_General_CommunicationError") + Environment.NewLine;
+						txtMessage.Text += ((Exception)this.ArtifactTag).Message;
+					}
+					else
+						txtMessage.Text = StaticFuncs.getCultureResource.GetString("app_General_CommunicationError");
+					tipReturn = txtMessage;
+				}
+				else if (!this.ArtifactIsFolder)
 				#region Individual Artifacts
 				{
 					switch (this.ArtifactType)
@@ -204,14 +227,13 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business
 					switch (this.ArtifactType)
 					{
 						case ArtifactTypeEnum.Incident:
-							if (this.ArtifactTag.GetType() == typeof(bool))
+							if (this.ArtifactTag.GetType() != typeof(Spira_ImportExport))
 							{
-								if ((bool)this.ArtifactTag)
+								if (this.ArtifactIsFolderMine)
 									txtMessage.Text = StaticFuncs.getCultureResource.GetString("app_Tree_FolderMyIncidents");
 								else
 									txtMessage.Text = StaticFuncs.getCultureResource.GetString("app_Tree_FolderUnIncidents");
 								txtMessage.Text += Environment.NewLine + StaticFuncs.getCultureResource.GetString("app_Tree_FolderHiIncidents");
-
 							}
 							else
 								txtMessage.Text = StaticFuncs.getCultureResource.GetString("app_Tree_FolderGettingData");
@@ -219,9 +241,9 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business
 							break;
 
 						case ArtifactTypeEnum.Requirement:
-							if (this.ArtifactTag.GetType() == typeof(bool))
+							if (this.ArtifactTag.GetType() != typeof(Spira_ImportExport))
 							{
-								if ((bool)this.ArtifactTag)
+								if (this.ArtifactIsFolderMine)
 									txtMessage.Text = StaticFuncs.getCultureResource.GetString("app_Tree_FolderMyRequirements");
 								else
 									txtMessage.Text = StaticFuncs.getCultureResource.GetString("app_Tree_FolderUnRequirements");
@@ -232,9 +254,9 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business
 							break;
 
 						case ArtifactTypeEnum.Task:
-							if (this.ArtifactTag.GetType() == typeof(bool))
+							if (this.ArtifactTag.GetType() != typeof(Spira_ImportExport))
 							{
-								if ((bool)this.ArtifactTag)
+								if (this.ArtifactIsFolderMine)
 									txtMessage.Text = StaticFuncs.getCultureResource.GetString("app_Tree_FolderMyTasks");
 								else
 									txtMessage.Text = StaticFuncs.getCultureResource.GetString("app_Tree_FolderUnTasks");
@@ -242,18 +264,6 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business
 							}
 							else
 								txtMessage.Text = StaticFuncs.getCultureResource.GetString("app_Tree_FolderGettingData");
-							tipReturn = txtMessage;
-							break;
-
-						case ArtifactTypeEnum.Error:
-							txtMessage.Foreground = new SolidColorBrush(Colors.DarkRed);
-							if (this.ArtifactTag.GetType() == typeof(Exception))
-							{
-								txtMessage.Text = StaticFuncs.getCultureResource.GetString("app_General_CommunicationError") + Environment.NewLine;
-								txtMessage.Text += ((Exception)this.ArtifactTag).Message;
-							}
-							else
-								txtMessage.Text = StaticFuncs.getCultureResource.GetString("app_General_CommunicationError");
 							tipReturn = txtMessage;
 							break;
 
@@ -274,6 +284,13 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business
 			}
 		}
 
+		/// <summary>Whether or not this specific treeview item is in an error state.</summary>
+		public bool ArtifactIsError
+		{
+			get;
+			set;
+		}
+
 		/// <summary>Available types of TreeNodes.</summary>
 		public enum ArtifactTypeEnum
 		{
@@ -281,8 +298,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business
 			Task = 1,
 			Incident = 2,
 			Requirement = 3,
-			Project = 4,
-			Error = 1024
+			Project = 4
 		}
 
 		/// <summary>Items contained within the current item.</summary>
