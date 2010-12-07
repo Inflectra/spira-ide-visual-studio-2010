@@ -6,14 +6,14 @@
 
 	<DockPanel LastChildFill="True" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
 		<ToolBar Height="Auto" DockPanel.Dock="Top" VerticalAlignment="Top">
-			<Button Name="btnRefresh" ToolTip="Refresh Listings" ></Button>
+			<Button Name="btnRefresh" ToolTip="Refresh Listings"  IsEnabledChanged="toolButton_IsEnabledChanged" Click="btnRefresh_Click" />
 			<Separator />
-			<ToggleButton Name="btnShowClosed" ToolTip="Show Closed &amp; Completed Items"></ToggleButton>
+			<ToggleButton Name="btnShowClosed" ToolTip="Show Closed &amp; Completed Items" IsEnabledChanged="toolButton_IsEnabledChanged" Click="btnShowClosed_Click" />
 			<Separator />
-			<Button Name="btnConfig" ToolTip="Project Explorer Configuration"></Button>
+			<Button Name="btnConfig" ToolTip="Project Explorer Configuration" Click="btnConfig_Click" />
 		</ToolBar>
 		<ProgressBar DockPanel.Dock="Bottom" Height="10" IsIndeterminate="True" Foreground="Orange" Visibility="Hidden" Name="barLoading" />
-		<TreeView Name="trvProject" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" MinHeight="150">
+		<TreeView Name="trvProject" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" MinHeight="150" SelectedItemChanged="trvProject_SelectedItemChanged">
 			<TreeView.Resources>
 				<HierarchicalDataTemplate DataType="{x:Type local:TreeViewArtifact}" ItemsSource="{Binding Path=Items}">
 					<Grid Margin="0,2,0,2">
@@ -30,9 +30,14 @@
 								<Run.Style>
 									<Style TargetType="{x:Type Run}">
 										<Style.Triggers>
-											<DataTrigger Binding="{Binding Path=isInError,Mode=OneWay}" Value="True">
+											<DataTrigger Binding="{Binding Path=Style_IsInError,Mode=OneWay}" Value="True">
 												<Setter Property="Foreground" Value="DarkRed" />
 												<Setter Property="FontStyle" Value="Italic" />
+											</DataTrigger>
+											<DataTrigger Binding="{Binding Path=Style_IsCompleted,Mode=OneWay}" Value="True">
+												<Setter Property="Foreground" Value="DarkGray" />
+												<Setter Property="FontStyle" Value="Normal" />
+												<Setter Property="TextDecorations" Value="Strikethrough" />
 											</DataTrigger>
 										</Style.Triggers>
 									</Style>
@@ -61,8 +66,13 @@
 					</Grid>
 				</HierarchicalDataTemplate>
 			</TreeView.Resources>
-			<TreeViewItem Header="Test" IsExpanded="True">
-				<TreeViewItem Header="Test 2" IsSelected="True" />
+			<TreeView.ItemContainerStyle>
+				<Style TargetType="TreeViewItem">
+					<Setter Property="IsExpanded" Value="{Binding IsExpanded,Mode=TwoWay}"/>
+				</Style>
+			</TreeView.ItemContainerStyle>
+			<TreeViewItem Header="Test Designer Item #1" IsExpanded="True">
+				<TreeViewItem Header="Test Contained Designer Item" IsSelected="True" />
 			</TreeViewItem>
 		</TreeView>
 	</DockPanel>

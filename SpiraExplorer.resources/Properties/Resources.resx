@@ -379,7 +379,7 @@ http://server/SpiraTeam/</value>
   <data name="app_Task_StartDate" xml:space="preserve">
     <value>Start Date</value>
   </data>
-  <data name="app_General_CommunicationError" xml:space="preserve">
+  <data name="app_General_CommunicationErrorMessage" xml:space="preserve">
     <value>An error occurred while communicating with the SpiraTeam server.</value>
   </data>
   <data name="app_Project_Name" xml:space="preserve">
@@ -426,5 +426,8 @@ http://server/SpiraTeam/</value>
   </data>
   <data name="app_Tree_FolderTasks" xml:space="preserve">
     <value>Tasks that are a part of this project.</value>
+  </data>
+  <data name="app_Error_RetrieveShort" xml:space="preserve">
+    <value>Error retrieving information</value>
   </data>
 </root>

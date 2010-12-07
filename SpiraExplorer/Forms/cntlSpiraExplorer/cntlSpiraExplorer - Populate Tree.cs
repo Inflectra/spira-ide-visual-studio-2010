@@ -37,16 +37,17 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 						newProj.ArtifactId = ((Business.SpiraProject)newProj.ArtifactTag).ProjectID;
 						newProj.ArtifactName = ((Business.SpiraProject)newProj.ArtifactTag).ProjectName;
 						newProj.ArtifactType = TreeViewArtifact.ArtifactTypeEnum.Project;
+						newProj.ArtifactIsFolder = true;
 						newProj.Parent = null;
+
 						this._Projects.Add(newProj);
 					}
 				}
 
 				//Refresh the treeview.
-				this.refreshProjects(null);
+				this.refreshProjects();
 
 				//Enable the control buttons.
-				this.btnRefresh.IsEnabled = true;
 				this.btnShowClosed.IsEnabled = true;
 			}
 			catch (Exception ex)
@@ -117,7 +118,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 		}
 
 		/// <summary>Refreshes the display for all loaded projects.</summary>
-		private void refreshProjects(TreeViewArtifact itemToRefresh)
+		private void refreshProjects()
 		{
 			try
 			{
@@ -125,6 +126,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 				//  refreshTreeNodeServerData on each Project TreeNode.
 
 				//Clear the tree and refresh data.
+				this.trvProject.ItemsSource = null;
 				this.trvProject.Items.Clear();
 				this.trvProject.ItemsSource = this._Projects;
 				this.trvProject.Items.Refresh();
@@ -243,14 +245,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 				}
 				else
 				{
-					//Add an error node to the treeview.
-					TreeViewArtifact newNode = new TreeViewArtifact();
-					newNode.ArtifactIsError = true;
-					newNode.ArtifactName = e.Error.Message;
-					newNode.ArtifactTag = e.Error;
-					newNode.ArtifactIsFolder = false;
-
-					parentNode.Items.Add(newNode);
+					this.addErrorNode(ref parentNode, e.Error, StaticFuncs.getCultureResource.GetString("app_Error_RetrieveShort"));
 				}
 			}
 			else
@@ -280,10 +275,10 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			{
 				if (_client.ClientNode != null)
 				{
-					_client.ClientNode.ArtifactIsError = true;
-					_client.ClientNode.Items.Clear();
-					//TODO: Create tooltip for error.
-					_client.ClientNode.ArtifactTag = e.error;
+					TreeViewArtifact treeNode = _client.ClientNode;
+					this.addErrorNode(ref treeNode, e.error, StaticFuncs.getCultureResource.GetString("app_Error_RetrieveShort"));
+					_client.ClientNode = treeNode;
+
 					//Refresh treeview.
 					this._numActiveClients--;
 					this.refreshTree();
@@ -315,7 +310,8 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 		{
 			//Connection ready. Let's fire off our query.
 			Business.Spira_ImportExport client = e.UserState as Business.Spira_ImportExport;
-			if (client != null)
+
+			if (e.Error == null && client != null)
 			{
 				//Get the parent project..
 				TreeViewArtifact nodeProject = client.ClientNode.ArtifactParentProject;
@@ -395,6 +391,20 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 						break;
 				}
 			}
+			else
+			{
+				//Add an error node.
+				if (client != null)
+				{
+					TreeViewArtifact treeNode = client.ClientNode;
+					this.addErrorNode(ref treeNode, e.Error, StaticFuncs.getCultureResource.GetString("app_Error_RetrieveShort"));
+					client.ClientNode = treeNode;
+
+					//Refresh treeview.
+					this._numActiveClients--;
+					this.refreshTree();
+				}
+			}
 		}
 
 		/// <summary>Hit when a client sent to retrieve Requirements is finished with results.</summary>
@@ -431,14 +441,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 				}
 				else
 				{
-					//Add an error node to the treeview.
-					TreeViewArtifact newNode = new TreeViewArtifact();
-					newNode.ArtifactIsError = true;
-					newNode.ArtifactName = e.Error.Message;
-					newNode.ArtifactTag = e.Error;
-					newNode.ArtifactIsFolder = false;
-
-					parentNode.Items.Add(newNode);
+					this.addErrorNode(ref parentNode, e.Error, StaticFuncs.getCultureResource.GetString("app_Error_RetrieveShort"));
 				}
 			}
 			else
@@ -488,14 +491,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 				}
 				else
 				{
-					//Add an error node to the treeview.
-					TreeViewArtifact newNode = new TreeViewArtifact();
-					newNode.ArtifactIsError = true;
-					newNode.ArtifactName = e.Error.Message;
-					newNode.ArtifactTag = e.Error;
-					newNode.ArtifactIsFolder = false;
-
-					parentNode.Items.Add(newNode);
+					this.addErrorNode(ref parentNode, e.Error, StaticFuncs.getCultureResource.GetString("app_Error_RetrieveShort"));
 				}
 			}
 			else
@@ -570,6 +566,23 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 
 			if (this._numActiveClients == 0)
 				this.barLoading.Visibility = System.Windows.Visibility.Collapsed;
+		}
+
+		/// <summary>Creates an error node in the given node.</summary>
+		/// <param name="nodeToAddTo">TreeViewArtifact node to add the error to.</param>
+		/// <param name="exception">Exception for the error.</param>
+		/// <param name="Title">The title of the error node.</param>
+		private void addErrorNode(ref TreeViewArtifact nodeToAddTo, Exception exception, String Title)
+		{
+			TreeViewArtifact errorNode = new TreeViewArtifact();
+			errorNode.ArtifactIsError = true;
+			errorNode.ArtifactName = Title;
+			errorNode.ArtifactTag = exception;
+			errorNode.Parent = nodeToAddTo;
+
+			//Clear existing, add error.
+			nodeToAddTo.Items.Clear();
+			nodeToAddTo.Items.Add(errorNode);
 		}
 	}
 }

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Resources;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -17,7 +16,6 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 		private TreeViewItem _nodeNoSolution = null;
 		private TreeViewItem _nodeNoProjects = null;
 		private List<TreeViewArtifact> _treeNodeList;
-		private ResourceManager _resources = null;
 		#endregion
 		#region Public Events
 		public event EventHandler<OpenItemEventArgs> OpenDetails;
@@ -28,32 +26,25 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 		{
 			try
 			{
-				//Get the resources first..
-				this._resources = Business.StaticFuncs.getCultureResource;
-
 				//Overall initialization.
 				InitializeComponent();
 
 				//Set button images and events.
 				// - Config button
-				Image btnConfigImage = Business.StaticFuncs.getImage("imgSettings", new Size(16, 16));
+				Image btnConfigImage = Business.StaticFuncs.getImage("imgProject", new Size(16, 16));
 				btnConfigImage.Stretch = Stretch.None;
 				this.btnConfig.Content = btnConfigImage;
-				this.btnConfig.Click += new RoutedEventHandler(btnConfig_Click);
 				// - Show Completed button
 				Image btnCompleteImage = Business.StaticFuncs.getImage("imgShowCompleted", new Size(16, 16));
 				btnCompleteImage.Stretch = Stretch.None;
 				this.btnShowClosed.Content = btnCompleteImage;
-				this.btnShowClosed.IsEnabledChanged += new DependencyPropertyChangedEventHandler(toolButton_IsEnabledChanged);
-				this.btnShowClosed.Click += new RoutedEventHandler(btnRefresh_Click);
+				this.btnShowClosed.IsChecked = Settings.Default.ShowCompleted;
 				// - Refresh Button
 				Image btnRefreshImage = Business.StaticFuncs.getImage("imgRefresh", new Size(16, 16));
 				btnRefreshImage.Stretch = Stretch.None;
 				this.btnRefresh.Content = btnRefreshImage;
-				this.btnRefresh.Click += new RoutedEventHandler(btnRefresh_Click);
-				this.btnRefresh.IsEnabledChanged += new DependencyPropertyChangedEventHandler(toolButton_IsEnabledChanged);
 				// - Set bar color.
-				this.barLoading.Foreground = (Brush)new System.Windows.Media.BrushConverter().ConvertFrom(this._resources.GetString("app_Colors_StyledBarColor"));
+				this.barLoading.Foreground = (Brush)new System.Windows.Media.BrushConverter().ConvertFrom(StaticFuncs.getCultureResource.GetString("app_Colors_StyledBarColor"));
 
 				//Load nodes.
 				this.CreateStandardNodes();
@@ -89,6 +80,24 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			}
 		}
 
+		/// <summary>Hit when the selected item changes in the treeview.</summary>
+		/// <param name="sender">trvProject</param>
+		/// <param name="e">RoutedPropertyChangedEventArgs</param>
+		private void trvProject_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
+		{
+			e.Handled = true;
+
+			//If it's a TreeViewArtifact item.
+			if (this.trvProject.SelectedItem != null && this.trvProject.SelectedItem.GetType() == typeof(TreeViewArtifact))
+			{
+				//Only if it's NOT not a folder.
+				TreeViewArtifact selItem = this.trvProject.SelectedItem as TreeViewArtifact;
+				this.btnRefresh.IsEnabled = (selItem != null && selItem.ArtifactIsFolder);
+			}
+			else
+				this.btnRefresh.IsEnabled = false;
+		}
+
 		/// <summary>Hit when the user wants to refresh the list.</summary>
 		/// <param name="sender">btnRefresh, btnShowClosed</param>
 		/// <param name="e">Event Args</param>
@@ -96,12 +105,28 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 		{
 			try
 			{
-				this.loadSolution(this._solutionName);
+				TreeViewArtifact selItem = this.trvProject.SelectedItem as TreeViewArtifact;
+				if (selItem != null) this.refreshTreeNodeServerData(selItem);
 			}
 			catch (Exception ex)
 			{
 				//TODO: Error logging here.
 			}
+		}
+
+		/// <summary>Hit when the user wants to show/not show closed items.</summary>
+		/// <param name="sender">TobbleButton</param>
+		/// <param name="e">RoutedEventArgs</param>
+		private void btnShowClosed_Click(object sender, RoutedEventArgs e)
+		{
+			e.Handled = true;
+
+			//We need to save the setting here.
+			Settings.Default.ShowCompleted = this.btnShowClosed.IsChecked.Value;
+			Settings.Default.Save();
+
+			//Refresh the item list.
+			this.refreshProjects();
 		}
 
 		/// <summary>Hit when a toolbar button IsEnabled is changed, for greying out icons.</summary>
@@ -111,18 +136,9 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 		{
 			try
 			{
-				if (sender.GetType() == typeof(Button))
-				{
-					Button btn = (Button)sender;
-
-					btn.Opacity = ((btn.IsEnabled) ? 1 : .5);
-				}
-				else if (sender.GetType() == typeof(System.Windows.Controls.Primitives.ToggleButton))
-				{
-					System.Windows.Controls.Primitives.ToggleButton btn = (System.Windows.Controls.Primitives.ToggleButton)sender;
-
-					btn.Opacity = ((btn.IsEnabled) ? 1 : .5);
-				}
+				UIElement btnChanged = sender as UIElement;
+				if (btnChanged != null)
+					btnChanged.Opacity = ((btnChanged.IsEnabled) ? 1 : .5);
 			}
 			catch (Exception ex)
 			{

@@ -96,6 +96,8 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business
 			{
 				if (this.ArtifactType == ArtifactTypeEnum.Project)
 					return StaticFuncs.getImage("imgProject", new System.Windows.Size(16, 16)).Source;
+				else if (this.ArtifactIsError)
+					return StaticFuncs.getImage("imgError", new System.Windows.Size(16, 16)).Source;
 				else if (this.ArtifactIsFolder)
 					switch (this.ArtifactType)
 					{
@@ -137,6 +139,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business
 			set;
 		}
 
+		/// <summary>The parent object (TreeViewArtifact) of this item.</summary>
 		public TreeViewArtifact Parent
 		{
 			get;
@@ -179,11 +182,11 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business
 
 					if (this.ArtifactTag.GetType() == typeof(Exception))
 					{
-						txtMessage.Text = StaticFuncs.getCultureResource.GetString("app_General_CommunicationError") + Environment.NewLine;
+						txtMessage.Text = StaticFuncs.getCultureResource.GetString("app_General_CommunicationErrorMessage") + Environment.NewLine;
 						txtMessage.Text += ((Exception)this.ArtifactTag).Message;
 					}
 					else
-						txtMessage.Text = StaticFuncs.getCultureResource.GetString("app_General_CommunicationError");
+						txtMessage.Text = StaticFuncs.getCultureResource.GetString("app_General_CommunicationErrorMessage");
 					tipReturn = txtMessage;
 				}
 				else if (!this.ArtifactIsFolder)
@@ -308,7 +311,8 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business
 			set;
 		}
 
-		public string isInError
+		/// <summary>Used for XAML to determine if the item is in error (late).</summary>
+		public string Style_IsInError
 		{
 			get
 			{
@@ -336,6 +340,40 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business
 			}
 		}
 
+		/// <summary>Used for XAML to determine if the item is completed.</summary>
+		public string Style_IsCompleted
+		{
+			get
+			{
+				string retValue = "False";
+
+				if (this.ArtifactTag != null)
+				{
+					if (this.ArtifactTag.GetType() == typeof(SpiraTeam_Client.RemoteIncident))
+					{
+						//HACK: At this time there is no property stating whether the issue is 'closed' or not. So, basing it on the ClosedDate.
+						SpiraTeam_Client.RemoteIncident item = (SpiraTeam_Client.RemoteIncident)this.ArtifactTag;
+						if (item.ClosedDate < DateTime.Now)
+							retValue = "True";
+					}
+					else if (this.ArtifactTag.GetType() == typeof(SpiraTeam_Client.RemoteTask))
+					{
+						SpiraTeam_Client.RemoteTask item = (SpiraTeam_Client.RemoteTask)this.ArtifactTag;
+						if (item.TaskStatusId != 1 && item.TaskStatusId != 2 && item.TaskStatusId != 4 && item.TaskStatusId != 5)
+							retValue = "True";
+					}
+					else if (this.ArtifactTag.GetType() == typeof(SpiraTeam_Client.RemoteRequirement))
+					{
+						SpiraTeam_Client.RemoteRequirement item = (SpiraTeam_Client.RemoteRequirement)this.ArtifactTag;
+						if (item.StatusId != 1 && item.StatusId != 2 && item.StatusId != 3 && item.StatusId != 5 && item.StatusId != 7)
+							retValue = "True";
+					}
+				}
+
+				return retValue;
+			}
+		}
+
 		/// <summary>Default indexer.</summary>
 		/// <param name="index">The number of the item.</param>
 		/// <returns>Child at index.</returns>
@@ -349,6 +387,13 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business
 			{
 				this.Items[index] = value;
 			}
+		}
+
+		/// <summary>Whether or not the user opened this treenode up.</summary>
+		public bool IsExpanded
+		{
+			get;
+			set;
 		}
 	}
 }
