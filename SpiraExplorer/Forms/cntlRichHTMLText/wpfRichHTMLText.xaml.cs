@@ -7,7 +7,7 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Threading;
-using Inflectra.SpiraTest.IDEIntegration.VisualStudio.WPF.Forms;
+using Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms;
 
 namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Controls
 {

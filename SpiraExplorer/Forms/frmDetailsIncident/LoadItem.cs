@@ -1,45 +1,45 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Resources;
 using System.Windows;
 using System.Windows.Controls;
-using Inflectra.SpiraTest.IDEIntegration.VisualStudio.WPF.Controls;
-using System.Resources;
+using Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business;
+using Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Controls;
 
-namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio.WPF.Forms
+namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 {
 	public partial class wpfDetailsIncident : UserControl
 	{
-		//Global var to store ProjectInfo & this Incident.
-		private Connect.SpiraProject _Project = null;
-		private Spira_ImportExport.RemoteIncident _Incident;
-		private Spira_ImportExport.RemoteIncident _IncidentConcurrency;
-		//Global to store ProjectUsers.
-		private Spira_ImportExport.RemoteProjectUser[] _ProjUsers = new Inflectra.SpiraTest.IDEIntegration.VisualStudio.Spira_ImportExport.RemoteProjectUser[] { };
-		private Spira_ImportExport.RemoteRelease[] _ProjReleases = new Inflectra.SpiraTest.IDEIntegration.VisualStudio.Spira_ImportExport.RemoteRelease[] { };
-		private Spira_ImportExport.RemoteIncidentSeverity[] _IncSeverity = new Inflectra.SpiraTest.IDEIntegration.VisualStudio.Spira_ImportExport.RemoteIncidentSeverity[] { };
-		private Spira_ImportExport.RemoteIncidentPriority[] _IncPriority = new Inflectra.SpiraTest.IDEIntegration.VisualStudio.Spira_ImportExport.RemoteIncidentPriority[] { };
-		private Spira_ImportExport.RemoteIncidentType[] _IncType = new Inflectra.SpiraTest.IDEIntegration.VisualStudio.Spira_ImportExport.RemoteIncidentType[] { };
-		private Spira_ImportExport.RemoteIncidentStatus[] _IncStatus = new Inflectra.SpiraTest.IDEIntegration.VisualStudio.Spira_ImportExport.RemoteIncidentStatus[] { };
-		private Spira_ImportExport.RemoteWorkflowIncidentTransition[] _IncWkfTransision = new Inflectra.SpiraTest.IDEIntegration.VisualStudio.Spira_ImportExport.RemoteWorkflowIncidentTransition[] { };
-		private Spira_ImportExport.RemoteIncidentResolution[] _IncResolutions = new Inflectra.SpiraTest.IDEIntegration.VisualStudio.Spira_ImportExport.RemoteIncidentResolution[] { };
+		#region Private Data Storage Variables
+		//The Project and the Incident
+		private SpiraProject _Project = null;
+		private Business.SpiraTeam_Client.RemoteIncident _Incident;
+		private Business.SpiraTeam_Client.RemoteIncident _IncidentConcurrency;
+		//Other project-specific items.
+		private List<Business.SpiraTeam_Client.RemoteProjectUser> _ProjUsers;
+		private List<Business.SpiraTeam_Client.RemoteRelease> _ProjReleases;
+		private List<Business.SpiraTeam_Client.RemoteIncidentSeverity> _IncSeverity;
+		private List<Business.SpiraTeam_Client.RemoteIncidentPriority> _IncPriority;
+		private List<Business.SpiraTeam_Client.RemoteIncidentType> _IncType;
+		private List<Business.SpiraTeam_Client.RemoteIncidentStatus> _IncStatus;
+		private List<Business.SpiraTeam_Client.RemoteWorkflowIncidentTransition> _IncWkfTransision;
+		private List<Business.SpiraTeam_Client.RemoteIncidentResolution> _IncResolutions;
 		//Workflow fields.
 		private Dictionary<int, int> _IncWkfFields_Current;
 		private Dictionary<int, int> _IncWkfFields_Updated;
-		//Async Counter
+		#endregion
+		#region Internal Client Tracking
 		private int _NumRunning = 0;
 		private int _NumAsync = 0;
+		#endregion
 		//Global client.
-		private Spira_ImportExport.ImportExport _Client;
+		private Business.SpiraTeam_Client.ImportExportClient _Client;
 		// Are we in read-only mode? Are we saving?
-		/// <summary>If server version is 2.3.1(17) or newer. Client has the functions 'Project_RetrieveUserMembership()', 'Incident_RetrieveWorkflowFields()', and 'Incident_RetrieveWorkflowTransitions()' available.</summary>
-		private bool hasWorkFlow_Avail = true;
 		private bool isInLoadMode = false;
 		private bool isInSaveMode = false;
 		private bool isInConcMode = false;
 		// The item code.
 		private string _itemCode = "";
-		//Resources
-		private ResourceManager _resources = null;
 
 		/// <summary>Loads the specified incident into the form, handling all client creation and UI updates. Entry point for loading new item.</summary>
 		/// <param name="inProject">SpiraProject associated with this artifact.</param>
@@ -78,25 +78,25 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio.WPF.Forms
 			{
 				this.isInLoadMode = true;
 				//Set up the client here.
-				this._Client = new Inflectra.SpiraTest.IDEIntegration.VisualStudio.Spira_ImportExport.ImportExport();
+				this._Client = new Inflectra.SpiraTest.IDEIntegration.VisualStudio.Business.SpiraTeam_Client.ImportExport();
 				this._Client.Url = this._Project.ServerURL + Connect.SpiraProject.URL_APIADD;
 				this._Client.CookieContainer = new System.Net.CookieContainer();
 
 				//Set all event handlers.
-				this._Client.Connection_Authenticate2Completed += new Inflectra.SpiraTest.IDEIntegration.VisualStudio.Spira_ImportExport.Connection_Authenticate2CompletedEventHandler(loadItem_Incident_2);
-				this._Client.Connection_ConnectToProjectCompleted += new Inflectra.SpiraTest.IDEIntegration.VisualStudio.Spira_ImportExport.Connection_ConnectToProjectCompletedEventHandler(loadItem_Incident_3);
-				this._Client.Incident_RetrieveByIdCompleted += new Spira_ImportExport.Incident_RetrieveByIdCompletedEventHandler(loadItem_Incident_4);
-				this._Client.Project_RetrieveUserMembershipCompleted += new Spira_ImportExport.Project_RetrieveUserMembershipCompletedEventHandler(loadItem_Incident_4);
-				this._Client.Incident_RetrieveWorkflowFieldsCompleted += new Spira_ImportExport.Incident_RetrieveWorkflowFieldsCompletedEventHandler(loadItem_Incident_4);
-				this._Client.Incident_RetrieveWorkflowTransitionsCompleted += new Spira_ImportExport.Incident_RetrieveWorkflowTransitionsCompletedEventHandler(loadItem_Incident_4);
-				this._Client.Release_RetrieveCompleted += new Spira_ImportExport.Release_RetrieveCompletedEventHandler(loadItem_Incident_4);
-				this._Client.Incident_RetrievePrioritiesCompleted += new Spira_ImportExport.Incident_RetrievePrioritiesCompletedEventHandler(loadItem_Incident_4);
-				this._Client.Incident_RetrieveSeveritiesCompleted += new Spira_ImportExport.Incident_RetrieveSeveritiesCompletedEventHandler(loadItem_Incident_4);
-				this._Client.Incident_RetrieveTypesCompleted += new Inflectra.SpiraTest.IDEIntegration.VisualStudio.Spira_ImportExport.Incident_RetrieveTypesCompletedEventHandler(loadItem_Incident_4);
-				this._Client.Incident_RetrieveStatusesCompleted += new Inflectra.SpiraTest.IDEIntegration.VisualStudio.Spira_ImportExport.Incident_RetrieveStatusesCompletedEventHandler(loadItem_Incident_4);
-				this._Client.Incident_RetrieveResolutionsCompleted += new Inflectra.SpiraTest.IDEIntegration.VisualStudio.Spira_ImportExport.Incident_RetrieveResolutionsCompletedEventHandler(loadItem_Incident_4);
-				this._Client.Incident_UpdateCompleted += new Inflectra.SpiraTest.IDEIntegration.VisualStudio.Spira_ImportExport.Incident_UpdateCompletedEventHandler(_Client_Incident_UpdateCompleted);
-				this._Client.Incident_AddResolutionsCompleted += new Inflectra.SpiraTest.IDEIntegration.VisualStudio.Spira_ImportExport.Incident_AddResolutionsCompletedEventHandler(_Client_Incident_UpdateCompleted);
+				this._Client.Connection_Authenticate2Completed += new Inflectra.SpiraTest.IDEIntegration.VisualStudio.Business.SpiraTeam_Client.Connection_Authenticate2CompletedEventHandler(loadItem_Incident_2);
+				this._Client.Connection_ConnectToProjectCompleted += new Inflectra.SpiraTest.IDEIntegration.VisualStudio.Business.SpiraTeam_Client.Connection_ConnectToProjectCompletedEventHandler(loadItem_Incident_3);
+				this._Client.Incident_RetrieveByIdCompleted += new Business.SpiraTeam_Client.Incident_RetrieveByIdCompletedEventHandler(loadItem_Incident_4);
+				this._Client.Project_RetrieveUserMembershipCompleted += new Business.SpiraTeam_Client.Project_RetrieveUserMembershipCompletedEventHandler(loadItem_Incident_4);
+				this._Client.Incident_RetrieveWorkflowFieldsCompleted += new Business.SpiraTeam_Client.Incident_RetrieveWorkflowFieldsCompletedEventHandler(loadItem_Incident_4);
+				this._Client.Incident_RetrieveWorkflowTransitionsCompleted += new Business.SpiraTeam_Client.Incident_RetrieveWorkflowTransitionsCompletedEventHandler(loadItem_Incident_4);
+				this._Client.Release_RetrieveCompleted += new Business.SpiraTeam_Client.Release_RetrieveCompletedEventHandler(loadItem_Incident_4);
+				this._Client.Incident_RetrievePrioritiesCompleted += new Business.SpiraTeam_Client.Incident_RetrievePrioritiesCompletedEventHandler(loadItem_Incident_4);
+				this._Client.Incident_RetrieveSeveritiesCompleted += new Business.SpiraTeam_Client.Incident_RetrieveSeveritiesCompletedEventHandler(loadItem_Incident_4);
+				this._Client.Incident_RetrieveTypesCompleted += new Inflectra.SpiraTest.IDEIntegration.VisualStudio.Business.SpiraTeam_Client.Incident_RetrieveTypesCompletedEventHandler(loadItem_Incident_4);
+				this._Client.Incident_RetrieveStatusesCompleted += new Inflectra.SpiraTest.IDEIntegration.VisualStudio.Business.SpiraTeam_Client.Incident_RetrieveStatusesCompletedEventHandler(loadItem_Incident_4);
+				this._Client.Incident_RetrieveResolutionsCompleted += new Inflectra.SpiraTest.IDEIntegration.VisualStudio.Business.SpiraTeam_Client.Incident_RetrieveResolutionsCompletedEventHandler(loadItem_Incident_4);
+				this._Client.Incident_UpdateCompleted += new Inflectra.SpiraTest.IDEIntegration.VisualStudio.Business.SpiraTeam_Client.Incident_UpdateCompletedEventHandler(_Client_Incident_UpdateCompleted);
+				this._Client.Incident_AddResolutionsCompleted += new Inflectra.SpiraTest.IDEIntegration.VisualStudio.Business.SpiraTeam_Client.Incident_AddResolutionsCompletedEventHandler(_Client_Incident_UpdateCompleted);
 
 				string[] token = this._itemCode.Split(':');
 				if (token.Length == 2)
@@ -117,7 +117,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio.WPF.Forms
 		/// <summary>Hit after we have successfully logged on. Launches off connecting to the project.</summary>
 		/// <param name="sender">ImportExport</param>
 		/// <param name="e">Event Args</param>
-		private void loadItem_Incident_2(object sender, Spira_ImportExport.Connection_Authenticate2CompletedEventArgs e)
+		private void loadItem_Incident_2(object sender, Business.SpiraTeam_Client.Connection_Authenticate2CompletedEventArgs e)
 		{
 			try
 			{
@@ -146,7 +146,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio.WPF.Forms
 		/// <summary>Hit after we successfully connected to the project. Launches all all other data retrievals.</summary>
 		/// <param name="sender">ImportExport</param>
 		/// <param name="e">Event Args</param>
-		private void loadItem_Incident_3(object sender, Spira_ImportExport.Connection_ConnectToProjectCompletedEventArgs e)
+		private void loadItem_Incident_3(object sender, Business.SpiraTeam_Client.Connection_ConnectToProjectCompletedEventArgs e)
 		{
 			try
 			{
@@ -205,7 +205,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio.WPF.Forms
 					case "Incident_RetrieveByIdCompletedEventArgs":
 						{
 							//Incident is loaded. Save data, fire off the dependant one.
-							Spira_ImportExport.Incident_RetrieveByIdCompletedEventArgs evt = (Spira_ImportExport.Incident_RetrieveByIdCompletedEventArgs)e;
+							Business.SpiraTeam_Client.Incident_RetrieveByIdCompletedEventArgs evt = (Business.SpiraTeam_Client.Incident_RetrieveByIdCompletedEventArgs)e;
 							if (!evt.Cancelled)
 							{
 								if (evt.Error == null)
@@ -249,7 +249,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio.WPF.Forms
 					#region Project User Membership Complete
 					case "Project_RetrieveUserMembershipCompletedEventArgs":
 						{
-							Spira_ImportExport.Project_RetrieveUserMembershipCompletedEventArgs evt = (Spira_ImportExport.Project_RetrieveUserMembershipCompletedEventArgs)e;
+							Business.SpiraTeam_Client.Project_RetrieveUserMembershipCompletedEventArgs evt = (Business.SpiraTeam_Client.Project_RetrieveUserMembershipCompletedEventArgs)e;
 							if (!evt.Cancelled)
 							{
 								if (evt.Error == null)
@@ -273,7 +273,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio.WPF.Forms
 					#region Workflow Fields Complete
 					case "Incident_RetrieveWorkflowFieldsCompletedEventArgs":
 						{
-							Spira_ImportExport.Incident_RetrieveWorkflowFieldsCompletedEventArgs evt = (Spira_ImportExport.Incident_RetrieveWorkflowFieldsCompletedEventArgs)e;
+							Business.SpiraTeam_Client.Incident_RetrieveWorkflowFieldsCompletedEventArgs evt = (Business.SpiraTeam_Client.Incident_RetrieveWorkflowFieldsCompletedEventArgs)e;
 							if (!evt.Cancelled)
 							{
 								if (evt.Error == null)
@@ -298,7 +298,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio.WPF.Forms
 					#region Workflow Transisions Complete
 					case "Incident_RetrieveWorkflowTransitionsCompletedEventArgs":
 						{
-							Spira_ImportExport.Incident_RetrieveWorkflowTransitionsCompletedEventArgs evt = (Spira_ImportExport.Incident_RetrieveWorkflowTransitionsCompletedEventArgs)e;
+							Business.SpiraTeam_Client.Incident_RetrieveWorkflowTransitionsCompletedEventArgs evt = (Business.SpiraTeam_Client.Incident_RetrieveWorkflowTransitionsCompletedEventArgs)e;
 							if (!evt.Cancelled)
 							{
 								if (evt.Error == null)
@@ -321,7 +321,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio.WPF.Forms
 					#region Releases Complete
 					case "Release_RetrieveCompletedEventArgs":
 						{
-							Spira_ImportExport.Release_RetrieveCompletedEventArgs evt = (Spira_ImportExport.Release_RetrieveCompletedEventArgs)e;
+							Business.SpiraTeam_Client.Release_RetrieveCompletedEventArgs evt = (Business.SpiraTeam_Client.Release_RetrieveCompletedEventArgs)e;
 							if (!evt.Cancelled)
 							{
 								if (evt.Error == null)
@@ -344,7 +344,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio.WPF.Forms
 					#region Incident Priorities Complete
 					case "Incident_RetrievePrioritiesCompletedEventArgs":
 						{
-							Spira_ImportExport.Incident_RetrievePrioritiesCompletedEventArgs evt = (Spira_ImportExport.Incident_RetrievePrioritiesCompletedEventArgs)e;
+							Business.SpiraTeam_Client.Incident_RetrievePrioritiesCompletedEventArgs evt = (Business.SpiraTeam_Client.Incident_RetrievePrioritiesCompletedEventArgs)e;
 							if (!evt.Cancelled)
 							{
 								if (evt.Error == null)
@@ -368,7 +368,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio.WPF.Forms
 					#region Incident Severites Complete
 					case "Incident_RetrieveSeveritiesCompletedEventArgs":
 						{
-							Spira_ImportExport.Incident_RetrieveSeveritiesCompletedEventArgs evt = (Spira_ImportExport.Incident_RetrieveSeveritiesCompletedEventArgs)e;
+							Business.SpiraTeam_Client.Incident_RetrieveSeveritiesCompletedEventArgs evt = (Business.SpiraTeam_Client.Incident_RetrieveSeveritiesCompletedEventArgs)e;
 							if (!evt.Cancelled)
 							{
 								if (evt.Error == null)
@@ -392,7 +392,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio.WPF.Forms
 					#region Incident Types Complete
 					case "Incident_RetrieveTypesCompletedEventArgs":
 						{
-							Spira_ImportExport.Incident_RetrieveTypesCompletedEventArgs evt = (Spira_ImportExport.Incident_RetrieveTypesCompletedEventArgs)e;
+							Business.SpiraTeam_Client.Incident_RetrieveTypesCompletedEventArgs evt = (Business.SpiraTeam_Client.Incident_RetrieveTypesCompletedEventArgs)e;
 							if (!evt.Cancelled)
 							{
 								if (evt.Error == null)
@@ -416,7 +416,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio.WPF.Forms
 					#region Incident Statuses Complete
 					case "Incident_RetrieveStatusesCompletedEventArgs":
 						{
-							Spira_ImportExport.Incident_RetrieveStatusesCompletedEventArgs evt = (Spira_ImportExport.Incident_RetrieveStatusesCompletedEventArgs)e;
+							Business.SpiraTeam_Client.Incident_RetrieveStatusesCompletedEventArgs evt = (Business.SpiraTeam_Client.Incident_RetrieveStatusesCompletedEventArgs)e;
 							if (!evt.Cancelled)
 							{
 								if (evt.Error == null)
@@ -439,7 +439,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio.WPF.Forms
 					#region Resolutions Complete
 					case "Incident_RetrieveResolutionsCompletedEventArgs":
 						{
-							Spira_ImportExport.Incident_RetrieveResolutionsCompletedEventArgs evt = (Spira_ImportExport.Incident_RetrieveResolutionsCompletedEventArgs)e;
+							Business.SpiraTeam_Client.Incident_RetrieveResolutionsCompletedEventArgs evt = (Business.SpiraTeam_Client.Incident_RetrieveResolutionsCompletedEventArgs)e;
 							if (!evt.Cancelled)
 							{
 								if (evt.Error == null)
@@ -543,7 +543,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio.WPF.Forms
 		}
 
 		#region Field Population
-		private void loadItem_PopulateUser(ComboBox box, int? SelectedUserID, string SelectedUserName, Spira_ImportExport.ImportExport client)
+		private void loadItem_PopulateUser(ComboBox box, int? SelectedUserID, string SelectedUserName, Business.SpiraTeam_Client.ImportExport client)
 		{
 			try
 			{
@@ -558,7 +558,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio.WPF.Forms
 				//Load the project users.
 				if (this.hasWorkFlow_Avail)
 				{
-					foreach (Spira_ImportExport.RemoteProjectUser projUser in this._ProjUsers)
+					foreach (Business.SpiraTeam_Client.RemoteProjectUser projUser in this._ProjUsers)
 					{
 						int numAdded = box.Items.Add(client.User_RetrieveById(projUser.UserId));
 						if (projUser.UserId == SelectedUserID)
@@ -591,7 +591,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio.WPF.Forms
 				if (!SelectedRelease.HasValue)
 					SelectedRelease = -1;
 
-				foreach (Spira_ImportExport.RemoteRelease Release in this._ProjReleases)
+				foreach (Business.SpiraTeam_Client.RemoteRelease Release in this._ProjReleases)
 				{
 					int numAdded = Box.Items.Add(Release);
 					if (Release.ReleaseId == SelectedRelease)
@@ -612,13 +612,13 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio.WPF.Forms
 			{
 				//Clear and add our 'none'.
 				Box.Items.Clear();
-				int def = Box.Items.Add(new Spira_ImportExport.RemoteIncidentSeverity() { Name = "-- None --" });
+				int def = Box.Items.Add(new Business.SpiraTeam_Client.RemoteIncidentSeverity() { Name = "-- None --" });
 				Box.SelectedIndex = def;
 
 				if (!SelectedItem.HasValue)
 					SelectedItem = -1;
 
-				foreach (Spira_ImportExport.RemoteIncidentSeverity Severity in this._IncSeverity)
+				foreach (Business.SpiraTeam_Client.RemoteIncidentSeverity Severity in this._IncSeverity)
 				{
 					int nunAdded = Box.Items.Add(Severity);
 					if (Severity.SeverityId == SelectedItem)
@@ -639,13 +639,13 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio.WPF.Forms
 			{
 				//Clear and add our 'none'.
 				Box.Items.Clear();
-				int def = Box.Items.Add(new Spira_ImportExport.RemoteIncidentPriority() { Name = "-- None --" });
+				int def = Box.Items.Add(new Business.SpiraTeam_Client.RemoteIncidentPriority() { Name = "-- None --" });
 				Box.SelectedIndex = def;
 
 				if (!SelectedItem.HasValue)
 					SelectedItem = -1;
 
-				foreach (Spira_ImportExport.RemoteIncidentPriority Priority in this._IncPriority)
+				foreach (Business.SpiraTeam_Client.RemoteIncidentPriority Priority in this._IncPriority)
 				{
 					int nunAdded = Box.Items.Add(Priority);
 					if (Priority.PriorityId == SelectedItem)
@@ -669,7 +669,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio.WPF.Forms
 				if (!SelectedItem.HasValue)
 					SelectedItem = -1;
 
-				foreach (Spira_ImportExport.RemoteIncidentType Type in this._IncType)
+				foreach (Business.SpiraTeam_Client.RemoteIncidentType Type in this._IncType)
 				{
 					int numAdded = Box.Items.Add(Type);
 					if (SelectedItem == Type.IncidentTypeId)
@@ -692,7 +692,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio.WPF.Forms
 			try
 			{
 				Box.Items.Clear();
-				foreach (Spira_ImportExport.RemoteIncidentStatus Status in this._IncStatus)
+				foreach (Business.SpiraTeam_Client.RemoteIncidentStatus Status in this._IncStatus)
 				{
 					if (Status.IncidentStatusId == SelectedItem)
 					{
@@ -702,7 +702,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio.WPF.Forms
 					else
 					{
 						//Loop through. If it's available, add it.
-						foreach (Spira_ImportExport.RemoteWorkflowIncidentTransition Transition in this._IncWkfTransision)
+						foreach (Business.SpiraTeam_Client.RemoteWorkflowIncidentTransition Transition in this._IncWkfTransision)
 						{
 							if (Transition.IncidentStatusID_Output == Status.IncidentStatusId)
 							{
@@ -719,13 +719,13 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio.WPF.Forms
 			}
 		}
 
-		private void loadItem_PopulateDiscussion(Spira_ImportExport.RemoteIncidentResolution[] Discussions)
+		private void loadItem_PopulateDiscussion(Business.SpiraTeam_Client.RemoteIncidentResolution[] Discussions)
 		{
 			try
 			{
 				//Erase ones in there.
 				this.cntrlDiscussion.Children.Clear();
-				foreach (Spira_ImportExport.RemoteIncidentResolution Resolution in Discussions)
+				foreach (Business.SpiraTeam_Client.RemoteIncidentResolution Resolution in Discussions)
 				{
 					string header = Resolution.CreatorName + " [" + Resolution.CreationDate.ToShortDateString() + " " + Resolution.CreationDate.ToShortTimeString() + "]";
 					this.cntrlDiscussion.Children.Add(new wpfDiscussionFrame(header, Resolution.Resolution));
@@ -800,12 +800,12 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio.WPF.Forms
 
 		#endregion
 
-		private void loadItem_VerifyVersion(Spira_ImportExport.ImportExport client)
+		private void loadItem_VerifyVersion(Business.SpiraTeam_Client.ImportExport client)
 		{
 			try
 			{
 				//Get the version number and disable any items necessary.
-				Spira_ImportExport.RemoteVersion version = client.System_GetProductVersion();
+				Business.SpiraTeam_Client.RemoteVersion version = client.System_GetProductVersion();
 				string[] mainVers = version.Version.Split('.');
 				int verMain = int.Parse(mainVers[0]);
 				int verRev = int.Parse(mainVers[1]);
@@ -869,7 +869,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio.WPF.Forms
 			}
 		}
 
-		private void loadItem_displayInformation(Spira_ImportExport.RemoteIncident incident)
+		private void loadItem_displayInformation(Business.SpiraTeam_Client.RemoteIncident incident)
 		{
 			try
 			{
@@ -926,23 +926,23 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio.WPF.Forms
 
 			if (string.IsNullOrEmpty(this.cntrlIncidentName.Text.Trim()))
 				Fields += "Name;";
-			if (this.lblType.FontWeight == FontWeights.Bold && this.cntrlType.SelectedItem.GetType() != typeof(Spira_ImportExport.RemoteIncidentType))
+			if (this.lblType.FontWeight == FontWeights.Bold && this.cntrlType.SelectedItem.GetType() != typeof(Business.SpiraTeam_Client.RemoteIncidentType))
 				Fields += "Type;";
-			if (this.lblStatus.FontWeight == FontWeights.Bold && this.cntrlStatus.SelectedItem.GetType() != typeof(Spira_ImportExport.RemoteIncidentStatus))
+			if (this.lblStatus.FontWeight == FontWeights.Bold && this.cntrlStatus.SelectedItem.GetType() != typeof(Business.SpiraTeam_Client.RemoteIncidentStatus))
 				Fields += "Status;";
-			if (this.lblDetectedBy.FontWeight == FontWeights.Bold && this.cntrlDetectedBy.SelectedItem.GetType() != typeof(Spira_ImportExport.RemoteUser))
+			if (this.lblDetectedBy.FontWeight == FontWeights.Bold && this.cntrlDetectedBy.SelectedItem.GetType() != typeof(Business.SpiraTeam_Client.RemoteUser))
 				Fields += "Detected By;";
-			if (this.lblOwnedBy.FontWeight == FontWeights.Bold && this.cntrlOwnedBy.SelectedItem.GetType() != typeof(Spira_ImportExport.RemoteUser))
+			if (this.lblOwnedBy.FontWeight == FontWeights.Bold && this.cntrlOwnedBy.SelectedItem.GetType() != typeof(Business.SpiraTeam_Client.RemoteUser))
 				Fields += "Owned By;";
-			if (this.lblPriority.FontWeight == FontWeights.Bold && !((Spira_ImportExport.RemoteIncidentPriority)this.cntrlPriority.SelectedItem).PriorityId.HasValue)
+			if (this.lblPriority.FontWeight == FontWeights.Bold && !((Business.SpiraTeam_Client.RemoteIncidentPriority)this.cntrlPriority.SelectedItem).PriorityId.HasValue)
 				Fields += "Priority;";
-			if (this.lblSeverity.FontWeight == FontWeights.Bold && !((Spira_ImportExport.RemoteIncidentSeverity)this.cntrlSeverity.SelectedItem).SeverityId.HasValue)
+			if (this.lblSeverity.FontWeight == FontWeights.Bold && !((Business.SpiraTeam_Client.RemoteIncidentSeverity)this.cntrlSeverity.SelectedItem).SeverityId.HasValue)
 				Fields += "Severity;";
-			if (this.lblDetectedIn.FontWeight == FontWeights.Bold && this.cntrlDetectedIn.SelectedItem.GetType() != typeof(Spira_ImportExport.RemoteRelease))
+			if (this.lblDetectedIn.FontWeight == FontWeights.Bold && this.cntrlDetectedIn.SelectedItem.GetType() != typeof(Business.SpiraTeam_Client.RemoteRelease))
 				Fields += "Detected In;";
-			if (this.lblResolvedIn.FontWeight == FontWeights.Bold && this.cntrlResolvedIn.SelectedItem.GetType() != typeof(Spira_ImportExport.RemoteRelease))
+			if (this.lblResolvedIn.FontWeight == FontWeights.Bold && this.cntrlResolvedIn.SelectedItem.GetType() != typeof(Business.SpiraTeam_Client.RemoteRelease))
 				Fields += "Resolved In;";
-			if (this.lblVerifiedIn.FontWeight == FontWeights.Bold && this.cntrlVerifiedIn.SelectedItem.GetType() != typeof(Spira_ImportExport.RemoteRelease))
+			if (this.lblVerifiedIn.FontWeight == FontWeights.Bold && this.cntrlVerifiedIn.SelectedItem.GetType() != typeof(Business.SpiraTeam_Client.RemoteRelease))
 				Fields += "Verified In;";
 			if (this.lblStartDate.FontWeight == FontWeights.Bold && !this.cntrlStartDate.SelectedDate.HasValue)
 				Fields += "Start Date;";

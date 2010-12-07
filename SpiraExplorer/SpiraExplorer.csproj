@@ -134,11 +134,16 @@
     <Compile Include="Forms\cntlSpiraExplorer\cntlSpiraExplorer.xaml.cs">
       <DependentUpon>cntlSpiraExplorer.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Forms\cntrlMaskedText\cntrlMaskedText.cs" />
     <Compile Include="Forms\frmAssignProject\frmAssignProject.xaml.cs">
       <DependentUpon>frmAssignProject.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Forms\frmDetailsIncident\LoadItem.cs" />
-    <Compile Include="Forms\frmDetailsIncident\LoadItem_Concurrency.cs" />
+    <Compile Include="Forms\frmDetailsIncident\LoadItem.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Forms\frmDetailsIncident\LoadItem_Concurrency.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Forms\frmDetailsIncident\wpfDetailsIncident.xaml.cs">
       <DependentUpon>wpfDetailsIncident.xaml</DependentUpon>
     </Compile>

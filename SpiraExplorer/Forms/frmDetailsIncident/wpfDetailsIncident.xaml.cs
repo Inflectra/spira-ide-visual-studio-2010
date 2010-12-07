@@ -12,11 +12,12 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 	/// </summary>
 	public partial class wpfDetailsIncident : UserControl
 	{
-		//Private vars.
-		// - Determines whether or not the user changed the description.
+		#region Private Data-Changed Vars
 		private bool _isDescChanged = false;
 		private bool _isResChanged = false;
 		private bool _isFieldChanged = false;
+		#endregion
+
 		private EnvDTE80.Window2 _DetailsWindow = null;
 		private string _DetailsWindowTitle = null;
 
@@ -26,9 +27,6 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			try
 			{
 				InitializeComponent();
-
-				//Get resources
-				this._resources = Connect.getCultureResource;
 
 				//Lock numeric fields
 				this.cntrlPerComplete.PreviewTextInput += new TextCompositionEventHandler(_cntrl_PreviewTextInput);
