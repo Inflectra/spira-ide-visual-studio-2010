@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -15,7 +14,6 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 		string _solutionName = null;
 		private TreeViewItem _nodeNoSolution = null;
 		private TreeViewItem _nodeNoProjects = null;
-		private List<TreeViewArtifact> _treeNodeList;
 		#endregion
 		#region Public Events
 		public event EventHandler<OpenItemEventArgs> OpenDetails;

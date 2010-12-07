@@ -430,4 +430,7 @@ http://server/SpiraTeam/</value>
   <data name="app_Error_RetrieveShort" xml:space="preserve">
     <value>Error retrieving information</value>
   </data>
+  <data name="app_General_Unknown" xml:space="preserve">
+    <value>Unknown</value>
+  </data>
 </root>

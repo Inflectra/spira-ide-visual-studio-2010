@@ -15,10 +15,6 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 	{
 		private List<TreeViewArtifact> _Projects = new List<TreeViewArtifact>();
 		private int _numActiveClients = 0;
-		//Default node numbers.
-		private const int NODE_INCIDENTNUM = 0;
-		private const int NODE_TASKNUM = 1;
-		private const int NODE_REQUIREMENTNUM = 2;
 
 		/// <summary>Loads a new set of projects into the treeview.</summary>
 		/// <param name="ProjList">A field-seperated list of project id's.</param>
@@ -260,6 +256,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 				((ImportExportClient)sender).Connection_DisconnectAsync();
 			}
 			catch { }
+			parentNode.ArtifactTag = null;
 			this._numActiveClients--;
 			this.refreshTree();
 		}
@@ -456,6 +453,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 				((ImportExportClient)sender).Connection_DisconnectAsync();
 			}
 			catch { }
+			parentNode.ArtifactTag = null;
 			this._numActiveClients--;
 			this.refreshTree();
 		}
@@ -506,6 +504,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 				((ImportExportClient)sender).Connection_DisconnectAsync();
 			}
 			catch { }
+			parentNode.ArtifactTag = null;
 			this._numActiveClients--;
 			this.refreshTree();
 		}

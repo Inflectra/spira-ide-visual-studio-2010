@@ -62,7 +62,19 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business
 			{
 				string retName = this.ArtifactName;
 
-				if (this.ArtifactIsFolder)
+				if (this.ArtifactType == ArtifactTypeEnum.Project)
+				{
+					retName += " [";
+
+					SpiraProject projTag = this.ArtifactTag as SpiraProject;
+					if (projTag != null)
+						retName += projTag.ServerURL.Host.Trim();
+					else
+						retName += StaticFuncs.getCultureResource.GetString("app_General_Unknown");
+
+					retName += "]";
+				}
+				else if (this.ArtifactIsFolder)
 				{
 					if (this.ArtifactType != ArtifactTypeEnum.None && this.Items.Count > 0)
 						retName += " (" + this.Items.Count.ToString() + ")";
@@ -230,7 +242,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business
 					switch (this.ArtifactType)
 					{
 						case ArtifactTypeEnum.Incident:
-							if (this.ArtifactTag.GetType() != typeof(Spira_ImportExport))
+							if (this.ArtifactTag == null)
 							{
 								if (this.ArtifactIsFolderMine)
 									txtMessage.Text = StaticFuncs.getCultureResource.GetString("app_Tree_FolderMyIncidents");
@@ -244,7 +256,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business
 							break;
 
 						case ArtifactTypeEnum.Requirement:
-							if (this.ArtifactTag.GetType() != typeof(Spira_ImportExport))
+							if (this.ArtifactTag == null)
 							{
 								if (this.ArtifactIsFolderMine)
 									txtMessage.Text = StaticFuncs.getCultureResource.GetString("app_Tree_FolderMyRequirements");
@@ -257,7 +269,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business
 							break;
 
 						case ArtifactTypeEnum.Task:
-							if (this.ArtifactTag.GetType() != typeof(Spira_ImportExport))
+							if (this.ArtifactTag == null)
 							{
 								if (this.ArtifactIsFolderMine)
 									txtMessage.Text = StaticFuncs.getCultureResource.GetString("app_Tree_FolderMyTasks");
