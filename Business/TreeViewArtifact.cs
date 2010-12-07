@@ -220,14 +220,6 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business
 							tipReturn = new cntlTTipTask();
 							((cntlTTipTask)tipReturn).DataItem = this;
 							break;
-
-						case ArtifactTypeEnum.Project:
-							if (this.ArtifactTag.GetType() == typeof(SpiraProject))
-							{
-								tipReturn = new cntlTTipProject();
-								((cntlTTipProject)tipReturn).DataItem = (SpiraProject)this.ArtifactTag;
-							}
-							break;
 					}
 				}
 				#endregion
@@ -292,6 +284,13 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business
 							tipReturn = txtMessage;
 							break;
 
+						case ArtifactTypeEnum.Project:
+							if (this.ArtifactTag.GetType() == typeof(SpiraProject))
+							{
+								tipReturn = new cntlTTipProject();
+								((cntlTTipProject)tipReturn).DataItem = (SpiraProject)this.ArtifactTag;
+							}
+							break;
 					}
 				}
 				#endregion

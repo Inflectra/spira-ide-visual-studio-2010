@@ -151,7 +151,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 				}
 				foreach (Business.SpiraProject proj in this.lstSelectProjects.Items)
 				{
-					string projstr = Business.SpiraProject.GenerateToString(proj) + Business.SpiraProject.CHAR_RECORD;
+					string projstr = Business.SpiraProject.GenerateToString(proj);
 					availProjects.Add(projstr);
 					selProjects += projstr;
 				}
@@ -435,7 +435,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 				//Load up all projects into the first listbox.
 				this.lstAvailProjects.Items.Clear();
 				foreach (string proj in Settings.Default.AllProjects)
-					this.lstAvailProjects.Items.Add(Business.SpiraProject.GenerateFromString(proj));
+					this.lstAvailProjects.Items.Add(Business.SpiraProject.GenerateFromString(proj.Trim(new char[] { SpiraProject.CHAR_RECORD, SpiraProject.CHAR_FIELD }).Trim()));
 
 				//We have the solution name, load up the projects associated, and remove them from the available.
 				if (!string.IsNullOrEmpty(this._solname))

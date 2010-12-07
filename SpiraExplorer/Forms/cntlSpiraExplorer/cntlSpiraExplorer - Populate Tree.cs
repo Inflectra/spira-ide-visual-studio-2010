@@ -90,6 +90,10 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 				//Now refresh this one if necessary.
 				if (itemToRefresh.ArtifactType != TreeViewArtifact.ArtifactTypeEnum.None && itemToRefresh.ArtifactType != TreeViewArtifact.ArtifactTypeEnum.Project)
 				{
+					//We're spawning one off, make the bar visible.
+					this.barLoading.Visibility = System.Windows.Visibility.Visible;
+					this.trvProject.Cursor = System.Windows.Input.Cursors.AppStarting;
+
 					//Generate a new client to go get data for.
 					Spira_ImportExport clientRefresh = new Spira_ImportExport(((SpiraProject)itemToRefresh.ArtifactParentProject.ArtifactTag).ServerURL.ToString(), ((SpiraProject)itemToRefresh.ArtifactParentProject.ArtifactTag).UserName, ((SpiraProject)itemToRefresh.ArtifactParentProject.ArtifactTag).UserPass);
 					clientRefresh.ConnectionReady += new EventHandler(_client_ConnectionReady);
@@ -127,6 +131,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 				this.trvProject.ItemsSource = this._Projects;
 				this.trvProject.Items.Refresh();
 				this.barLoading.Visibility = Visibility.Visible;
+				this.trvProject.Cursor = System.Windows.Input.Cursors.AppStarting;
 
 				foreach (TreeViewArtifact trvProj in this._Projects)
 				{
@@ -530,6 +535,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 				this.trvProject.Items.Clear();
 				this.trvProject.Items.Add(this._nodeNoSolution);
 				this.barLoading.Visibility = Visibility.Collapsed;
+				this.trvProject.Cursor = System.Windows.Input.Cursors.Arrow;
 				this.btnRefresh.IsEnabled = false;
 				this.btnShowClosed.IsEnabled = false;
 			}
@@ -548,6 +554,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 				this.trvProject.Items.Clear();
 				this.trvProject.Items.Add(this._nodeNoProjects);
 				this.barLoading.Visibility = Visibility.Collapsed;
+				this.trvProject.Cursor = System.Windows.Input.Cursors.Arrow;
 				this.btnShowClosed.IsEnabled = false;
 				this.btnRefresh.IsEnabled = false;
 			}
@@ -564,7 +571,10 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			this.trvProject.Items.Refresh();
 
 			if (this._numActiveClients == 0)
+			{
 				this.barLoading.Visibility = System.Windows.Visibility.Collapsed;
+				this.trvProject.Cursor = System.Windows.Input.Cursors.Arrow;
+			}
 		}
 
 		/// <summary>Creates an error node in the given node.</summary>
