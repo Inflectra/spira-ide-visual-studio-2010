@@ -125,11 +125,12 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Controls
 				_mprovider.Clear();
 				_mprovider.Add(this.Text);
 				if (!_mprovider.MaskFull)
-				{
 					e.Handled = true;
+				else
 					this.Text = this._mprovider.ToDisplayString();
-				}
 			}
+			else
+				this.Text = this._mprovider.ToDisplayString();
 
 			base.OnPreviewLostKeyboardFocus(e);
 		}

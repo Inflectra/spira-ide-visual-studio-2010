@@ -151,5 +151,6 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business
 			return retClient;
 
 		}
+
 	}
 }

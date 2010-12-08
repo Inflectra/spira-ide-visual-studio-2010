@@ -148,6 +148,8 @@
   <ItemGroup>
     <None Include="Resources\imgProject.png" />
     <None Include="Resources\imgRelease.png" />
+    <None Include="Resources\imgTaskTime.png" />
+    <None Include="Resources\imgTimer.png" />
     <Content Include="Resources\Spira.ico" />
     <None Include="Resources\Spira_NoComp.ico" />
     <None Include="Resources\Spira_XP.ico" />

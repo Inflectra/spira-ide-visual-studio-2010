@@ -117,35 +117,13 @@
     </COMReference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Forms\cntlDiscussionFrame\wpfDiscussionFrame.xaml.cs">
-      <DependentUpon>wpfDiscussionFrame.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\cntlRichHTMLText\HTMLConverter\HTMLCssParser.cs" />
-    <Compile Include="Forms\cntlRichHTMLText\HTMLConverter\HTMLFromXAMLConverter.cs" />
-    <Compile Include="Forms\cntlRichHTMLText\HTMLConverter\HTMLLexicAlanalyzer.cs" />
-    <Compile Include="Forms\cntlRichHTMLText\HTMLConverter\HTMLParser.cs" />
-    <Compile Include="Forms\cntlRichHTMLText\HTMLConverter\HTMLSchema.cs" />
-    <Compile Include="Forms\cntlRichHTMLText\HTMLConverter\HTMLTokenType.cs" />
-    <Compile Include="Forms\cntlRichHTMLText\HTMLConverter\HTMLToXAMLConverter.cs" />
-    <Compile Include="Forms\cntlRichHTMLText\wpfRichHTMLText.xaml.cs">
-      <DependentUpon>wpfRichHTMLText.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Forms\cntlSpiraExplorer\cntlSpiraExplorer - Populate Tree.cs" />
     <Compile Include="Forms\cntlSpiraExplorer\cntlSpiraExplorer.xaml.cs">
       <DependentUpon>cntlSpiraExplorer.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Forms\cntrlMaskedText\cntrlMaskedText.cs" />
+    <Compile Include="Forms\cntrlMaskedText.cs" />
     <Compile Include="Forms\frmAssignProject\frmAssignProject.xaml.cs">
       <DependentUpon>frmAssignProject.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\frmDetailsIncident\LoadItem.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Forms\frmDetailsIncident\LoadItem_Concurrency.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Forms\frmDetailsIncident\wpfDetailsIncident.xaml.cs">
-      <DependentUpon>wpfDetailsIncident.xaml</DependentUpon>
     </Compile>
     <Compile Include="Forms\frmNewServerProject\frmNewServerProject.xaml.cs">
       <DependentUpon>frmNewServerProject.xaml</DependentUpon>
@@ -201,41 +179,14 @@
   <ItemGroup>
     <None Include="Resources\img_Spira_32b.bmp" />
     <None Include="Resources\img_Spira_24b.bmp" />
-    <Resource Include="Forms\cntlRichHTMLText\Resources\img_bold.png" />
-    <Resource Include="Forms\cntlRichHTMLText\Resources\img_font.png" />
-    <Resource Include="Forms\cntlRichHTMLText\Resources\img_fontcolor.png" />
-    <Resource Include="Forms\cntlRichHTMLText\Resources\img_fonthighlight.png" />
-    <Resource Include="Forms\cntlRichHTMLText\Resources\img_fontsize.png" />
-    <Resource Include="Forms\cntlRichHTMLText\Resources\img_indent.png" />
-    <Resource Include="Forms\cntlRichHTMLText\Resources\img_italic.png" />
-    <Resource Include="Forms\cntlRichHTMLText\Resources\img_justcenter.png" />
-    <Resource Include="Forms\cntlRichHTMLText\Resources\img_justleft.png" />
-    <Resource Include="Forms\cntlRichHTMLText\Resources\img_justright.png" />
-    <Resource Include="Forms\cntlRichHTMLText\Resources\img_link.png" />
-    <Resource Include="Forms\cntlRichHTMLText\Resources\img_listbullet.png" />
-    <Resource Include="Forms\cntlRichHTMLText\Resources\img_listnumber.png" />
-    <Resource Include="Forms\cntlRichHTMLText\Resources\img_outdent.png" />
-    <Resource Include="Forms\cntlRichHTMLText\Resources\img_underline.png" />
     <Content Include="Resources\Package.ico" />
   </ItemGroup>
   <ItemGroup>
-    <Page Include="Forms\cntlDiscussionFrame\wpfDiscussionFrame.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Forms\cntlRichHTMLText\wpfRichHTMLText.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
     <Page Include="Forms\cntlSpiraExplorer\cntlSpiraExplorer.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Forms\frmAssignProject\frmAssignProject.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Forms\frmDetailsIncident\wpfDetailsIncident.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

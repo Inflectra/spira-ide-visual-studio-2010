@@ -16,59 +16,13 @@
 		<TreeView Name="trvProject" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" MinHeight="150" SelectedItemChanged="trvProject_SelectedItemChanged">
 			<TreeView.Resources>
 				<HierarchicalDataTemplate DataType="{x:Type local:TreeViewArtifact}" ItemsSource="{Binding Path=Items}">
-					<Grid Margin="0,2,0,2">
-						<Grid.ColumnDefinitions>
-							<ColumnDefinition Width="16px" />
-							<ColumnDefinition Width="*" />
-						</Grid.ColumnDefinitions>
-						<Grid.RowDefinitions>
-							<RowDefinition Height="Auto" />
-						</Grid.RowDefinitions>
-						<Image Grid.Column="0" Grid.Row="0" Height="16px" Width="16px" Source="{Binding Path=ArtifactImageSource, Mode=OneWay}" />
-						<TextBlock Grid.Column="1" Grid.Row="0" Margin="5,0,0,0">
-							<Run Text="{Binding Path=ArtifactDisplay,Mode=OneWay}">
-								<Run.Style>
-									<Style TargetType="{x:Type Run}">
-										<Style.Triggers>
-											<DataTrigger Binding="{Binding Path=Style_IsInError,Mode=OneWay}" Value="True">
-												<Setter Property="Foreground" Value="DarkRed" />
-												<Setter Property="FontStyle" Value="Italic" />
-											</DataTrigger>
-											<DataTrigger Binding="{Binding Path=Style_IsCompleted,Mode=OneWay}" Value="True">
-												<Setter Property="Foreground" Value="DarkGray" />
-												<Setter Property="FontStyle" Value="Normal" />
-												<Setter Property="TextDecorations" Value="Strikethrough" />
-											</DataTrigger>
-										</Style.Triggers>
-									</Style>
-								</Run.Style>
-							</Run>
-						</TextBlock>
-						<Grid.ToolTip>
-							<GroupBox Content="{Binding Path=ArtifactTooltip,Mode=OneWay}">
-								<GroupBox.Header>
-									<Grid>
-										<Grid.ColumnDefinitions>
-											<ColumnDefinition Width="Auto" />
-										</Grid.ColumnDefinitions>
-										<Grid.RowDefinitions>
-											<RowDefinition Height="Auto" />
-										</Grid.RowDefinitions>
-										<!-- Image and Title -->
-										<StackPanel Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Orientation="Horizontal">
-											<Image Height="16" Width="16" Source="{Binding Path=ArtifactImageSource,Mode=OneWay}" />
-											<TextBlock Margin="5,0,0,0" Text="{Binding Path=ArtifactName}" FontSize="12" FontWeight="Bold" />
-										</StackPanel>
-									</Grid>
-								</GroupBox.Header>
-							</GroupBox>
-						</Grid.ToolTip>
-					</Grid>
+					<ContentControl Content="{Binding Path=ArtifactHeaderDisplay,Mode=OneWay}" MouseDoubleClick="TreeNode_MouseDoubleClick" />
 				</HierarchicalDataTemplate>
 			</TreeView.Resources>
 			<TreeView.ItemContainerStyle>
 				<Style TargetType="TreeViewItem">
-					<Setter Property="IsExpanded" Value="{Binding IsExpanded,Mode=TwoWay}"/>
+					<Setter Property="IsExpanded" Value="{Binding Path=IsExpanded,Mode=TwoWay}"/>
+					<Setter Property="ContextMenu" Value="{Binding Path=ArtifactContextMenu,Mode=OneWay}" />
 				</Style>
 			</TreeView.ItemContainerStyle>
 			<TreeViewItem Header="Test Designer Item #1" IsExpanded="True">
