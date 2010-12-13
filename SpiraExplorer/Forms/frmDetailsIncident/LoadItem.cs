@@ -45,20 +45,21 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 		/// <param name="inProject">SpiraProject associated with this artifact.</param>
 		/// <param name="itemKey">Item key for this artifact. ex: "IN:1234"</param>
 		/// <returns>False.</returns>
-		internal bool loadItem(Connect.SpiraProject inProject, string itemKey)
+		//internal bool loadItem(Connect.SpiraProject inProject, string itemKey)
+		internal bool loadItem(object inProject, string itemKey)
 		{
 			try
 			{
 				this.lblItemTag.Content = itemKey;
 
 				//Hide the form, show the "I'm loading.." bar.
-				this.panelForm.Visibility = Visibility.Collapsed;
+				//this.panelForm.Visibility = Visibility.Collapsed;
 				this.panelLoading.Visibility = Visibility.Visible;
 				this.panelLoadingError.Visibility = Visibility.Collapsed;
 				this.msgLoadingErrorMsg.Text = "";
 				//Verify we have an item and project to load.
-				if (inProject != null)
-					this._Project = inProject;
+				//if (inProject != null)
+				//     this._Project = inProject;
 				this._itemCode = itemKey;
 
 				//Call the real load function.
@@ -67,7 +68,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			}
 			catch (Exception ex)
 			{
-				Connect.logEventMessage("wpfDetailsIncident::loadItem", ex, System.Diagnostics.EventLogEntryType.Error);
+				//Connect.logEventMessage("wpfDetailsIncident::loadItem", ex, System.Diagnostics.EventLogEntryType.Error);
 			}
 			return false;
 		}
@@ -78,25 +79,25 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			{
 				this.isInLoadMode = true;
 				//Set up the client here.
-				this._Client = new Inflectra.SpiraTest.IDEIntegration.VisualStudio.Business.SpiraTeam_Client.ImportExport();
-				this._Client.Url = this._Project.ServerURL + Connect.SpiraProject.URL_APIADD;
-				this._Client.CookieContainer = new System.Net.CookieContainer();
+				//this._Client = new Inflectra.SpiraTest.IDEIntegration.VisualStudio.Business.SpiraTeam_Client.ImportExport();
+				//this._Client.Url = this._Project.ServerURL + Connect.SpiraProject.URL_APIADD;
+				//this._Client.CookieContainer = new System.Net.CookieContainer();
 
 				//Set all event handlers.
-				this._Client.Connection_Authenticate2Completed += new Inflectra.SpiraTest.IDEIntegration.VisualStudio.Business.SpiraTeam_Client.Connection_Authenticate2CompletedEventHandler(loadItem_Incident_2);
-				this._Client.Connection_ConnectToProjectCompleted += new Inflectra.SpiraTest.IDEIntegration.VisualStudio.Business.SpiraTeam_Client.Connection_ConnectToProjectCompletedEventHandler(loadItem_Incident_3);
-				this._Client.Incident_RetrieveByIdCompleted += new Business.SpiraTeam_Client.Incident_RetrieveByIdCompletedEventHandler(loadItem_Incident_4);
-				this._Client.Project_RetrieveUserMembershipCompleted += new Business.SpiraTeam_Client.Project_RetrieveUserMembershipCompletedEventHandler(loadItem_Incident_4);
-				this._Client.Incident_RetrieveWorkflowFieldsCompleted += new Business.SpiraTeam_Client.Incident_RetrieveWorkflowFieldsCompletedEventHandler(loadItem_Incident_4);
-				this._Client.Incident_RetrieveWorkflowTransitionsCompleted += new Business.SpiraTeam_Client.Incident_RetrieveWorkflowTransitionsCompletedEventHandler(loadItem_Incident_4);
-				this._Client.Release_RetrieveCompleted += new Business.SpiraTeam_Client.Release_RetrieveCompletedEventHandler(loadItem_Incident_4);
-				this._Client.Incident_RetrievePrioritiesCompleted += new Business.SpiraTeam_Client.Incident_RetrievePrioritiesCompletedEventHandler(loadItem_Incident_4);
-				this._Client.Incident_RetrieveSeveritiesCompleted += new Business.SpiraTeam_Client.Incident_RetrieveSeveritiesCompletedEventHandler(loadItem_Incident_4);
-				this._Client.Incident_RetrieveTypesCompleted += new Inflectra.SpiraTest.IDEIntegration.VisualStudio.Business.SpiraTeam_Client.Incident_RetrieveTypesCompletedEventHandler(loadItem_Incident_4);
-				this._Client.Incident_RetrieveStatusesCompleted += new Inflectra.SpiraTest.IDEIntegration.VisualStudio.Business.SpiraTeam_Client.Incident_RetrieveStatusesCompletedEventHandler(loadItem_Incident_4);
-				this._Client.Incident_RetrieveResolutionsCompleted += new Inflectra.SpiraTest.IDEIntegration.VisualStudio.Business.SpiraTeam_Client.Incident_RetrieveResolutionsCompletedEventHandler(loadItem_Incident_4);
-				this._Client.Incident_UpdateCompleted += new Inflectra.SpiraTest.IDEIntegration.VisualStudio.Business.SpiraTeam_Client.Incident_UpdateCompletedEventHandler(_Client_Incident_UpdateCompleted);
-				this._Client.Incident_AddResolutionsCompleted += new Inflectra.SpiraTest.IDEIntegration.VisualStudio.Business.SpiraTeam_Client.Incident_AddResolutionsCompletedEventHandler(_Client_Incident_UpdateCompleted);
+				//this._Client.Connection_Authenticate2Completed += new Inflectra.SpiraTest.IDEIntegration.VisualStudio.Business.SpiraTeam_Client.Connection_Authenticate2CompletedEventHandler(loadItem_Incident_2);
+				//this._Client.Connection_ConnectToProjectCompleted += new Inflectra.SpiraTest.IDEIntegration.VisualStudio.Business.SpiraTeam_Client.Connection_ConnectToProjectCompletedEventHandler(loadItem_Incident_3);
+				//this._Client.Incident_RetrieveByIdCompleted += new Business.SpiraTeam_Client.Incident_RetrieveByIdCompletedEventHandler(loadItem_Incident_4);
+				//this._Client.Project_RetrieveUserMembershipCompleted += new Business.SpiraTeam_Client.Project_RetrieveUserMembershipCompletedEventHandler(loadItem_Incident_4);
+				//this._Client.Incident_RetrieveWorkflowFieldsCompleted += new Business.SpiraTeam_Client.Incident_RetrieveWorkflowFieldsCompletedEventHandler(loadItem_Incident_4);
+				//this._Client.Incident_RetrieveWorkflowTransitionsCompleted += new Business.SpiraTeam_Client.Incident_RetrieveWorkflowTransitionsCompletedEventHandler(loadItem_Incident_4);
+				//this._Client.Release_RetrieveCompleted += new Business.SpiraTeam_Client.Release_RetrieveCompletedEventHandler(loadItem_Incident_4);
+				//this._Client.Incident_RetrievePrioritiesCompleted += new Business.SpiraTeam_Client.Incident_RetrievePrioritiesCompletedEventHandler(loadItem_Incident_4);
+				//this._Client.Incident_RetrieveSeveritiesCompleted += new Business.SpiraTeam_Client.Incident_RetrieveSeveritiesCompletedEventHandler(loadItem_Incident_4);
+				//this._Client.Incident_RetrieveTypesCompleted += new Inflectra.SpiraTest.IDEIntegration.VisualStudio.Business.SpiraTeam_Client.Incident_RetrieveTypesCompletedEventHandler(loadItem_Incident_4);
+				//this._Client.Incident_RetrieveStatusesCompleted += new Inflectra.SpiraTest.IDEIntegration.VisualStudio.Business.SpiraTeam_Client.Incident_RetrieveStatusesCompletedEventHandler(loadItem_Incident_4);
+				//this._Client.Incident_RetrieveResolutionsCompleted += new Inflectra.SpiraTest.IDEIntegration.VisualStudio.Business.SpiraTeam_Client.Incident_RetrieveResolutionsCompletedEventHandler(loadItem_Incident_4);
+				//this._Client.Incident_UpdateCompleted += new Inflectra.SpiraTest.IDEIntegration.VisualStudio.Business.SpiraTeam_Client.Incident_UpdateCompletedEventHandler(_Client_Incident_UpdateCompleted);
+				//this._Client.Incident_AddResolutionsCompleted += new Inflectra.SpiraTest.IDEIntegration.VisualStudio.Business.SpiraTeam_Client.Incident_AddResolutionsCompletedEventHandler(_Client_Incident_UpdateCompleted);
 
 				string[] token = this._itemCode.Split(':');
 				if (token.Length == 2)
@@ -104,13 +105,13 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 					int artNum = -1;
 					if (int.TryParse(token[1], out artNum))
 					{
-						this._Client.Connection_Authenticate2Async(this._Project.UserName, this._Project.UserPass, this._resources.GetString("strAddinProgNamePretty"), this._NumAsync++);
+						//this._Client.Connection_Authenticate2Async(this._Project.UserName, this._Project.UserPass, this._resources.GetString("strAddinProgNamePretty"), this._NumAsync++);
 					}
 				}
 			}
 			catch (Exception ex)
 			{
-				Connect.logEventMessage("wpfDetailsIncident::loadItem_Incident", ex, System.Diagnostics.EventLogEntryType.Error);
+				//Connect.logEventMessage("wpfDetailsIncident::loadItem_Incident", ex, System.Diagnostics.EventLogEntryType.Error);
 			}
 		}
 
@@ -126,7 +127,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 					int incidentID = (int)e.UserState;
 
 					//Get server version.
-					this.loadItem_VerifyVersion(this._Client);
+					//this.loadItem_VerifyVersion(this._Client);
 
 					this._Client.Connection_ConnectToProjectAsync(this._Project.ProjectID, this._NumAsync++);
 				}
@@ -139,7 +140,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			}
 			catch (Exception ex)
 			{
-				Connect.logEventMessage("wpfDetailsIncident::loadItem_Incident_2", ex, System.Diagnostics.EventLogEntryType.Error);
+				//Connect.logEventMessage("wpfDetailsIncident::loadItem_Incident_2", ex, System.Diagnostics.EventLogEntryType.Error);
 			}
 		}
 
@@ -160,11 +161,11 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 					this._Client.Incident_RetrieveSeveritiesAsync(this._NumAsync++);
 					this._Client.Incident_RetrieveTypesAsync(this._NumAsync++);
 					this._Client.Incident_RetrieveStatusesAsync(this._NumAsync++);
-					if (this.hasWorkFlow_Avail)
-					{
-						this._NumRunning++;
-						this._Client.Project_RetrieveUserMembershipAsync(this._NumAsync++);
-					}
+					//if (this.hasWorkFlow_Avail)
+					//{
+					//     this._NumRunning++;
+					//     this._Client.Project_RetrieveUserMembershipAsync(this._NumAsync++);
+					//}
 				}
 				else
 				{
@@ -183,7 +184,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			}
 			catch (Exception ex)
 			{
-				Connect.logEventMessage("wpfDetailsIncident::loadItem_Incident_3", ex, System.Diagnostics.EventLogEntryType.Error);
+				//Connect.logEventMessage("wpfDetailsIncident::loadItem_Incident_3", ex, System.Diagnostics.EventLogEntryType.Error);
 			}
 		}
 
@@ -215,7 +216,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 										// It's a data concurrency load. We're only looking for Incident information.
 										this._IncidentConcurrency = evt.Result;
 										// Pass it to the flagging function.
-										this.concurrency_HighlightFields(this._IncidentConcurrency);
+										//this.concurrency_HighlightFields(this._IncidentConcurrency);
 									}
 									else
 									{
@@ -223,12 +224,12 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 										this._Incident = evt.Result;
 										this._NumRunning++;
 										this._Client.Incident_RetrieveResolutionsAsync(this._Incident.IncidentId.Value, this._NumAsync++);
-										if (this.hasWorkFlow_Avail)
-										{
-											this._NumRunning += 2;
-											this._Client.Incident_RetrieveWorkflowFieldsAsync(this._Incident.IncidentTypeId, this._Incident.IncidentStatusId, this._NumAsync++);
-											this._Client.Incident_RetrieveWorkflowTransitionsAsync(this._Incident.IncidentTypeId, this._Incident.IncidentStatusId, (this._Incident.OpenerId == this._Project.UserID), (this._Incident.OwnerId == this._Project.UserID), this._NumAsync++);
-										}
+										//if (this.hasWorkFlow_Avail)
+										//{
+										//     this._NumRunning += 2;
+										//     this._Client.Incident_RetrieveWorkflowFieldsAsync(this._Incident.IncidentTypeId, this._Incident.IncidentStatusId, this._NumAsync++);
+										//     this._Client.Incident_RetrieveWorkflowTransitionsAsync(this._Incident.IncidentTypeId, this._Incident.IncidentStatusId, (this._Incident.OpenerId == this._Project.UserID), (this._Incident.OwnerId == this._Project.UserID), this._NumAsync++);
+										//}
 									}
 
 									//Subtract one because the one that started this is finished.
@@ -278,7 +279,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 							{
 								if (evt.Error == null)
 								{
-									this._IncWkfFields_Current = scanWorkFlowFields(evt.Result);
+									//this._IncWkfFields_Current = scanWorkFlowFields(evt.Result);
 									this._NumRunning -= 1;
 
 									//DEBUG: Logit.
@@ -469,7 +470,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 					{
 						for (int I = 0; I <= this._NumAsync; I++)
 						{
-							this._Client.CancelAsync(I);
+							//this._Client.CancelAsync(I);
 						}
 					}
 					finally
@@ -477,7 +478,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 						//Display error information.
 						this.panelLoading.Visibility = Visibility.Collapsed;
 						this.panelLoadingError.Visibility = Visibility.Visible;
-						this.panelForm.Visibility = Visibility.Collapsed;
+						//this.panelForm.Visibility = Visibility.Collapsed;
 						this.msgLoadingErrorMsg.Text = strErrMsg;
 					}
 				}
@@ -491,11 +492,11 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 					}
 					else
 						this.loadItem_displayInformation(this._Incident);
-					this.loadItem_PopulateDiscussion(this._IncResolutions);
+					//this.loadItem_PopulateDiscussion(this._IncResolutions);
 
 					//Set Workflow Data. (To disable Fields)
 					this.loadItem_SetEnabledFields(this._IncWkfFields_Current);
-					this.panelContents.IsEnabled = this.hasWorkFlow_Avail;
+					//this.panelContents.IsEnabled = this.hasWorkFlow_Avail;
 
 					//Update screen.
 					if (this.isInSaveMode)
@@ -504,33 +505,33 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 						{
 							this.isInConcMode = false;
 							this.isInSaveMode = false;
-							this.panelWarning.Visibility = Visibility.Collapsed;
-							this.panelInfo.Visibility = Visibility.Collapsed;
-							this.panelError.Visibility = Visibility.Visible;
-							this.msgErrMessage.Text = "This incident was modified by another user. New data has been loaded." + Environment.NewLine + "Yellow fields were modified by the other user. Red fields were both modified by you and the other user.";
+							//this.panelWarning.Visibility = Visibility.Collapsed;
+							//this.panelInfo.Visibility = Visibility.Collapsed;
+							//this.panelError.Visibility = Visibility.Visible;
+							//this.msgErrMessage.Text = "This incident was modified by another user. New data has been loaded." + Environment.NewLine + "Yellow fields were modified by the other user. Red fields were both modified by you and the other user.";
 						}
 						else
 						{
 							this.isInSaveMode = false;
-							this.panelWarning.Visibility = Visibility.Collapsed;
-							this.panelError.Visibility = Visibility.Collapsed;
-							this.panelInfo.Visibility = Visibility.Visible;
-							this.msgInfMessage.Text = "Incident saved.";
-							this.concurrency_ResetHighlightFields();
+							//this.panelWarning.Visibility = Visibility.Collapsed;
+							//this.panelError.Visibility = Visibility.Collapsed;
+							//this.panelInfo.Visibility = Visibility.Visible;
+							//this.msgInfMessage.Text = "Incident saved.";
+							//this.concurrency_ResetHighlightFields();
 						}
 					}
 					else
 					{
 						this.panelLoading.Visibility = Visibility.Collapsed;
 						this.panelLoadingError.Visibility = Visibility.Collapsed;
-						this.panelForm.Visibility = Visibility.Visible;
-						this.concurrency_ResetHighlightFields();
+						//this.panelForm.Visibility = Visibility.Visible;
+						//this.concurrency_ResetHighlightFields();
 					}
 
 					//Finished loading.
 					this.isInLoadMode = false;
 					this._isFieldChanged = false;
-					this._btnSave.IsEnabled = false;
+					//this._btnSave.IsEnabled = false;
 					this._isDescChanged = false;
 					this._isResChanged = false;
 					this._DetailsWindow.Caption = this._DetailsWindowTitle;
@@ -538,12 +539,13 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			}
 			catch (Exception ex)
 			{
-				Connect.logEventMessage("wpfDetailsIncident::loadItem_Incident_4", ex, System.Diagnostics.EventLogEntryType.Error);
+				//Connect.logEventMessage("wpfDetailsIncident::loadItem_Incident_4", ex, System.Diagnostics.EventLogEntryType.Error);
 			}
 		}
 
 		#region Field Population
-		private void loadItem_PopulateUser(ComboBox box, int? SelectedUserID, string SelectedUserName, Business.SpiraTeam_Client.ImportExport client)
+		//private void loadItem_PopulateUser(ComboBox box, int? SelectedUserID, string SelectedUserName, Business.SpiraTeam_Client.ImportExport client)
+		private void loadItem_PopulateUser(ComboBox box, int? SelectedUserID, string SelectedUserName, object client)
 		{
 			try
 			{
@@ -556,17 +558,17 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 					SelectedUserID = -1;
 
 				//Load the project users.
-				if (this.hasWorkFlow_Avail)
-				{
-					foreach (Business.SpiraTeam_Client.RemoteProjectUser projUser in this._ProjUsers)
-					{
-						int numAdded = box.Items.Add(client.User_RetrieveById(projUser.UserId));
-						if (projUser.UserId == SelectedUserID)
-						{
-							box.SelectedIndex = numAdded;
-						}
-					}
-				}
+				//if (this.hasWorkFlow_Avail)
+				//{
+				//     foreach (Business.SpiraTeam_Client.RemoteProjectUser projUser in this._ProjUsers)
+				//     {
+				//          int numAdded = box.Items.Add(client.User_RetrieveById(projUser.UserId));
+				//          if (projUser.UserId == SelectedUserID)
+				//          {
+				//               box.SelectedIndex = numAdded;
+				//          }
+				//     }
+				//}
 				else
 				{
 					int numAdded = box.Items.Add(SelectedUserName);
@@ -575,7 +577,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			}
 			catch (Exception ex)
 			{
-				Connect.logEventMessage("wpfDetailsIncident::loadItem_PopulateUser", ex, System.Diagnostics.EventLogEntryType.Error);
+				//Connect.logEventMessage("wpfDetailsIncident::loadItem_PopulateUser", ex, System.Diagnostics.EventLogEntryType.Error);
 			}
 		}
 
@@ -602,7 +604,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			}
 			catch (Exception ex)
 			{
-				Connect.logEventMessage("wpfDetailsIncident::loadItem_PopulateReleaseControl", ex, System.Diagnostics.EventLogEntryType.Error);
+				//Connect.logEventMessage("wpfDetailsIncident::loadItem_PopulateReleaseControl", ex, System.Diagnostics.EventLogEntryType.Error);
 			}
 		}
 
@@ -629,7 +631,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			}
 			catch (Exception ex)
 			{
-				Connect.logEventMessage("wpfDetailsIncident::loadItem_PopulateSeverity", ex, System.Diagnostics.EventLogEntryType.Error);
+				//Connect.logEventMessage("wpfDetailsIncident::loadItem_PopulateSeverity", ex, System.Diagnostics.EventLogEntryType.Error);
 			}
 		}
 
@@ -656,7 +658,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			}
 			catch (Exception ex)
 			{
-				Connect.logEventMessage("wpfDetailsIncident::loadItem_PopulatePriority", ex, System.Diagnostics.EventLogEntryType.Error);
+				//Connect.logEventMessage("wpfDetailsIncident::loadItem_PopulatePriority", ex, System.Diagnostics.EventLogEntryType.Error);
 			}
 		}
 
@@ -680,7 +682,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			}
 			catch (Exception ex)
 			{
-				Connect.logEventMessage("wpfDetailsIncident::loadItem_PopulateType", ex, System.Diagnostics.EventLogEntryType.Error);
+				//Connect.logEventMessage("wpfDetailsIncident::loadItem_PopulateType", ex, System.Diagnostics.EventLogEntryType.Error);
 			}
 		}
 
@@ -704,18 +706,18 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 						//Loop through. If it's available, add it.
 						foreach (Business.SpiraTeam_Client.RemoteWorkflowIncidentTransition Transition in this._IncWkfTransision)
 						{
-							if (Transition.IncidentStatusID_Output == Status.IncidentStatusId)
-							{
-								Transition.Name = "» " + Transition.Name;
-								Box.Items.Add(Transition);
-							}
+							//if (Transition.IncidentStatusID_Output == Status.IncidentStatusId)
+							//{
+							//     Transition.Name = "» " + Transition.Name;
+							//     Box.Items.Add(Transition);
+							//}
 						}
 					}
 				}
 			}
 			catch (Exception ex)
 			{
-				Connect.logEventMessage("wpfDetailsIncident::loadItem_PopulateStatus", ex, System.Diagnostics.EventLogEntryType.Error);
+				//Connect.logEventMessage("wpfDetailsIncident::loadItem_PopulateStatus", ex, System.Diagnostics.EventLogEntryType.Error);
 			}
 		}
 
@@ -728,18 +730,18 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 				foreach (Business.SpiraTeam_Client.RemoteIncidentResolution Resolution in Discussions)
 				{
 					string header = Resolution.CreatorName + " [" + Resolution.CreationDate.ToShortDateString() + " " + Resolution.CreationDate.ToShortTimeString() + "]";
-					this.cntrlDiscussion.Children.Add(new wpfDiscussionFrame(header, Resolution.Resolution));
+					//this.cntrlDiscussion.Children.Add(new wpfDiscussionFrame(header, Resolution.Resolution));
 				}
 				if (Discussions.Length < 1)
 				{
-					this.cntrlDiscussion.Children.Add(new wpfDiscussionFrame("No comments for this item.", ""));
+					//this.cntrlDiscussion.Children.Add(new wpfDiscussionFrame("No comments for this item.", ""));
 				}
 				//Clear the entry box.
-				this.cntrlResolution.HTMLText = "";
+				//this.cntrlResolution.HTMLText = "";
 			}
 			catch (Exception ex)
 			{
-				Connect.logEventMessage("wpfDetailsIncident::loadItem_PopulateDiscussion", ex, System.Diagnostics.EventLogEntryType.Error);
+				//Connect.logEventMessage("wpfDetailsIncident::loadItem_PopulateDiscussion", ex, System.Diagnostics.EventLogEntryType.Error);
 			}
 		}
 
@@ -763,7 +765,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 				this.cntrlVerifiedIn.IsEnabled = (WorkFlowFields.ContainsKey(9));
 				this.cntrlDescription.IsToolbarVisible = (WorkFlowFields.ContainsKey(11));
 				this.cntrlDescription.IsEnabled = (WorkFlowFields.ContainsKey(11));
-				this.cntrlResolution.Visibility = ((WorkFlowFields.ContainsKey(12)) ? Visibility.Visible : Visibility.Collapsed);
+				//this.cntrlResolution.Visibility = ((WorkFlowFields.ContainsKey(12)) ? Visibility.Visible : Visibility.Collapsed);
 				//Schedule fields.
 				this.cntrlStartDate.IsEnabled = (WorkFlowFields.ContainsKey(45));
 				this.cntrlEndDate.IsEnabled = (WorkFlowFields.ContainsKey(14));
@@ -782,7 +784,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 				this.lblResolvedIn.FontWeight = ((this.workflow_IsFieldRequired(8, WorkFlowFields)) ? FontWeights.Bold : FontWeights.Normal);
 				this.lblVerifiedIn.FontWeight = ((this.workflow_IsFieldRequired(9, WorkFlowFields)) ? FontWeights.Bold : FontWeights.Normal);
 				this.cntrlDescription.Tag = (this.workflow_IsFieldRequired(11, WorkFlowFields));
-				this.cntrlResolution.Tag = (this.workflow_IsFieldRequired(12, WorkFlowFields));
+				//this.cntrlResolution.Tag = (this.workflow_IsFieldRequired(12, WorkFlowFields));
 				// lblDescription
 				// lblResolution
 				//Schedule fields.
@@ -794,78 +796,79 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			}
 			catch (Exception ex)
 			{
-				Connect.logEventMessage("wpfDetailsIncident::loadItem_SetEnabledFields", ex, System.Diagnostics.EventLogEntryType.Error);
+				//Connect.logEventMessage("wpfDetailsIncident::loadItem_SetEnabledFields", ex, System.Diagnostics.EventLogEntryType.Error);
 			}
 		}
 
 		#endregion
 
-		private void loadItem_VerifyVersion(Business.SpiraTeam_Client.ImportExport client)
+		//private void loadItem_VerifyVersion(Business.SpiraTeam_Client.ImportExport client)
+		private void loadItem_VerifyVersion(object client)
 		{
 			try
 			{
 				//Get the version number and disable any items necessary.
-				Business.SpiraTeam_Client.RemoteVersion version = client.System_GetProductVersion();
-				string[] mainVers = version.Version.Split('.');
-				int verMain = int.Parse(mainVers[0]);
-				int verRev = int.Parse(mainVers[1]);
-				int verBuild = int.Parse(mainVers[2]);
+				//Business.SpiraTeam_Client.RemoteVersion version = client.System_GetProductVersion();
+				//string[] mainVers = version.Version.Split('.');
+				//int verMain = int.Parse(mainVers[0]);
+				//int verRev = int.Parse(mainVers[1]);
+				//int verBuild = int.Parse(mainVers[2]);
 
 				bool enableCustom = false;
 				bool enableHistory = false;
 				bool showWorkflowMessage = false;
 
-				if (verMain > 2)
-				{
-					enableCustom = true;
-				}
-				else
-				{
-					if (verMain == 2)
-					{
-						if (verRev >= 3)
-						{
-							if (verBuild >= 1)
-							{
-								if (version.Patch.HasValue && version.Patch < 17)
-								{
-									showWorkflowMessage = true;
-								}
-							}
-							else
-							{
-								showWorkflowMessage = true;
-							}
-						}
-						else
-						{
-							showWorkflowMessage = true;
-						}
-					}
-					else
-					{
-						showWorkflowMessage = true;
-					}
-				}
+				//if (verMain > 2)
+				//{
+				//     enableCustom = true;
+				//}
+				//else
+				//{
+				//     if (verMain == 2)
+				//     {
+				//          if (verRev >= 3)
+				//          {
+				//               if (verBuild >= 1)
+				//               {
+				//                    //if (version.Patch.HasValue && version.Patch < 17)
+				//                    //{
+				//                    //     showWorkflowMessage = true;
+				//                    //}
+				//               }
+				//               else
+				//               {
+				//                    showWorkflowMessage = true;
+				//               }
+				//          }
+				//          else
+				//          {
+				//               showWorkflowMessage = true;
+				//          }
+				//     }
+				//     else
+				//     {
+				//          showWorkflowMessage = true;
+				//     }
+				//}
 
-				if (showWorkflowMessage)
-				{
-					this.panelWarning.Visibility = Visibility.Visible;
-					this.panelNone.Visibility = Visibility.Collapsed;
-					this.msgWrnMessage.Text = "Application version is less than 2.3.1(17) and remote workflows are not supported. Incident is read-only.";
-					this.hasWorkFlow_Avail = false;
-				}
-				else
-				{
-					this.hasWorkFlow_Avail = true;
-				}
+				//if (showWorkflowMessage)
+				//{
+				//     //this.panelWarning.Visibility = Visibility.Visible;
+				//     //this.panelNone.Visibility = Visibility.Collapsed;
+				//     //this.msgWrnMessage.Text = "Application version is less than 2.3.1(17) and remote workflows are not supported. Incident is read-only.";
+				//     //this.hasWorkFlow_Avail = false;
+				//}
+				//else
+				//{
+				//     //this.hasWorkFlow_Avail = true;
+				//}
 
 				this.cntrlTabCustProps.Visibility = ((enableCustom) ? Visibility.Visible : Visibility.Collapsed);
 				this.cntrlTabHistory.Visibility = ((enableHistory) ? Visibility.Visible : Visibility.Collapsed);
 			}
 			catch (Exception ex)
 			{
-				Connect.logEventMessage("wpfDetailsIncident::loadItem_VerifyVersion", ex, System.Diagnostics.EventLogEntryType.Error);
+				//Connect.logEventMessage("wpfDetailsIncident::loadItem_VerifyVersion", ex, System.Diagnostics.EventLogEntryType.Error);
 			}
 		}
 
@@ -877,8 +880,8 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 				// - Name
 				this.cntrlIncidentName.Text = incident.Name;
 				// - Users
-				this.loadItem_PopulateUser(this.cntrlDetectedBy, incident.OpenerId, incident.OpenerName, this._Client);
-				this.loadItem_PopulateUser(this.cntrlOwnedBy, incident.OwnerId, incident.OwnerName, this._Client);
+				//this.loadItem_PopulateUser(this.cntrlDetectedBy, incident.OpenerId, incident.OpenerName, this._Client);
+				//this.loadItem_PopulateUser(this.cntrlOwnedBy, incident.OwnerId, incident.OwnerName, this._Client);
 				((ComboBoxItem)this.cntrlDetectedBy.Items[0]).IsEnabled = false;
 				// - Releases
 				this.loadItem_PopulateReleaseControl(this.cntrlDetectedIn, incident.DetectedReleaseId);
@@ -907,7 +910,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			}
 			catch (Exception ex)
 			{
-				Connect.logEventMessage("wpfDetailsIncident::loadItem_displayInformation", ex, System.Diagnostics.EventLogEntryType.Error);
+				//Connect.logEventMessage("wpfDetailsIncident::loadItem_displayInformation", ex, System.Diagnostics.EventLogEntryType.Error);
 			}
 		}
 
@@ -952,8 +955,8 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 				Fields += "Estimated Effort;";
 			if (this.lblActEffort.FontWeight == FontWeights.Bold && string.IsNullOrEmpty(this.cntrlActEffortH.Text.Trim()) && string.IsNullOrEmpty(this.cntrlActEffortH.Text.Trim()))
 				Fields += "Estimated Effort;";
-			if (this.cntrlResolution.Tag.GetType() == typeof(bool) && (bool)this.cntrlResolution.Tag && !this._isResChanged)
-				Fields += "Resolution;";
+			//if (this.cntrlResolution.Tag.GetType() == typeof(bool) && (bool)this.cntrlResolution.Tag && !this._isResChanged)
+			//     Fields += "Resolution;";
 
 			if (string.IsNullOrEmpty(Fields.Trim()))
 			{

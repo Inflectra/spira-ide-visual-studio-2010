@@ -142,20 +142,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business
 				}
 				else
 				{
-					switch (this.ArtifactType)
-					{
-						case ArtifactTypeEnum.Incident:
-							retName += " [IN:" + this.ArtifactId.ToString() + "]";
-							break;
-
-						case ArtifactTypeEnum.Requirement:
-							retName += " [RQ:" + this.ArtifactId.ToString() + "]";
-							break;
-
-						case ArtifactTypeEnum.Task:
-							retName += " [TK:" + this.ArtifactId.ToString() + "]";
-							break;
-					}
+					retName += " " + this.ArtifactIDDisplay;
 				}
 
 				//Add it to a textblock.
@@ -507,6 +494,26 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business
 				}
 
 				return retMenu;
+			}
+		}
+
+		public string ArtifactIDDisplay
+		{
+			get
+			{
+				if (!this.ArtifactIsFolder)
+				{
+					switch (this.ArtifactType)
+					{
+						case ArtifactTypeEnum.Incident:
+							return "[IN:" + this.ArtifactId.ToString() + "]";
+						case ArtifactTypeEnum.Requirement:
+							return "[RQ:" + this.ArtifactId.ToString() + "]";
+						case ArtifactTypeEnum.Task:
+							return "[TK:" + this.ArtifactId.ToString() + "]";
+					}
+				}
+				return null;
 			}
 		}
 

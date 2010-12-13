@@ -33,7 +33,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010
 	{
 		private EnvDTE.Events _EnvironEvents;
 		SolutionEvents _SolEvents;
-		private Dictionary<string, Guid> _windowGuids;
+		static Dictionary<string, int> _windowGuids;
 
 		/// <summary>Default constructor of the package. Inside this method you can place any initialization code that does not require any Visual Studio service because at this point the package object is created but not sited yet inside Visual Studio environment. The place to do all the other initialization is the Initialize method.</summary>
 		public SpiraExplorerPackage()
@@ -159,18 +159,22 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010
 		}
 		#endregion
 
-		internal void OpenDetailsToolWindow(TreeViewArtifact Artifact)
+		static void OpenDetailsToolWindow(TreeViewArtifact Artifact)
 		{
-			if (this._windowGuids == null)
-				this._windowGuids = new Dictionary<string, Guid>();
+			if (SpiraExplorerPackage._windowGuids == null)
+				SpiraExplorerPackage._windowGuids = new Dictionary<string, int>();
 
-			// Get the instance number 0 of this tool window. This window is single instance so this instance
-			// is actually the only one.
-			// The last flag is set to true so that if the tool window does not exists it will be created.
-			ToolWindowPane window = this.FindToolWindow(typeof(toolSpiraExplorer), 0, true);
+			//See if the window was already created.
+			if (SpiraExplorerPackage._windowGuids.ContainsKey(Artifact.ArtifactIDDisplay))
 
-			MessageBox.Show("Tried to open " + Artifact.ArtifactType.ToString() + " #" + Artifact.ArtifactId.ToString());
+
+				// Get the instance number 0 of this tool window. This window is single instance so this instance
+				// is actually the only one.
+				// The last flag is set to true so that if the tool window does not exists it will be created.
+				//ToolWindowPane window = this.FindToolWindow(typeof(toolSpiraExplorer), 0, true);
+				//ToolWindowPane window = new SpiraExplorerPackage().FindToolWindow(typeof(toolSpiraExplorerDetails), 0, true);
+
+				MessageBox.Show("Tried to open " + Artifact.ArtifactType.ToString() + " #" + Artifact.ArtifactId.ToString());
 		}
-
 	}
 }

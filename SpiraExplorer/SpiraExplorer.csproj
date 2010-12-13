@@ -125,10 +125,16 @@
     <Compile Include="Forms\frmAssignProject\frmAssignProject.xaml.cs">
       <DependentUpon>frmAssignProject.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Forms\frmDetailsIncident\LoadItem.cs" />
+    <Compile Include="Forms\frmDetailsIncident\LoadItem_Concurrency.cs" />
+    <Compile Include="Forms\frmDetailsIncident\wpfDetailsIncident.xaml.cs">
+      <DependentUpon>wpfDetailsIncident.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Forms\frmNewServerProject\frmNewServerProject.xaml.cs">
       <DependentUpon>frmNewServerProject.xaml</DependentUpon>
     </Compile>
     <Compile Include="Forms\cntlSpiraExplorer\toolSpiraExplorer.cs" />
+    <Compile Include="Forms\toolSpiraExplorerDetails.cs" />
     <Compile Include="Guids.cs" />
     <Compile Include="Properties\Settings.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -187,6 +193,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Forms\frmAssignProject\frmAssignProject.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Forms\frmDetailsIncident\wpfDetailsIncident.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

@@ -150,6 +150,9 @@
     <None Include="Resources\imgRelease.png" />
     <None Include="Resources\imgTaskTime.png" />
     <None Include="Resources\imgTimer.png" />
+    <None Include="Resources\imgSave.png" />
+    <None Include="Resources\imgOpenWeb.png" />
+    <None Include="Resources\imgReload.png" />
     <Content Include="Resources\Spira.ico" />
     <None Include="Resources\Spira_NoComp.ico" />
     <None Include="Resources\Spira_XP.ico" />
