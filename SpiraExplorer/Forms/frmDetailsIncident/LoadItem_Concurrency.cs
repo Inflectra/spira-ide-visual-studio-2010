@@ -1,7 +1,6 @@
 ﻿using System;
-using System.Windows.Controls;
 
-namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio.WPF.Forms
+namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 {
 	public partial class wpfDetailsIncident
 	{
@@ -254,7 +253,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio.WPF.Forms
 				//}
 				//#endregion
 			}
-			catch (Exception ex) 
+			catch (Exception ex)
 			{
 				//Connect.logEventMessage("wpfDetailsIncident::concurrency_HighlightFields", ex, System.Diagnostics.EventLogEntryType.Error);
 			}

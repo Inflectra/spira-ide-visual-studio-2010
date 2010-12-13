@@ -35,7 +35,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Controls
 			this._toolFont.ItemsSource = fontFamilies;
 
 			//Update toolbar.
-			this.Selection_Changed(this._TextBox, new EventArgs());
+			this._TextBox_Selection_Changed(this._TextBox, new EventArgs());
 		}
 
 		#region Control Events
@@ -74,7 +74,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Controls
 				if (this._toolFont.SelectedItem != null)
 					this._TextBox.Selection.ApplyPropertyValue(TextElement.FontFamilyProperty, (FontFamily)this._toolFont.SelectedItem);
 
-				this.Selection_Changed(null, null);
+				this._TextBox_Selection_Changed(this._TextBox, new EventArgs());
 
 				if (this._TextBox.Focusable)
 					this._TextBox.Focus();
@@ -93,7 +93,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Controls
 				if (double.TryParse(this._toolSize.Text, out tryNum))
 				{
 					this._TextBox.Selection.ApplyPropertyValue(TextElement.FontSizeProperty, tryNum);
-					this.Selection_Changed(null, null);
+					this._TextBox_Selection_Changed(this._TextBox, new EventArgs());
 				}
 			}
 		}
@@ -106,7 +106,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Controls
 			if (!this.updSelectionProcessing)
 			{
 				this._TextBox.Selection.ApplyPropertyValue(TextElement.FontSizeProperty, (string)((ComboBoxItem)this._toolSize.SelectedItem).Content);
-				this.Selection_Changed(null, null);
+				this._TextBox_Selection_Changed(this._TextBox, new EventArgs());
 				if (this._TextBox.Focusable)
 					this._TextBox.Focus();
 			}
@@ -125,7 +125,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Controls
 					try
 					{
 						this._TextBox.Selection.ApplyPropertyValue(TextElement.FontSizeProperty, (string)this._toolSize.Text);
-						this.Selection_Changed(null, null);
+						this._TextBox_Selection_Changed(this._TextBox, new EventArgs());
 						if (this._TextBox.Focusable)
 							this._TextBox.Focus();
 					}

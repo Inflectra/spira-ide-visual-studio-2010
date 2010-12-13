@@ -31,7 +31,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business.HTMLandXA
 		/// <summary>Main entry point for XAML-to-HTML converter. Converts a XAML string into html string.</summary>
 		/// <param name="xamlString">XAML string to convert.</param>
 		/// <returns>Html string produced from a source XAML.</returns>
-		internal static string ConvertXamlToHtml(string xamlString)
+		public static string ConvertXamlToHtml(string xamlString)
 		{
 			XmlTextReader xamlReader;
 			StringBuilder htmlStringBuilder;
