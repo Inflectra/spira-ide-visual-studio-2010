@@ -105,10 +105,14 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Controls
 		{
 			if (!this.updSelectionProcessing)
 			{
-				this._TextBox.Selection.ApplyPropertyValue(TextElement.FontSizeProperty, (string)((ComboBoxItem)this._toolSize.SelectedItem).Content);
-				this._TextBox_Selection_Changed(this._TextBox, new EventArgs());
-				if (this._TextBox.Focusable)
-					this._TextBox.Focus();
+				try
+				{
+					this._TextBox.Selection.ApplyPropertyValue(TextElement.FontSizeProperty, (string)((ComboBoxItem)this._toolSize.SelectedItem).Content);
+					this._TextBox_Selection_Changed(this._TextBox, new EventArgs());
+					if (this._TextBox.Focusable)
+						this._TextBox.Focus();
+				}
+				catch { }
 			}
 		}
 

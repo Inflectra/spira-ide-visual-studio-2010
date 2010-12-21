@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms.wpfDetailsIncident"
+﻿<UserControl x:Class="Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms.frmDetailsIncident"
 	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 	xmlns:bus_client="clr-namespace:Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business.SpiraTeam_Client;assembly=Business"
@@ -96,14 +96,14 @@
 			<ToolBar Name="toolbarSaveReload" Band="0" BandIndex="0" Loaded="_toolbar_Loaded">
 				<Button Name="btnSave" ToolBar.OverflowMode="Never">
 					<StackPanel Orientation="Horizontal">
-						<Image Name="toolImgSave" Height="16" Width="16" Source="/SpiraExplorer;component/Forms/_Shared%20Resources/imgSave.png" />
+						<Image Name="toolImgSave" Height="16" Width="16" Source="/Business.resources;component/Resources/imgSave.png" />
 						<TextBlock Name="toolTxtSave" Margin="2,0,0,0" />
 					</StackPanel>
 				</Button>
 				<Separator ToolBar.OverflowMode="Never" />
 				<Button Name="btnRefresh" ToolBar.OverflowMode="Never">
 					<StackPanel Orientation="Horizontal">
-						<Image Name="toolImgRefresh" Height="16" Width="16" Source="/SpiraExplorer;component/Forms/_Shared%20Resources/imgReload.png" />
+						<Image Name="toolImgRefresh" Height="16" Width="16" Source="/Business.resources;component/Resources/imgReload.png" />
 						<TextBlock Name="toolTxtRefresh" Margin="2,0,0,0" />
 					</StackPanel>
 				</Button>
@@ -111,8 +111,16 @@
 			<ToolBar Name="toolbarLoadWeb" Band="0" BandIndex="2" Loaded="_toolbar_Loaded">
 				<Button Name="btnLoadWeb" ToolBar.OverflowMode="Never">
 					<StackPanel Orientation="Horizontal">
-						<Image Name="toolImgLoadWeb" Height="16" Width="16" Source="/SpiraExplorer;component/Forms/_Shared%20Resources/imgOpenWeb.png" />
+						<Image Name="toolImgLoadWeb" Height="16" Width="16" Source="Business.resources;component/Resources/imgOpenWeb.png" />
 						<TextBlock Name="toolTxtLoadWeb" Margin="2,0,0,0" />
+					</StackPanel>
+				</Button>
+			</ToolBar>
+			<ToolBar Name="toolbarTimer" Band="0" BandIndex="2" Loaded="_toolbar_Loaded">
+				<Button Name="btnStartStopTimer" ToolBar.OverflowMode="Never">
+					<StackPanel Orientation="Horizontal">
+						<Image Name="toolImgTimer" Height="16" Width="16" Source="Business.resources;component/Resources/imgTimer.png" />
+						<TextBlock Name="toolTxtTimer" Margin="2,0,0,0" />
 					</StackPanel>
 				</Button>
 			</ToolBar>
@@ -144,7 +152,7 @@
 					</Setter>
 				</Style>
 			</ListBox.ItemContainerStyle>
-			<Expander Header="Details">
+			<Expander Header="Details / Description">
 				<Grid HorizontalAlignment="Stretch">
 					<Grid.ColumnDefinitions>
 						<ColumnDefinition Width="Auto" />
@@ -282,7 +290,7 @@
 			<Expander Header="Custom Properties">
 				<!-- TODO: Generate Custom Field controls -->
 			</Expander>
-			<!--<Expander Header="History" />-->
+			<!-- <Expander Header="History" /> -->
 		</ListBox>
 	</DockPanel>
 </UserControl>

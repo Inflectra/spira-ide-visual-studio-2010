@@ -31,6 +31,12 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			this.BitmapIndex = 1;
 		}
 
+		public toolSpiraExplorerDetails(object ContentControl)
+			: this()
+		{
+			this.Content = ContentControl;
+		}
+
 		/// <summary>The contents of the tool window.</summary>
 		public object FormControl
 		{

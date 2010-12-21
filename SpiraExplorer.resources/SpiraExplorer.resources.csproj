@@ -79,80 +79,80 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\1.bmp" />
+    <Resource Include="Resources\1.bmp" />
     <None Include="SpiraExplorer.snk" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\imgAdd.png" />
+    <Resource Include="Resources\imgAdd.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\imgDelete.png" />
+    <Resource Include="Resources\imgDelete.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\imgEdit.png" />
+    <Resource Include="Resources\imgEdit.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\imgError.png" />
+    <Resource Include="Resources\imgError.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\imgFolder.png" />
+    <Resource Include="Resources\imgFolder.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\imgFolderIncident.png" />
+    <Resource Include="Resources\imgFolderIncident.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\imgFolderRequirement.png" />
+    <Resource Include="Resources\imgFolderRequirement.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\imgFolderTask.png" />
+    <Resource Include="Resources\imgFolderTask.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\imgIncident.png" />
+    <Resource Include="Resources\imgIncident.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\imgNo.png" />
+    <Resource Include="Resources\imgNo.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\imgRefresh.png" />
+    <Resource Include="Resources\imgRefresh.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\imgRequirement.png" />
+    <Resource Include="Resources\imgRequirement.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\imgSettings.png" />
+    <Resource Include="Resources\imgSettings.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\imgShowCompleted.png" />
+    <Resource Include="Resources\imgShowCompleted.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\imgTask.png" />
+    <Resource Include="Resources\imgTask.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\imgLogo.png" />
+    <Resource Include="Resources\imgLogo.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\ico_Error.png" />
+    <Resource Include="Resources\ico_Error.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\ico_Warning.png" />
+    <Resource Include="Resources\ico_Warning.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\img_Info.png" />
+    <Resource Include="Resources\img_Info.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\img_Logo.png" />
+    <Resource Include="Resources\img_Logo.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\2_bmp.bmp" />
+    <Resource Include="Resources\2_bmp.bmp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\imgProject.png" />
-    <None Include="Resources\imgRelease.png" />
-    <None Include="Resources\imgTaskTime.png" />
-    <None Include="Resources\imgTimer.png" />
-    <None Include="Resources\imgSave.png" />
-    <None Include="Resources\imgOpenWeb.png" />
-    <None Include="Resources\imgReload.png" />
+    <Resource Include="Resources\imgProject.png" />
+    <Resource Include="Resources\imgRelease.png" />
+    <Resource Include="Resources\imgTaskTime.png" />
+    <Resource Include="Resources\imgTimer.png" />
+    <Resource Include="Resources\imgSave.png" />
+    <Resource Include="Resources\imgOpenWeb.png" />
+    <Resource Include="Resources\imgReload.png" />
     <Content Include="Resources\Spira.ico" />
     <None Include="Resources\Spira_NoComp.ico" />
     <None Include="Resources\Spira_XP.ico" />

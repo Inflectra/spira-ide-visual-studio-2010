@@ -466,12 +466,17 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business
 					MenuItem mnuStartWork = new MenuItem();
 					mnuStartWork.Header = ((this._isTimed) ? "End _Timer" : "Start _Timer");
 					mnuStartWork.Click += new RoutedEventHandler(mnuStartWork_Click);
+					// - Copy ID to Clipboard
+					MenuItem mnuCopyHead = new MenuItem();
+					mnuCopyHead.Header = "_Copy ID to Clipboard";
+					mnuCopyHead.Click += new RoutedEventHandler(mnuCopyHead_Click);
 
 					//Add to the context..
 					retMenu.Items.Add(mnuDetails);
 					retMenu.Items.Add(mnuOpenWeb);
 					retMenu.Items.Add(new Separator());
 					retMenu.Items.Add(mnuStartWork);
+					retMenu.Items.Add(mnuCopyHead);
 				}
 				else
 				{
@@ -592,9 +597,19 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business
 		/// <summary>Hit when the user wants to open the details screen of an item.</summary>
 		/// <param name="sender">MenuItem</param>
 		/// <param name="e">RoutedEventArgs</param>
-		void mnuDetails_Click(object sender, RoutedEventArgs e)
+		private void mnuDetails_Click(object sender, RoutedEventArgs e)
 		{
 			e.Handled = true;
+		}
+
+		/// <summary>Hit when the user wants to copy the artifact ID to the clipboard.</summary>
+		/// <param name="sender">menuItem</param>
+		/// <param name="e">RoutedEventArgs</param>
+		private void mnuCopyHead_Click(object sender, RoutedEventArgs e)
+		{
+			e.Handled = true;
+
+			Clipboard.SetText(this.ArtifactIDDisplay);
 		}
 
 		#endregion

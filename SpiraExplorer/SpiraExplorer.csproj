@@ -117,6 +117,9 @@
     </COMReference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Forms\cntlDiscussionFrame\wpfDiscussionFrame.xaml.cs">
+      <DependentUpon>wpfDiscussionFrame.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Forms\cntlSpiraExplorer\cntlSpiraExplorer - Populate Tree.cs" />
     <Compile Include="Forms\cntlSpiraExplorer\cntlSpiraExplorer.xaml.cs">
       <DependentUpon>cntlSpiraExplorer.xaml</DependentUpon>
@@ -136,10 +139,10 @@
     <Compile Include="Forms\frmAssignProject\frmAssignProject.xaml.cs">
       <DependentUpon>frmAssignProject.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Forms\frmDetailsIncident\LoadItem.cs" />
+    <Compile Include="Forms\frmDetailsIncident\frmDetailsIncident - LoadItem.cs" />
     <Compile Include="Forms\frmDetailsIncident\LoadItem_Concurrency.cs" />
-    <Compile Include="Forms\frmDetailsIncident\wpfDetailsIncident.xaml.cs">
-      <DependentUpon>wpfDetailsIncident.xaml</DependentUpon>
+    <Compile Include="Forms\frmDetailsIncident\frmDetailsIncident.xaml.cs">
+      <DependentUpon>frmDetailsIncident.xaml</DependentUpon>
     </Compile>
     <Compile Include="Forms\frmNewServerProject\frmNewServerProject.xaml.cs">
       <DependentUpon>frmNewServerProject.xaml</DependentUpon>
@@ -211,12 +214,13 @@
     <Resource Include="Forms\cntrlRichTextEditor\Resources\img_listnumber.png" />
     <Resource Include="Forms\cntrlRichTextEditor\Resources\img_outdent.png" />
     <Resource Include="Forms\cntrlRichTextEditor\Resources\img_underline.png" />
-    <Resource Include="Forms\_Shared Resources\imgOpenWeb.png" />
-    <Resource Include="Forms\_Shared Resources\imgReload.png" />
-    <Resource Include="Forms\_Shared Resources\imgSave.png" />
     <Content Include="Resources\Package.ico" />
   </ItemGroup>
   <ItemGroup>
+    <Page Include="Forms\cntlDiscussionFrame\wpfDiscussionFrame.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Forms\cntlSpiraExplorer\cntlSpiraExplorer.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -237,7 +241,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Forms\frmDetailsIncident\wpfDetailsIncident.xaml">
+    <Page Include="Forms\frmDetailsIncident\frmDetailsIncident.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

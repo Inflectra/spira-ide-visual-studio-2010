@@ -34,6 +34,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010
 		private EnvDTE.Events _EnvironEvents;
 		SolutionEvents _SolEvents;
 		static Dictionary<string, int> _windowGuids;
+		static int _numWindowIds;
 
 		/// <summary>Default constructor of the package. Inside this method you can place any initialization code that does not require any Visual Studio service because at this point the package object is created but not sited yet inside Visual Studio environment. The place to do all the other initialization is the Initialize method.</summary>
 		public SpiraExplorerPackage()
@@ -164,17 +165,28 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010
 			if (SpiraExplorerPackage._windowGuids == null)
 				SpiraExplorerPackage._windowGuids = new Dictionary<string, int>();
 
-			//See if the window was already created.
-			if (SpiraExplorerPackage._windowGuids.ContainsKey(Artifact.ArtifactIDDisplay))
+			//Get the window ID if it already exists.
+			int NextId = -1;
+			if (SpiraExplorerPackage._windowGuids.ContainsKey(Artifact.ArtifactIDDisplay)) //Get the ID if it exists.
+				NextId = SpiraExplorerPackage._windowGuids[Artifact.ArtifactIDDisplay];
+			else //Figure out the next ID.
+			{
+				SpiraExplorerPackage._numWindowIds++;
+				NextId = SpiraExplorerPackage._numWindowIds;
+				SpiraExplorerPackage._windowGuids.Add(Artifact.ArtifactIDDisplay, SpiraExplorerPackage._numWindowIds);
+			}
 
+			//Now generate the window..
+			toolSpiraExplorerDetails window = (toolSpiraExplorerDetails)new SpiraExplorerPackage().FindToolWindow(typeof(toolSpiraExplorerDetails), NextId, true);
 
-				// Get the instance number 0 of this tool window. This window is single instance so this instance
-				// is actually the only one.
-				// The last flag is set to true so that if the tool window does not exists it will be created.
-				//ToolWindowPane window = this.FindToolWindow(typeof(toolSpiraExplorer), 0, true);
-				//ToolWindowPane window = new SpiraExplorerPackage().FindToolWindow(typeof(toolSpiraExplorerDetails), 0, true);
+			
 
-				MessageBox.Show("Tried to open " + Artifact.ArtifactType.ToString() + " #" + Artifact.ArtifactId.ToString());
+			// Get the instance number 0 of this tool window. This window is single instance so this instance
+			// is actually the only one.
+			// The last flag is set to true so that if the tool window does not exists it will be created.
+			//ToolWindowPane window = this.FindToolWindow(typeof(toolSpiraExplorer), 0, true);
+
+			MessageBox.Show("Tried to open " + Artifact.ArtifactType.ToString() + " #" + Artifact.ArtifactId.ToString());
 		}
 	}
 }

@@ -6,9 +6,9 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Controls
 	/// <summary>
 	/// Interaction logic for wpfDiscussionFrame.xaml
 	/// </summary>
-	public partial class wpfDiscussionFrame : UserControl
+	public partial class cntlDiscussionFrame : UserControl
 	{
-		public wpfDiscussionFrame(string HeaderLine, string MessageBody)
+		public cntlDiscussionFrame(string HeaderLine, string MessageBody)
 		{
 			InitializeComponent();
 
@@ -16,14 +16,9 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Controls
 			this.txtMessage.BorderThickness = new Thickness(0);
 
 			if (string.IsNullOrEmpty(MessageBody))
-			{
 				this.txtMessage.Visibility = Visibility.Collapsed;
-			}
 			else
-			{
 				this.txtMessage.HTMLText = MessageBody;
-			}
-
 		}
 	}
 }

@@ -2,149 +2,93 @@
 using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Input;
-using System.Windows.Media.Imaging;
+using Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business;
+using Microsoft.VisualStudio.Shell;
 
 namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 {
 	/// <summary>
 	/// Interaction logic for wpfDetailsIncident.xaml
 	/// </summary>
-	public partial class wpfDetailsIncident : UserControl
+	public partial class frmDetailsIncident : UserControl
 	{
+		private const string CLASS = "frmDetailsIncident:";
+
 		#region Private Data-Changed Vars
 		private bool _isDescChanged = false;
 		private bool _isResChanged = false;
 		private bool _isFieldChanged = false;
 		#endregion
 
-		private EnvDTE80.Window2 _DetailsWindow = null;
-		private string _DetailsWindowTitle = null;
+		private TreeViewArtifact _ArtifactDetails;
 
 		/// <summary>Creates a new instance of our IncidentDetailsForm.</summary>
-		public wpfDetailsIncident()
+		public frmDetailsIncident()
 		{
-			try
-			{
-				InitializeComponent();
-
-				//Lock numeric fields
-				this.cntrlPerComplete.PreviewTextInput += new TextCompositionEventHandler(_cntrl_PreviewTextInput);
-				this.cntrlEstEffortH.PreviewTextInput += new TextCompositionEventHandler(_cntrl_PreviewTextInput);
-				this.cntrlEstEffortM.PreviewTextInput += new TextCompositionEventHandler(_cntrl_PreviewTextInput);
-				this.cntrlActEffortH.PreviewTextInput += new TextCompositionEventHandler(_cntrl_PreviewTextInput);
-				this.cntrlActEffortM.PreviewTextInput += new TextCompositionEventHandler(_cntrl_PreviewTextInput);
-				this.cntrlPerComplete.LostFocus += new RoutedEventHandler(_cntrl_LostFocus);
-				this.cntrlEstEffortH.LostFocus += new RoutedEventHandler(_cntrl_LostFocus);
-				this.cntrlEstEffortM.LostFocus += new RoutedEventHandler(_cntrl_LostFocus);
-				this.cntrlActEffortH.LostFocus += new RoutedEventHandler(_cntrl_LostFocus);
-				this.cntrlActEffortM.LostFocus += new RoutedEventHandler(_cntrl_LostFocus);
-
-				//Load images.
-				this._bnrImgInfo.Source = this.getImage("imgInfoWPF", new Size()).Source;
-				this._bnrImgError.Source = this.getImage("imgErrorWPF", new Size()).Source;
-				//this._barImgInfo.Source = this.getImage("imgInfoWPF", new Size()).Source;
-				//this._barImgWarning.Source = this.getImage("imgWarningWPF", new Size()).Source;
-				//this._barImgError.Source = this.getImage("imgErrorWPF", new Size()).Source;
-				//this._barImgLogo.Source = this.getImage("imgLogoWPF", new Size()).Source;
-			}
-			catch (Exception ex)
-			{
-				//Connect.logEventMessage("wpfDetailsIncident::.ctor", ex, System.Diagnostics.EventLogEntryType.Error);
-			}
+			InitializeComponent();
 		}
 
-		/// <summary>Set the window handle for this form.</summary>
-		internal EnvDTE80.Window2 setDetailWindow
+		public frmDetailsIncident(ToolWindowPane ParentWindow)
+			: this()
 		{
+			this.ParentWindow = ParentWindow;
+		}
+
+		public frmDetailsIncident(TreeViewArtifact artifactDetails, ToolWindowPane parentWindow)
+			: this(parentWindow)
+		{
+			this.ArtifactDetail = artifactDetails;
+		}
+
+		/// <summary>The parent ToolWindowPane of this details screen.</summary>
+		public ToolWindowPane ParentWindow
+		{
+			get;
+			set;
+		}
+
+		/// <summary>The detail item for this display.</summary>
+		public TreeViewArtifact ArtifactDetail
+		{
+			get
+			{
+				return this._ArtifactDetails;
+			}
 			set
 			{
-				this._DetailsWindow = value;
-				this._DetailsWindowTitle = this._DetailsWindow.Caption;
+				this._ArtifactDetails = value;
+				//TODO: Load details information.
 			}
 		}
 
-		/// <summary>Hit when a numeric field loses focus. Verifies the item entered is a number.</summary>
-		/// <param name="sender">cntrlEstEffortH, cntrlEstEffortM, cntrlActEffortH, cntrlActEffortM, cntrlPerComplete</param>
-		/// <param name="e">Event Args</param>
-		void _cntrl_LostFocus(object sender, RoutedEventArgs e)
-		{
-			try
-			{
-				TextBox control = (TextBox)sender;
 
-				int tryNum;
-				if (int.TryParse(control.Text, out tryNum))
-				{
-					if (tryNum < 0)
-						control.Text = "0";
-					if (control == this.cntrlPerComplete && tryNum > 100)
-						control.Text = "100";
-					this._isFieldChanged = true;
-					//this._btnSave.IsEnabled = true;
-					if (!this._DetailsWindow.Caption.Contains("*"))
-					{
-						this._DetailsWindow.Caption = this._DetailsWindowTitle + " *";
-					}
-				}
-				else
-				{
-					control.Text = "";
-				}
-			}
-			catch (Exception ex)
-			{
-				//Connect.logEventMessage("wpfDetailsIncident::_cntrl_LostFocus", ex, System.Diagnostics.EventLogEntryType.Error);
-			}
-		}
+		///// <summary>The item code for the loaded artifact.</summary>
+		///// <returns>String in the format of "IN:xxxx"</returns>
+		//internal string getItemCode()
+		//{
+		//     return this._itemCode;
+		//}
 
-		/// <summary>Hit when the user tries to enter data into a numeric field. Verifies it's numeric only.</summary>
-		/// <param name="sender">cntrlEstEffortH, cntrlEstEffortM, cntrlActEffortH, cntrlActEffortM, cntrlPerComplete</param>
-		/// <param name="e">Event Args</param>
-		void _cntrl_PreviewTextInput(object sender, TextCompositionEventArgs e)
-		{
-			try
-			{
-				int tryParse;
-				if (!int.TryParse(e.Text, out tryParse))
-				{
-					e.Handled = true;
-				}
-			}
-			catch (Exception ex)
-			{
-				e.Handled = false;
-				//Connect.logEventMessage("wpfDetailsIncident::_cntrl_PreviewiTextInput", ex, System.Diagnostics.EventLogEntryType.Error);
-			}
-		}
+		///// <summary>Hit when the user clicks a message bar.</summary>
+		///// <param name="sender">messageWarning / messageError / messageInfo</param>
+		///// <param name="e">MouseButton Event Args</param>
+		//private void messageWarning_MouseDown(object sender, MouseButtonEventArgs e)
+		//{
+		//     try
+		//     {
+		//          Grid panel = (Grid)sender;
 
-		/// <summary>The item code for the loaded artifact.</summary>
-		/// <returns>String in the format of "IN:xxxx"</returns>
-		internal string getItemCode()
-		{
-			return this._itemCode;
-		}
-
-		/// <summary>Hit when the user clicks a message bar.</summary>
-		/// <param name="sender">messageWarning / messageError / messageInfo</param>
-		/// <param name="e">MouseButton Event Args</param>
-		private void messageWarning_MouseDown(object sender, MouseButtonEventArgs e)
-		{
-			try
-			{
-				Grid panel = (Grid)sender;
-
-				if (panel.Visibility == Visibility.Visible)
-				{
-					panel.Visibility = Visibility.Collapsed;
-					//this.panelNone.Visibility = Visibility.Visible;
-				}
-			}
-			catch (Exception ex)
-			{
-				//Connect.logEventMessage("wpfDetailsIncident::messageWarning_MouseDown", ex, System.Diagnostics.EventLogEntryType.Error);
-			}
-		}
+		//          if (panel.Visibility == Visibility.Visible)
+		//          {
+		//               panel.Visibility = Visibility.Collapsed;
+		//               //this.panelNone.Visibility = Visibility.Visible;
+		//          }
+		//     }
+		//     catch (Exception ex)
+		//     {
+		//          //Connect.logEventMessage("wpfDetailsIncident::messageWarning_MouseDown", ex, System.Diagnostics.EventLogEntryType.Error);
+		//     }
+		//}
 
 		/// <summary>Hit when the user clicks to save the incident.</summary>
 		/// <param name="sender">The save button.</param>
@@ -164,7 +108,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 						//this.panelNone.Visibility = Visibility.Collapsed;
 						//this.panelWarning.Visibility = Visibility.Visible;
 						//this.msgWrnMessage.Text = "Saving incident...";
-						this.panelContents.IsEnabled = false;
+						//this.panelContents.IsEnabled = false;
 
 						//RemoteIncident newIncident = new RemoteIncident();
 
@@ -399,15 +343,6 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			}
 		}
 
-		/// <summary>Hit when the user wants to reload the incident after an error.</summary>
-		/// <param name="sender">TextBlock</param>
-		/// <param name="e">Event Args</param>
-		private void TextBlock_MouseDown(object sender, MouseButtonEventArgs e)
-		{
-			int inNumber = int.Parse(this.getItemCode().Split(':')[1]);
-			//this.loadItem(this._Project, this._itemCode);
-		}
-
 		/// <summary>Hit when a textbox or dropdown list changes.</summary>
 		/// <param name="sender">cntrlIncidentName, cntrlDetectedBy, cntrlOwnedBy, cntrlPriority, cntrlSeverity, cntrlDetectedIn, cntrlResolvedIn, cntrlVerifiedIn, cntrlDescription</param>
 		/// <param name="e"></param>
@@ -493,65 +428,6 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			}
 		}
 
-		/// <summary>Converts a resource to a WPF image. Needed for application resources.</summary>
-		/// <param name="image">Bitmap of the image to convert.</param>
-		/// <returns>BitmapSource suitable for an Image control.</returns>
-		private BitmapSource getBMSource(System.Drawing.Bitmap image)
-		{
-			try
-			{
-				if (image != null)
-				{
-					IntPtr bmStream = image.GetHbitmap();
-					return System.Windows.Interop.Imaging.CreateBitmapSourceFromHBitmap(bmStream, IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromWidthAndHeight(image.Width, image.Height));
-				}
-			}
-			catch (Exception ex)
-			{
-				//Connect.logEventMessage("wpfDetailsIncident::getBMSource", ex, System.Diagnostics.EventLogEntryType.Error);
-			}
-			return null;
-		}
-
-		/// <summary>Creates an Image control for a specified resource.</summary>
-		/// <param name="Key">The key name of the resource to use. Will search and use Product-dependent resources first.</param>
-		/// <param name="Size">Size of the desired image, or null.</param>
-		/// <param name="Stretch">Desired stretch setting of image, or null.</param>
-		/// <returns>Resulting image, or null if key is not found.</returns>
-		private Image getImage(string key, Size size)
-		{
-			try
-			{
-				Image retImage = new Image();
-				if (size != null)
-				{
-					retImage.Height = size.Height;
-					retImage.Width = size.Width;
-				}
-				//if (fill != null)
-				//{
-				//    retImage.Stretch = fill;
-				//}
-				BitmapSource image = null;
-				try
-				{
-					//image = getBMSource((System.Drawing.Bitmap)this._resources.GetObject(key));
-				}
-				catch
-				{
-				}
-
-				retImage.Source = image;
-
-				return retImage;
-			}
-			catch (Exception ex)
-			{
-				//Connect.logEventMessage("wpfDetailsIncident::getImage", ex, System.Diagnostics.EventLogEntryType.Error);
-				return new Image();
-			}
-		}
-
 		/// <summary>Hit when a toolbar is loaded. Hides the overflow arrow.</summary>
 		/// <param name="sender">ToolBar</param>
 		/// <param name="e">RoutedEventArgsparam>
@@ -564,5 +440,6 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 				overflowGrid.Visibility = Visibility.Collapsed;
 			}
 		}
+
 	}
 }

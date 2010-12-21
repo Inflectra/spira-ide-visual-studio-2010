@@ -2,7 +2,7 @@
 
 namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 {
-	public partial class wpfDetailsIncident
+	public partial class frmDetailsIncident
 	{
 		/// <summary>Uses the specified concurrency incident to determine the status of a field, and highlight that field for the user to take action on.</summary>
 		/// <param name="ConcurrencyIncident">The reloaded incident that has concurrency differences.</param>
@@ -278,14 +278,14 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 				this.cntrlVerifiedIn.Tag = null;
 				this.grpDescription.Tag = null;
 				// - Schedule fields.
-				this.cntrlTabSchedule.Tag = null;
+				//this.cntrlTabSchedule.Tag = null;
 				this.cntrlStartDate.Tag = null;
 				this.cntrlEndDate.Tag = null;
 				this.cntrlPerComplete.Tag = null;
 				this.cntrlEstEffortH.Tag = this.cntrlEstEffortM.Tag = null;
 				this.cntrlActEffortH.Tag = this.cntrlActEffortM.Tag = null;
 				// - Discussion field.
-				this.cntrlTabDiscussion.Tag = null;
+				//this.cntrlTabDiscussion.Tag = null;
 				this.grpResolution.Tag = null;
 			}
 			catch (Exception ex)
