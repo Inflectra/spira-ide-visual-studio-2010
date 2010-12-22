@@ -94,7 +94,7 @@
 				</StackPanel>
 			</ToolBar>
 			<ToolBar Name="toolbarSaveReload" Band="0" BandIndex="0" Loaded="_toolbar_Loaded">
-				<Button Name="btnSave" ToolBar.OverflowMode="Never">
+				<Button Name="btnSave" IsEnabled="False"  ToolBar.OverflowMode="Never" IsEnabledChanged="toolButton_IsEnabledChanged" Click="btnSave_Click">
 					<StackPanel Orientation="Horizontal">
 						<Image Name="toolImgSave" Height="16" Width="16" Source="/Business.resources;component/Resources/imgSave.png" />
 						<TextBlock Name="toolTxtSave" Margin="2,0,0,0" />

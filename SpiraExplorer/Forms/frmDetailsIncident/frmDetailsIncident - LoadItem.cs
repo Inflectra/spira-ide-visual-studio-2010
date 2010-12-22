@@ -32,11 +32,15 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 		private List<RemoteIncidentPriority> _IncPriority;
 		private List<RemoteIncidentType> _IncType;
 		private List<RemoteIncidentStatus> _IncStatus;
-		private List<RemoteWorkflowIncidentTransition> _IncWkfTransision;
+		private List<RemoteWorkflowIncidentTransition> _IncWkfTransition;
 
 		//Workflow fields..
 		private Dictionary<int, int> _IncWkfFields_Current;
+		private Dictionary<int, int> _IncWkfCustom_Current;
 		private Dictionary<int, int> _IncWkfFields_Updated;
+		private Dictionary<int, int> _IncWkfCustom_Updated;
+		private int? _IncCurrentType;
+		private int? _IncCurrentStatus;
 		#endregion
 
 		// Are we in read-only mode? Are we saving?
@@ -70,25 +74,33 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 				this._client.Incident_RetrieveWorkflowTransitionsCompleted += new EventHandler<Incident_RetrieveWorkflowTransitionsCompletedEventArgs>(_client_Incident_RetrieveWorkflowTransitionsCompleted);
 				this._client.Release_RetrieveCompleted += new EventHandler<Release_RetrieveCompletedEventArgs>(_client_Release_RetrieveCompleted);
 				this._client.Project_RetrieveUserMembershipCompleted += new EventHandler<Project_RetrieveUserMembershipCompletedEventArgs>(_client_Project_RetrieveUserMembershipCompleted);
+				this._client.CustomProperty_RetrieveForArtifactTypeCompleted += new EventHandler<CustomProperty_RetrieveForArtifactTypeCompletedEventArgs>(_client_CustomProperty_RetrieveForArtifactTypeCompleted);
+
+				//Fire the connection off here.
+				this._client.Connection_Authenticate2Async(this._Project.UserName, this._Project.UserPass, StaticFuncs.getCultureResource.GetString("app_ReportName"));
+
 			}
 
 			return retValue;
 		}
 
+
 		#region Client Events
+
+		//**Initial Data Gathering
 		/// <summary>Hit once we've disconnected form the server, all work is done.</summary>
 		/// <param name="sender">ImportExporClient</param>
 		/// <param name="e">AsyncCompletedEventArgs</param>
 		private void _client_Connection_DisconnectCompleted(object sender, AsyncCompletedEventArgs e)
 		{
 			const string METHOD = "_client_Connection_DisconnectCompleted()";
-			System.Diagnostics.Debug.WriteLine(CLASS + METHOD + "ENTER. Clients - Running: " + this._clientNumRunning.ToString() + ", Total: " + this._clientNum.ToString());
+			System.Diagnostics.Debug.WriteLine(CLASS + METHOD + " ENTER. Clients - Running: " + this._clientNumRunning.ToString() + ", Total: " + this._clientNum.ToString());
 
 			this._clientNumRunning = 0;
 			this._clientNum = 0;
 			this._client = null;
 
-			System.Diagnostics.Debug.WriteLine(CLASS + METHOD + "EXIT. Clients - Running: " + this._clientNumRunning.ToString() + ", Total: " + this._clientNum.ToString());
+			System.Diagnostics.Debug.WriteLine(CLASS + METHOD + " EXIT. Clients - Running: " + this._clientNumRunning.ToString() + ", Total: " + this._clientNum.ToString());
 		}
 
 		/// <summary>Hit when we've successfully connected to the server.</summary>
@@ -97,7 +109,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 		private void _client_Connection_Authenticate2Completed(object sender, Connection_Authenticate2CompletedEventArgs e)
 		{
 			const string METHOD = "_client_Connection_Authenticate2Completed()";
-			System.Diagnostics.Debug.WriteLine(CLASS + METHOD + "ENTER. Clients - Running: " + this._clientNumRunning.ToString() + ", Total: " + this._clientNum.ToString());
+			System.Diagnostics.Debug.WriteLine(CLASS + METHOD + " ENTER. Clients - Running: " + this._clientNumRunning.ToString() + ", Total: " + this._clientNum.ToString());
 
 			this._clientNumRunning--;
 
@@ -116,7 +128,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 				}
 			}
 
-			System.Diagnostics.Debug.WriteLine(CLASS + METHOD + "EXIT. Clients - Running: " + this._clientNumRunning.ToString() + ", Total: " + this._clientNum.ToString());
+			System.Diagnostics.Debug.WriteLine(CLASS + METHOD + " EXIT. Clients - Running: " + this._clientNumRunning.ToString() + ", Total: " + this._clientNum.ToString());
 		}
 
 		/// <summary>Hit when we've completed connecting to the project. </summary>
@@ -125,7 +137,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 		private void _client_Connection_ConnectToProjectCompleted(object sender, Connection_ConnectToProjectCompletedEventArgs e)
 		{
 			const string METHOD = "_client_Connection_ConnectToProjectCompleted()";
-			System.Diagnostics.Debug.WriteLine(CLASS + METHOD + "ENTER. Clients - Running: " + this._clientNumRunning.ToString() + ", Total: " + this._clientNum.ToString());
+			System.Diagnostics.Debug.WriteLine(CLASS + METHOD + " ENTER. Clients - Running: " + this._clientNumRunning.ToString() + ", Total: " + this._clientNum.ToString());
 
 			this._clientNumRunning--;
 
@@ -135,24 +147,21 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 				{
 					//Here we need to fire off all data retrieval functions:
 					// - Project users.
+					this._clientNumRunning++;
 					this._client.Project_RetrieveUserMembershipAsync(this._clientNum++);
-					this._clientNumRunning++;
 					// - Incident Statuses, Types, Priorities, Severities
+					this._clientNumRunning += 5;
 					this._client.Incident_RetrievePrioritiesAsync(this._clientNum++);
-					this._clientNumRunning++;
 					this._client.Incident_RetrieveSeveritiesAsync(this._clientNum++);
-					this._clientNumRunning++;
 					this._client.Incident_RetrieveStatusesAsync(this._clientNum++);
-					this._clientNumRunning++;
 					this._client.Incident_RetrieveTypesAsync(this._clientNum++);
-					this._clientNumRunning++;
+					this._client.CustomProperty_RetrieveForArtifactTypeAsync(3, this._clientNum++);
 					// - Available Releases
+					this._clientNumRunning++;
 					this._client.Release_RetrieveAsync(true, this._clientNum++);
+					//Resolutions / Comments
 					this._clientNumRunning++;
-					//Resolutions / COmments
 					this._client.Incident_RetrieveResolutionsAsync(this.ArtifactDetail.ArtifactId, this._clientNum++);
-					this._clientNumRunning++;
-
 				}
 				else
 				{
@@ -161,7 +170,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 				}
 			}
 
-			System.Diagnostics.Debug.WriteLine(CLASS + METHOD + "EXIT. Clients - Running: " + this._clientNumRunning.ToString() + ", Total: " + this._clientNum.ToString());
+			System.Diagnostics.Debug.WriteLine(CLASS + METHOD + " EXIT. Clients - Running: " + this._clientNumRunning.ToString() + ", Total: " + this._clientNum.ToString());
 		}
 
 		/// <summary>Hit when we're finished getting our project users.</summary>
@@ -170,7 +179,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 		private void _client_Project_RetrieveUserMembershipCompleted(object sender, Project_RetrieveUserMembershipCompletedEventArgs e)
 		{
 			const string METHOD = "_client_Project_RetrieveUserMembershipCompleted()";
-			System.Diagnostics.Debug.WriteLine(CLASS + METHOD + "ENTER. Clients - Running: " + this._clientNumRunning.ToString() + ", Total: " + this._clientNum.ToString());
+			System.Diagnostics.Debug.WriteLine(CLASS + METHOD + " ENTER. Clients - Running: " + this._clientNumRunning.ToString() + ", Total: " + this._clientNum.ToString());
 
 			this._clientNumRunning--;
 
@@ -189,7 +198,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 				}
 			}
 
-			System.Diagnostics.Debug.WriteLine(CLASS + METHOD + "EXIT. Clients - Running: " + this._clientNumRunning.ToString() + ", Total: " + this._clientNum.ToString());
+			System.Diagnostics.Debug.WriteLine(CLASS + METHOD + " EXIT. Clients - Running: " + this._clientNumRunning.ToString() + ", Total: " + this._clientNum.ToString());
 		}
 
 		/// <summary>Hit when we're finished getting our project releases.</summary>
@@ -198,7 +207,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 		private void _client_Release_RetrieveCompleted(object sender, Release_RetrieveCompletedEventArgs e)
 		{
 			const string METHOD = "_client_Release_RetrieveCompleted()";
-			System.Diagnostics.Debug.WriteLine(CLASS + METHOD + "ENTER. Clients - Running: " + this._clientNumRunning.ToString() + ", Total: " + this._clientNum.ToString());
+			System.Diagnostics.Debug.WriteLine(CLASS + METHOD + " ENTER. Clients - Running: " + this._clientNumRunning.ToString() + ", Total: " + this._clientNum.ToString());
 
 			this._clientNumRunning--;
 
@@ -217,7 +226,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 				}
 			}
 
-			System.Diagnostics.Debug.WriteLine(CLASS + METHOD + "EXIT. Clients - Running: " + this._clientNumRunning.ToString() + ", Total: " + this._clientNum.ToString());
+			System.Diagnostics.Debug.WriteLine(CLASS + METHOD + " EXIT. Clients - Running: " + this._clientNumRunning.ToString() + ", Total: " + this._clientNum.ToString());
 		}
 
 		/// <summary>Hit when we're finished getting our incident types.</summary>
@@ -226,7 +235,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 		private void _client_Incident_RetrieveTypesCompleted(object sender, Incident_RetrieveTypesCompletedEventArgs e)
 		{
 			const string METHOD = "_client_Incident_RetrieveTypesCompleted()";
-			System.Diagnostics.Debug.WriteLine(CLASS + METHOD + "ENTER. Clients - Running: " + this._clientNumRunning.ToString() + ", Total: " + this._clientNum.ToString());
+			System.Diagnostics.Debug.WriteLine(CLASS + METHOD + " ENTER. Clients - Running: " + this._clientNumRunning.ToString() + ", Total: " + this._clientNum.ToString());
 
 			this._clientNumRunning--;
 
@@ -245,7 +254,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 				}
 			}
 
-			System.Diagnostics.Debug.WriteLine(CLASS + METHOD + "EXIT. Clients - Running: " + this._clientNumRunning.ToString() + ", Total: " + this._clientNum.ToString());
+			System.Diagnostics.Debug.WriteLine(CLASS + METHOD + " EXIT. Clients - Running: " + this._clientNumRunning.ToString() + ", Total: " + this._clientNum.ToString());
 		}
 
 		/// <summary>Hit when we're finished getting our incident statuses.</summary>
@@ -254,7 +263,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 		private void _client_Incident_RetrieveStatusesCompleted(object sender, Incident_RetrieveStatusesCompletedEventArgs e)
 		{
 			const string METHOD = "_client_Incident_RetrieveStatusesCompleted()";
-			System.Diagnostics.Debug.WriteLine(CLASS + METHOD + "ENTER. Clients - Running: " + this._clientNumRunning.ToString() + ", Total: " + this._clientNum.ToString());
+			System.Diagnostics.Debug.WriteLine(CLASS + METHOD + " ENTER. Clients - Running: " + this._clientNumRunning.ToString() + ", Total: " + this._clientNum.ToString());
 
 			this._clientNumRunning--;
 
@@ -273,7 +282,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 				}
 			}
 
-			System.Diagnostics.Debug.WriteLine(CLASS + METHOD + "EXIT. Clients - Running: " + this._clientNumRunning.ToString() + ", Total: " + this._clientNum.ToString());
+			System.Diagnostics.Debug.WriteLine(CLASS + METHOD + " EXIT. Clients - Running: " + this._clientNumRunning.ToString() + ", Total: " + this._clientNum.ToString());
 		}
 
 		/// <summary>Hit when we're finished getting our incident priorities.</summary>
@@ -282,7 +291,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 		private void _client_Incident_RetrievePrioritiesCompleted(object sender, Incident_RetrievePrioritiesCompletedEventArgs e)
 		{
 			const string METHOD = "_client_Incident_RetrievePrioritiesCompleted()";
-			System.Diagnostics.Debug.WriteLine(CLASS + METHOD + "ENTER. Clients - Running: " + this._clientNumRunning.ToString() + ", Total: " + this._clientNum.ToString());
+			System.Diagnostics.Debug.WriteLine(CLASS + METHOD + " ENTER. Clients - Running: " + this._clientNumRunning.ToString() + ", Total: " + this._clientNum.ToString());
 
 			this._clientNumRunning--;
 
@@ -298,7 +307,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 				this._client.Connection_DisconnectAsync();
 			}
 
-			System.Diagnostics.Debug.WriteLine(CLASS + METHOD + "EXIT. Clients - Running: " + this._clientNumRunning.ToString() + ", Total: " + this._clientNum.ToString());
+			System.Diagnostics.Debug.WriteLine(CLASS + METHOD + " EXIT. Clients - Running: " + this._clientNumRunning.ToString() + ", Total: " + this._clientNum.ToString());
 		}
 
 		/// <summary>Hit when we're finished getting our incident severities.</summary>
@@ -307,7 +316,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 		private void _client_Incident_RetrieveSeveritiesCompleted(object sender, Incident_RetrieveSeveritiesCompletedEventArgs e)
 		{
 			const string METHOD = "_client_Incident_RetrieveSeveritiesCompleted()";
-			System.Diagnostics.Debug.WriteLine(CLASS + METHOD + "ENTER. Clients - Running: " + this._clientNumRunning.ToString() + ", Total: " + this._clientNum.ToString());
+			System.Diagnostics.Debug.WriteLine(CLASS + METHOD + " ENTER. Clients - Running: " + this._clientNumRunning.ToString() + ", Total: " + this._clientNum.ToString());
 
 			this._clientNumRunning--;
 
@@ -326,7 +335,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 				}
 			}
 
-			System.Diagnostics.Debug.WriteLine(CLASS + METHOD + "EXIT. Clients - Running: " + this._clientNumRunning.ToString() + ", Total: " + this._clientNum.ToString());
+			System.Diagnostics.Debug.WriteLine(CLASS + METHOD + " EXIT. Clients - Running: " + this._clientNumRunning.ToString() + ", Total: " + this._clientNum.ToString());
 		}
 
 		/// <summary>Hit when we're finished getting incident resolutions.</summary>
@@ -335,7 +344,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 		private void _client_Incident_RetrieveResolutionsCompleted(object sender, Incident_RetrieveResolutionsCompletedEventArgs e)
 		{
 			const string METHOD = "_client_Incident_RetrieveResolutionsCompleted()";
-			System.Diagnostics.Debug.WriteLine(CLASS + METHOD + "ENTER. Clients - Running: " + this._clientNumRunning.ToString() + ", Total: " + this._clientNum.ToString());
+			System.Diagnostics.Debug.WriteLine(CLASS + METHOD + " ENTER. Clients - Running: " + this._clientNumRunning.ToString() + ", Total: " + this._clientNum.ToString());
 
 			this._clientNumRunning--;
 
@@ -355,7 +364,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 				}
 			}
 
-			System.Diagnostics.Debug.WriteLine(CLASS + METHOD + "EXIT. Clients - Running: " + this._clientNumRunning.ToString() + ", Total: " + this._clientNum.ToString());
+			System.Diagnostics.Debug.WriteLine(CLASS + METHOD + " EXIT. Clients - Running: " + this._clientNumRunning.ToString() + ", Total: " + this._clientNum.ToString());
 		}
 
 		/// <summary>Hit when we're finished getting the main incident details.</summary>
@@ -364,7 +373,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 		private void _client_Incident_RetrieveByIdCompleted(object sender, Incident_RetrieveByIdCompletedEventArgs e)
 		{
 			const string METHOD = "_client_Incident_RetrieveByIdCompleted()";
-			System.Diagnostics.Debug.WriteLine(CLASS + METHOD + "ENTER. Clients - Running: " + this._clientNumRunning.ToString() + ", Total: " + this._clientNum.ToString());
+			System.Diagnostics.Debug.WriteLine(CLASS + METHOD + " ENTER. Clients - Running: " + this._clientNumRunning.ToString() + ", Total: " + this._clientNum.ToString());
 
 			this._clientNumRunning--;
 
@@ -372,7 +381,15 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			{
 				if (e.Error == null)
 				{
-					this.loadItem_DisplayInformation(this._Incident);
+					//Load recorded data..
+					this._IncCurrentStatus = e.Result.IncidentStatusId;
+					this._IncCurrentType = e.Result.IncidentTypeId;
+
+					//Get workflow steps and fields.
+					this._clientNumRunning += 3;
+					this._client.Incident_RetrieveWorkflowFieldsAsync(this._Incident.IncidentTypeId.Value, this._Incident.IncidentStatusId.Value, this._clientNum++);
+					this._client.Incident_RetrieveWorkflowTransitionsAsync(this._Incident.IncidentTypeId.Value, this._Incident.IncidentStatusId.Value, (this._Incident.OpenerId == this._Project.UserID), (this._Incident.OwnerId == this._Project.UserID), this._clientNum++);
+					this._client.Incident_RetrieveWorkflowCustomPropertiesAsync(this._Incident.IncidentTypeId.Value, this._Incident.IncidentStatusId.Value, this._clientNum++);
 				}
 				else
 				{
@@ -381,26 +398,246 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 				}
 			}
 
-			System.Diagnostics.Debug.WriteLine(CLASS + METHOD + "EXIT. Clients - Running: " + this._clientNumRunning.ToString() + ", Total: " + this._clientNum.ToString());
+			System.Diagnostics.Debug.WriteLine(CLASS + METHOD + " EXIT. Clients - Running: " + this._clientNumRunning.ToString() + ", Total: " + this._clientNum.ToString());
 		}
+
+		/// <summary>Hit when the client is finished getting available workflow transitions.</summary>
+		/// <param name="sender">ImportExportClient</param>
+		/// <param name="e">Incident_RetrieveWorkflowTransitionsCompletedEventArgs</param>
+		private void _client_Incident_RetrieveWorkflowTransitionsCompleted(object sender, Incident_RetrieveWorkflowTransitionsCompletedEventArgs e)
+		{
+			const string METHOD = "_client_Incident_RetrieveWorkflowTransitionsCompleted()";
+			System.Diagnostics.Debug.WriteLine(CLASS + METHOD + " ENTER. Clients - Running: " + this._clientNumRunning.ToString() + ", Total: " + this._clientNum.ToString());
+
+			this._clientNumRunning--;
+
+			if (!e.Cancelled)
+			{
+				if (e.Error == null)
+				{
+					this._IncWkfTransition = e.Result;
+
+					//See if we're ready to get the actual data.
+					this.load_IsReadyToDisplayData();
+				}
+				else
+				{
+					//TODO: Log error
+					this._client.Connection_DisconnectAsync();
+				}
+			}
+
+			System.Diagnostics.Debug.WriteLine(CLASS + METHOD + " EXIT. Clients - Running: " + this._clientNumRunning.ToString() + ", Total: " + this._clientNum.ToString());
+		}
+
+		/// <summary>Hit when the client is finished pulling all the workflow fields and their status.</summary>
+		/// <param name="sender">ImportExportClient</param>
+		/// <param name="e">Incident_RetrieveWorkflowFieldsCompletedEventArgs</param>
+		private void _client_Incident_RetrieveWorkflowFieldsCompleted(object sender, Incident_RetrieveWorkflowFieldsCompletedEventArgs e)
+		{
+			const string METHOD = "_client_Incident_RetrieveWorkflowFieldsCompleted()";
+			System.Diagnostics.Debug.WriteLine(CLASS + METHOD + " ENTER. Clients - Running: " + this._clientNumRunning.ToString() + ", Total: " + this._clientNum.ToString());
+
+			this._clientNumRunning--;
+
+			if (!e.Cancelled)
+			{
+				if (e.Error == null)
+				{
+					this._IncWkfFields_Current = this.load_ScanWorkFlowFields(e.Result);
+
+					//See if we're ready to get the actual data.
+					this.load_IsReadyToDisplayData();
+				}
+				else
+				{
+					//TODO: Log error
+					this._client.Connection_DisconnectAsync();
+				}
+			}
+
+			System.Diagnostics.Debug.WriteLine(CLASS + METHOD + " EXIT. Clients - Running: " + this._clientNumRunning.ToString() + ", Total: " + this._clientNum.ToString());
+		}
+
+		/// <summary>Hit when the client is finished getting custom workflow property fields.</summary>
+		/// <param name="sender">ImportExportClient</param>
+		/// <param name="e">Incident_RetrieveWorkflowCustomPropertiesCompletedEventArgs</param>
+		private void _client_Incident_RetrieveWorkflowCustomPropertiesCompleted(object sender, Incident_RetrieveWorkflowCustomPropertiesCompletedEventArgs e)
+		{
+			const string METHOD = "_client_Incident_RetrieveWorkflowCustomPropertiesCompleted()";
+			System.Diagnostics.Debug.WriteLine(CLASS + METHOD + " ENTER. Clients - Running: " + this._clientNumRunning.ToString() + ", Total: " + this._clientNum.ToString());
+
+			this._clientNumRunning--;
+
+			if (!e.Cancelled)
+			{
+				if (e.Error == null)
+				{
+					this._IncWkfCustom_Current = this.load_ScanWorkFlowCustomFields(e.Result);
+
+					//See if we're ready to get the actual data.
+					this.load_IsReadyToDisplayData();
+				}
+				else
+				{
+					//TODO: Log error
+					this._client.Connection_DisconnectAsync();
+				}
+			}
+
+			System.Diagnostics.Debug.WriteLine(CLASS + METHOD + " EXIT. Clients - Running: " + this._clientNumRunning.ToString() + ", Total: " + this._clientNum.ToString());
+		}
+
+		/// <summary>Hit when the client finishes getting the custom field values.</summary>
+		/// <param name="sender">ImportExaoprtClient</param>
+		/// <param name="e">CustomProperty_RetrieveForArtifactTypeCompletedEventArgs</param>
+		private void _client_CustomProperty_RetrieveForArtifactTypeCompleted(object sender, CustomProperty_RetrieveForArtifactTypeCompletedEventArgs e)
+		{
+			const string METHOD = "_client_CustomProperty_RetrieveForArtifactTypeCompleted()";
+			System.Diagnostics.Debug.WriteLine(CLASS + METHOD + " ENTER. Clients - Running: " + this._clientNumRunning.ToString() + ", Total: " + this._clientNum.ToString());
+
+			this._clientNumRunning--;
+
+			if (!e.Cancelled)
+			{
+				if (e.Error == null)
+				{
+					//Here we need to create the labels.
+					//TODO: Get labels for custom properties.
+					//Now here we need to create text boxes.
+					//TODO: Create our needed textboxes.
+					//Now here we need to get our lists.
+				}
+				else
+				{
+				}
+			}
+
+			System.Diagnostics.Debug.WriteLine(CLASS + METHOD + " EXIT. Clients - Running: " + this._clientNumRunning.ToString() + ", Total: " + this._clientNum.ToString());
+		}
+
+		//** Workflow updates.
+		/// <summary>Hit when we've successfully connected to the server.</summary>
+		/// <param name="sender">ImportExporClient</param>
+		/// <param name="e">Connection_Authenticate2CompletedEventArgs</param>
+		private void wkfClient_Connection_Authenticate2Completed(object sender, Connection_Authenticate2CompletedEventArgs e)
+		{
+			const string METHOD = "wkfClient_Connection_Authenticate2Completed()";
+			System.Diagnostics.Debug.WriteLine(CLASS + METHOD + " ENTER.");
+
+			if (sender is ImportExportClient)
+			{
+				ImportExportClient client = sender as ImportExportClient;
+
+				if (!e.Cancelled)
+				{
+					if (e.Error == null && e.Result)
+					{
+						//Connect to our project.
+						client.Connection_ConnectToProjectAsync(((SpiraProject)this._ArtifactDetails.ArtifactParentProject.ArtifactTag).ProjectID, this._clientNum++);
+					}
+					else
+					{
+						//TODO: Log error.
+					}
+				}
+			}
+
+			System.Diagnostics.Debug.WriteLine(CLASS + METHOD + " EXIT. Clients - Running: " + this._clientNumRunning.ToString() + ", Total: " + this._clientNum.ToString());
+		}
+
+		/// <summary>Hit when we've completed connecting to the project. </summary>
+		/// <param name="sender">ImportExporClient</param>
+		/// <param name="e">Connection_ConnectToProjectCompletedEventArgs</param>
+		private void wkfClient_Connection_ConnectToProjectCompleted(object sender, Connection_ConnectToProjectCompletedEventArgs e)
+		{
+			const string METHOD = "wkfClient_Connection_ConnectToProjectCompleted()";
+			System.Diagnostics.Debug.WriteLine(CLASS + METHOD + " ENTER.");
+
+			if (sender is ImportExportClient)
+			{
+				ImportExportClient client = sender as ImportExportClient;
+
+				if (!e.Cancelled)
+				{
+					if (e.Error == null && e.Result)
+					{
+						//Get the current workflow fields here.
+						client.Incident_RetrieveWorkflowCustomPropertiesAsync(((RemoteIncidentType)this.cntrlType.SelectedItem).IncidentTypeId.Value, ((RemoteIncidentStatus)this.cntrlStatus.SelectedItem).IncidentStatusId.Value, this._clientNum++);
+						client.Incident_RetrieveWorkflowFieldsAsync(((RemoteIncidentType)this.cntrlType.SelectedItem).IncidentTypeId.Value, ((RemoteIncidentStatus)this.cntrlStatus.SelectedItem).IncidentStatusId.Value, this._clientNum++);
+					}
+					else
+					{
+						//TODO: Log an error.
+					}
+				}
+			}
+
+			System.Diagnostics.Debug.WriteLine(CLASS + METHOD + " EXIT. Clients - Running: " + this._clientNumRunning.ToString() + ", Total: " + this._clientNum.ToString());
+		}
+
+		/// <summary>Hit when the client is finished pulling all the workflow fields and their status.</summary>
+		/// <param name="sender">ImportExportClient</param>
+		/// <param name="e">Incident_RetrieveWorkflowFieldsCompletedEventArgs</param>
+		private void wkfClient_Incident_RetrieveWorkflowFieldsCompleted(object sender, Incident_RetrieveWorkflowFieldsCompletedEventArgs e)
+		{
+			const string METHOD = "wkfClient_Incident_RetrieveWorkflowFieldsCompleted()";
+			System.Diagnostics.Debug.WriteLine(CLASS + METHOD + " ENTER.");
+
+			if (sender is ImportExportClient)
+			{
+				if (!e.Cancelled)
+				{
+					if (e.Error == null)
+					{
+						this._IncWkfFields_Updated = this.load_ScanWorkFlowFields(e.Result);
+
+						//Update main workflow fields.
+						this.loadItem_SetEnabledFields(this._IncWkfFields_Updated);
+					}
+					else
+					{
+						//TODO: Log error.
+					}
+				}
+			}
+			System.Diagnostics.Debug.WriteLine(CLASS + METHOD + " EXIT. Clients - Running: " + this._clientNumRunning.ToString() + ", Total: " + this._clientNum.ToString());
+		}
+
+		/// <summary>Hit when the client is finished getting custom workflow property fields.</summary>
+		/// <param name="sender">ImportExportClient</param>
+		/// <param name="e">Incident_RetrieveWorkflowCustomPropertiesCompletedEventArgs</param>
+		private void wkfClient_Incident_RetrieveWorkflowCustomPropertiesCompleted(object sender, Incident_RetrieveWorkflowCustomPropertiesCompletedEventArgs e)
+		{
+			const string METHOD = "wkfClient_Incident_RetrieveWorkflowCustomPropertiesCompleted()";
+			System.Diagnostics.Debug.WriteLine(CLASS + METHOD + " ENTER.");
+
+			if (sender is ImportExportClient)
+			{
+				if (!e.Cancelled)
+				{
+					if (e.Error == null)
+					{
+						this._IncWkfCustom_Updated = this.load_ScanWorkFlowCustomFields(e.Result);
+
+						//Update custom workflow fields.
+						//TODO: Create function to enable/mark custom fields.
+						//this.loadItem_SetEnabledFields(this._IncWkfFields_Updated);
+					}
+					else
+					{
+						//TODO: Log error
+					}
+				}
+			}
+			System.Diagnostics.Debug.WriteLine(CLASS + METHOD + " EXIT. Clients - Running: " + this._clientNumRunning.ToString() + ", Total: " + this._clientNum.ToString());
+		}
+
 		#endregion
 
-		void _client_Incident_RetrieveWorkflowTransitionsCompleted(object sender, Incident_RetrieveWorkflowTransitionsCompletedEventArgs e)
-		{
-			throw new NotImplementedException();
-		}
-
-		void _client_Incident_RetrieveWorkflowFieldsCompleted(object sender, Incident_RetrieveWorkflowFieldsCompletedEventArgs e)
-		{
-			throw new NotImplementedException();
-		}
-
-		void _client_Incident_RetrieveWorkflowCustomPropertiesCompleted(object sender, Incident_RetrieveWorkflowCustomPropertiesCompletedEventArgs e)
-		{
-			throw new NotImplementedException();
-		}
-
-		/// <summary>Checks to make sure that it is okay to go get the main Incident and Resolution data.</summary>
+		/// <summary>Checks to make sure that it is okay to go get the main Incident data.
+		/// Called after all Async calls except workflow items.
+		/// </summary>
 		private void load_IsReadyToGetMainData()
 		{
 			if (this._clientNumRunning == 0)
@@ -411,6 +648,80 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			}
 		}
 
+		/// <summary>Checks to see if it's okay to start loading form data.
+		/// Called after the two Workflow data retrieval Asyncs.
+		/// </summary>
+		private void load_IsReadyToDisplayData()
+		{
+			if (this._clientNumRunning == 0)
+			{
+				this.loadItem_DisplayInformation(this._Incident);
+
+				//Set Workflow Data. (To disable Fields)
+				this.loadItem_SetEnabledFields(this._IncWkfFields_Current);
+				//TODO: Create function to enable/mark custom fields.
+			}
+		}
+
+		/// <summary>Scans the result from a RetrieveWorkflowField call and add the fields into a useable dictionary.</summary>
+		/// <param name="workFields">List of RemoteWorkflowIncidentFields</param>
+		/// <returns>Dictionary of Field and Status</returns>
+		private Dictionary<int, int> load_ScanWorkFlowFields(List<RemoteWorkflowIncidentFields> workFields)
+		{
+			try
+			{
+				Dictionary<int, int> retList = new Dictionary<int, int>();
+				foreach (RemoteWorkflowIncidentFields Field in workFields)
+				{
+					if (retList.ContainsKey(Field.FieldId))
+					{
+						if (Field.FieldStateId > retList[Field.FieldId])
+							retList[Field.FieldId] = Field.FieldStateId;
+					}
+					else
+					{
+						retList.Add(Field.FieldId, Field.FieldStateId);
+					}
+				}
+
+				return retList;
+			}
+			catch (Exception ex)
+			{
+				//TODO: Log error.
+				return new Dictionary<int, int>();
+			}
+		}
+
+		/// <summary>Scans the result from a RetrieveWorkflowCustomField call and add the fields into a useable dictionary.</summary>
+		/// <param name="workFields">List of RemoteWorkflowIncidentFields</param>
+		/// <returns>Dictionary of Field and Status</returns>
+		private Dictionary<int, int> load_ScanWorkFlowCustomFields(List<RemoteWorkflowIncidentCustomProperties> workCustomFields)
+		{
+			try
+			{
+				Dictionary<int, int> retList = new Dictionary<int, int>();
+				foreach (RemoteWorkflowIncidentCustomProperties Field in workCustomFields)
+				{
+					if (retList.ContainsKey(Field.CustomPropertyId))
+					{
+						if (Field.FieldStateId > retList[Field.CustomPropertyId])
+							retList[Field.CustomPropertyId] = Field.FieldStateId;
+					}
+					else
+					{
+						retList.Add(Field.CustomPropertyId, Field.FieldStateId);
+					}
+				}
+
+				return retList;
+			}
+			catch (Exception ex)
+			{
+				//TODO: Log error.
+				return new Dictionary<int, int>();
+			}
+		}
 
 		#region Form Load Functions
 		/// <summary>Loads the list of available users.</summary>
@@ -577,7 +888,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 					else
 					{
 						//Loop through available transitions. If this status is available, add it.
-						foreach (Business.SpiraTeam_Client.RemoteWorkflowIncidentTransition Transition in this._IncWkfTransision)
+						foreach (Business.SpiraTeam_Client.RemoteWorkflowIncidentTransition Transition in this._IncWkfTransition)
 						{
 							if (Transition.IncidentStatusId_Output == Status.IncidentStatusId)
 							{
@@ -640,361 +951,6 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 
 
 
-
-		/// <summary>Hit when any ASync call for data is completed.</summary>
-		/// <param name="sender">ImportExport</param>
-		/// <param name="e">Event Args</param>
-		private void loadItem_Incident_4(object sender, EventArgs e)
-		{
-			try
-			{
-				bool isErrorThrown = false;
-				string strErrMsg = "";
-
-				string EventType = e.GetType().ToString().Substring(e.GetType().ToString().LastIndexOf('.') + 1);
-
-				switch (EventType)
-				{
-					#region Incident Complete
-					case "Incident_RetrieveByIdCompletedEventArgs":
-						{
-							//Incident is loaded. Save data, fire off the dependant one.
-							Business.SpiraTeam_Client.Incident_RetrieveByIdCompletedEventArgs evt = (Business.SpiraTeam_Client.Incident_RetrieveByIdCompletedEventArgs)e;
-							if (!evt.Cancelled)
-							{
-								if (evt.Error == null)
-								{
-									if (this.isInConcMode)
-									{
-										// It's a data concurrency load. We're only looking for Incident information.
-										this._IncidentConcurrency = evt.Result;
-										// Pass it to the flagging function.
-										//this.concurrency_HighlightFields(this._IncidentConcurrency);
-									}
-									else
-									{
-										// It's not a data concurrency load.
-										this._Incident = evt.Result;
-										this._NumRunning++;
-										this._Client.Incident_RetrieveResolutionsAsync(this._Incident.IncidentId.Value, this._NumAsync++);
-										//if (this.hasWorkFlow_Avail)
-										//{
-										//     this._NumRunning += 2;
-										//     this._Client.Incident_RetrieveWorkflowFieldsAsync(this._Incident.IncidentTypeId, this._Incident.IncidentStatusId, this._NumAsync++);
-										//     this._Client.Incident_RetrieveWorkflowTransitionsAsync(this._Incident.IncidentTypeId, this._Incident.IncidentStatusId, (this._Incident.OpenerId == this._Project.UserID), (this._Incident.OwnerId == this._Project.UserID), this._NumAsync++);
-										//}
-									}
-
-									//Subtract one because the one that started this is finished.
-									this._NumRunning -= 1;
-
-									//DEBUG: Logit.
-									System.Diagnostics.Debug.WriteLine("» Incident Complete. " + this._NumRunning.ToString() + " left.");
-								}
-								else
-								{
-									isErrorThrown = true;
-									strErrMsg = getErrorMessage(evt.Error);
-								}
-							}
-						}
-						break;
-					#endregion
-					#region Project User Membership Complete
-					case "Project_RetrieveUserMembershipCompletedEventArgs":
-						{
-							Business.SpiraTeam_Client.Project_RetrieveUserMembershipCompletedEventArgs evt = (Business.SpiraTeam_Client.Project_RetrieveUserMembershipCompletedEventArgs)e;
-							if (!evt.Cancelled)
-							{
-								if (evt.Error == null)
-								{
-									this._ProjUsers = evt.Result;
-									this._NumRunning -= 1;
-
-									//DEBUG: Logit.
-									System.Diagnostics.Debug.WriteLine("» Project User Membership Complete. " + this._NumRunning.ToString() + " left.");
-
-								}
-								else
-								{
-									isErrorThrown = true;
-									strErrMsg = getErrorMessage(evt.Error);
-								}
-							}
-						}
-						break;
-					#endregion
-					#region Workflow Fields Complete
-					case "Incident_RetrieveWorkflowFieldsCompletedEventArgs":
-						{
-							Business.SpiraTeam_Client.Incident_RetrieveWorkflowFieldsCompletedEventArgs evt = (Business.SpiraTeam_Client.Incident_RetrieveWorkflowFieldsCompletedEventArgs)e;
-							if (!evt.Cancelled)
-							{
-								if (evt.Error == null)
-								{
-									//this._IncWkfFields_Current = scanWorkFlowFields(evt.Result);
-									this._NumRunning -= 1;
-
-									//DEBUG: Logit.
-									System.Diagnostics.Debug.WriteLine("» Workflow Fields Complete. " + this._NumRunning.ToString() + " left.");
-
-								}
-								else
-								{
-									isErrorThrown = true;
-									strErrMsg = getErrorMessage(evt.Error);
-								}
-							}
-
-						}
-						break;
-					#endregion
-					#region Workflow Transisions Complete
-					case "Incident_RetrieveWorkflowTransitionsCompletedEventArgs":
-						{
-							Business.SpiraTeam_Client.Incident_RetrieveWorkflowTransitionsCompletedEventArgs evt = (Business.SpiraTeam_Client.Incident_RetrieveWorkflowTransitionsCompletedEventArgs)e;
-							if (!evt.Cancelled)
-							{
-								if (evt.Error == null)
-								{
-									this._IncWkfTransision = evt.Result;
-									this._NumRunning -= 1;
-
-									//DEBUG: Logit.
-									System.Diagnostics.Debug.WriteLine("» Workflow Transitions Complete. " + this._NumRunning.ToString() + " left.");
-								}
-								else
-								{
-									isErrorThrown = true;
-									strErrMsg = getErrorMessage(evt.Error);
-								}
-							}
-						}
-						break;
-					#endregion
-					#region Releases Complete
-					case "Release_RetrieveCompletedEventArgs":
-						{
-							Business.SpiraTeam_Client.Release_RetrieveCompletedEventArgs evt = (Business.SpiraTeam_Client.Release_RetrieveCompletedEventArgs)e;
-							if (!evt.Cancelled)
-							{
-								if (evt.Error == null)
-								{
-									this._ProjReleases = evt.Result;
-									this._NumRunning -= 1;
-
-									//DEBUG: Logit.
-									System.Diagnostics.Debug.WriteLine("» Releases Complete. " + this._NumRunning.ToString() + " left.");
-								}
-								else
-								{
-									isErrorThrown = true;
-									strErrMsg = getErrorMessage(evt.Error);
-								}
-							}
-						}
-						break;
-					#endregion
-					#region Incident Priorities Complete
-					case "Incident_RetrievePrioritiesCompletedEventArgs":
-						{
-							Business.SpiraTeam_Client.Incident_RetrievePrioritiesCompletedEventArgs evt = (Business.SpiraTeam_Client.Incident_RetrievePrioritiesCompletedEventArgs)e;
-							if (!evt.Cancelled)
-							{
-								if (evt.Error == null)
-								{
-									this._IncPriority = evt.Result;
-									this._NumRunning -= 1;
-
-									//DEBUG: Logit.
-									System.Diagnostics.Debug.WriteLine("» Incident Priorities Complete. " + this._NumRunning.ToString() + " left.");
-
-								}
-								else
-								{
-									isErrorThrown = true;
-									strErrMsg = getErrorMessage(evt.Error);
-								}
-							}
-						}
-						break;
-					#endregion
-					#region Incident Severites Complete
-					case "Incident_RetrieveSeveritiesCompletedEventArgs":
-						{
-							Business.SpiraTeam_Client.Incident_RetrieveSeveritiesCompletedEventArgs evt = (Business.SpiraTeam_Client.Incident_RetrieveSeveritiesCompletedEventArgs)e;
-							if (!evt.Cancelled)
-							{
-								if (evt.Error == null)
-								{
-									this._IncSeverity = evt.Result;
-									this._NumRunning -= 1;
-
-									//DEBUG: Logit.
-									System.Diagnostics.Debug.WriteLine("» Incident Severities Complete. " + this._NumRunning.ToString() + " left.");
-
-								}
-								else
-								{
-									isErrorThrown = true;
-									strErrMsg = getErrorMessage(evt.Error);
-								}
-							}
-						}
-						break;
-					#endregion
-					#region Incident Types Complete
-					case "Incident_RetrieveTypesCompletedEventArgs":
-						{
-							Business.SpiraTeam_Client.Incident_RetrieveTypesCompletedEventArgs evt = (Business.SpiraTeam_Client.Incident_RetrieveTypesCompletedEventArgs)e;
-							if (!evt.Cancelled)
-							{
-								if (evt.Error == null)
-								{
-									this._IncType = evt.Result;
-									this._NumRunning -= 1;
-
-									//DEBUG: Logit.
-									System.Diagnostics.Debug.WriteLine("» Incident Types Complete. " + this._NumRunning.ToString() + " left.");
-
-								}
-								else
-								{
-									isErrorThrown = true;
-									strErrMsg = getErrorMessage(evt.Error);
-								}
-							}
-						}
-						break;
-					#endregion
-					#region Incident Statuses Complete
-					case "Incident_RetrieveStatusesCompletedEventArgs":
-						{
-							Business.SpiraTeam_Client.Incident_RetrieveStatusesCompletedEventArgs evt = (Business.SpiraTeam_Client.Incident_RetrieveStatusesCompletedEventArgs)e;
-							if (!evt.Cancelled)
-							{
-								if (evt.Error == null)
-								{
-									this._IncStatus = evt.Result;
-									this._NumRunning -= 1;
-
-									//DEBUG: Logit.
-									System.Diagnostics.Debug.WriteLine("» Incident Statuses Complete. " + this._NumRunning.ToString() + " left.");
-								}
-								else
-								{
-									isErrorThrown = true;
-									strErrMsg = getErrorMessage(evt.Error);
-								}
-							}
-						}
-						break;
-					#endregion
-					#region Resolutions Complete
-					case "Incident_RetrieveResolutionsCompletedEventArgs":
-						{
-							Business.SpiraTeam_Client.Incident_RetrieveResolutionsCompletedEventArgs evt = (Business.SpiraTeam_Client.Incident_RetrieveResolutionsCompletedEventArgs)e;
-							if (!evt.Cancelled)
-							{
-								if (evt.Error == null)
-								{
-									this._IncResolutions = evt.Result;
-									this._NumRunning -= 1;
-
-									//DEBUG: Logit.
-									System.Diagnostics.Debug.WriteLine("» Resolutions Complete. " + this._NumRunning.ToString() + " left.");
-
-								}
-								else
-								{
-									isErrorThrown = true;
-									strErrMsg = getErrorMessage(evt.Error);
-								}
-							}
-						}
-						break;
-					#endregion
-				}
-				//If all of them have completed, load the form.
-				if (isErrorThrown)
-				{
-					//Kill all Async calls.
-					try
-					{
-						for (int I = 0; I <= this._NumAsync; I++)
-						{
-							//this._Client.CancelAsync(I);
-						}
-					}
-					finally
-					{
-						//Display error information.
-						//this.panelLoading.Visibility = Visibility.Collapsed;
-						//this.panelLoadingError.Visibility = Visibility.Visible;
-						//this.panelForm.Visibility = Visibility.Collapsed;
-						//this.msgLoadingErrorMsg.Text = strErrMsg;
-					}
-				}
-				else if (this._NumRunning == 0)
-				{
-					// Load data into fields.
-					if (this.isInConcMode)
-					{
-						this.loadItem_DisplayInformation(this._IncidentConcurrency);
-						this._Incident = this._IncidentConcurrency;
-					}
-					else
-						this.loadItem_DisplayInformation(this._Incident);
-					//this.loadItem_PopulateDiscussion(this._IncResolutions);
-
-					//Set Workflow Data. (To disable Fields)
-					this.loadItem_SetEnabledFields(this._IncWkfFields_Current);
-					//this.panelContents.IsEnabled = this.hasWorkFlow_Avail;
-
-					//Update screen.
-					if (this.isInSaveMode)
-					{
-						if (this.isInConcMode)
-						{
-							this.isInConcMode = false;
-							this.isInSaveMode = false;
-							//this.panelWarning.Visibility = Visibility.Collapsed;
-							//this.panelInfo.Visibility = Visibility.Collapsed;
-							//this.panelError.Visibility = Visibility.Visible;
-							//this.msgErrMessage.Text = "This incident was modified by another user. New data has been loaded." + Environment.NewLine + "Yellow fields were modified by the other user. Red fields were both modified by you and the other user.";
-						}
-						else
-						{
-							this.isInSaveMode = false;
-							//this.panelWarning.Visibility = Visibility.Collapsed;
-							//this.panelError.Visibility = Visibility.Collapsed;
-							//this.panelInfo.Visibility = Visibility.Visible;
-							//this.msgInfMessage.Text = "Incident saved.";
-							//this.concurrency_ResetHighlightFields();
-						}
-					}
-					else
-					{
-						//this.panelLoading.Visibility = Visibility.Collapsed;
-						//this.panelLoadingError.Visibility = Visibility.Collapsed;
-						//this.panelForm.Visibility = Visibility.Visible;
-						//this.concurrency_ResetHighlightFields();
-					}
-
-					//Finished loading.
-					this.isInLoadMode = false;
-					this._isFieldChanged = false;
-					//this._btnSave.IsEnabled = false;
-					this._isDescChanged = false;
-					this._isResChanged = false;
-					this._DetailsWindow.Caption = this._DetailsWindowTitle;
-				}
-			}
-			catch (Exception ex)
-			{
-				//Connect.logEventMessage("wpfDetailsIncident::loadItem_Incident_4", ex, System.Diagnostics.EventLogEntryType.Error);
-			}
-		}
 
 		#region Field Population
 
@@ -1067,8 +1023,8 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 				// - Name
 				this.cntrlIncidentName.Text = incident.Name;
 				// - Users
-				this.loadItem_PopulateUser(this.cntrlDetectedBy, incident.OpenerId, incident.OpenerName, this._Client);
-				this.loadItem_PopulateUser(this.cntrlOwnedBy, incident.OwnerId, incident.OwnerName, this._Client);
+				this.loadItem_PopulateUser(this.cntrlDetectedBy, incident.OpenerId);
+				this.loadItem_PopulateUser(this.cntrlOwnedBy, incident.OwnerId);
 				((ComboBoxItem)this.cntrlDetectedBy.Items[0]).IsEnabled = false;
 				// - Releases
 				this.loadItem_PopulateReleaseControl(this.cntrlDetectedIn, incident.DetectedReleaseId);

@@ -5,7 +5,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SpiraExplorer", "SpiraExplo
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Business", "Business\Business.csproj", "{256C278A-66AC-40CD-BB71-598586F6FA1C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SpiraExplorer.resources", "SpiraExplorer.resources\SpiraExplorer.resources.csproj", "{87F40C72-2AA5-4011-BAB2-29C6AD5C5B45}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Business.resources", "SpiraExplorer.resources\Business.resources.csproj", "{87F40C72-2AA5-4011-BAB2-29C6AD5C5B45}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

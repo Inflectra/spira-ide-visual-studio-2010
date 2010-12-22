@@ -255,9 +255,9 @@
       <Project>{256C278A-66AC-40CD-BB71-598586F6FA1C}</Project>
       <Name>Business</Name>
     </ProjectReference>
-    <ProjectReference Include="..\SpiraExplorer.resources\SpiraExplorer.resources.csproj">
+    <ProjectReference Include="..\SpiraExplorer.resources\Business.resources.csproj">
       <Project>{87F40C72-2AA5-4011-BAB2-29C6AD5C5B45}</Project>
-      <Name>SpiraExplorer.resources</Name>
+      <Name>Business.resources</Name>
       <Private>True</Private>
       <EmbedInteropTypes>False</EmbedInteropTypes>
       <VSIXSubPath>/en-US/</VSIXSubPath>

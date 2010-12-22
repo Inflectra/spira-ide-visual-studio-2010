@@ -256,9 +256,9 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\SpiraExplorer.resources\SpiraExplorer.resources.csproj">
+    <ProjectReference Include="..\SpiraExplorer.resources\Business.resources.csproj">
       <Project>{87F40C72-2AA5-4011-BAB2-29C6AD5C5B45}</Project>
-      <Name>SpiraExplorer.resources</Name>
+      <Name>Business.resources</Name>
       <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
