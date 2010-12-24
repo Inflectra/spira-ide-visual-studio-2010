@@ -51,7 +51,10 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			set
 			{
 				this._ArtifactDetails = value;
+				this._Project = value.ArtifactParentProject.ArtifactTag as SpiraProject;
+
 				//TODO: Load details information.
+				this.load_LoadItem();
 			}
 		}
 

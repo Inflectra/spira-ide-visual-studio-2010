@@ -384,6 +384,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 					//Load recorded data..
 					this._IncCurrentStatus = e.Result.IncidentStatusId;
 					this._IncCurrentType = e.Result.IncidentTypeId;
+					this._Incident = e.Result;
 
 					//Get workflow steps and fields.
 					this._clientNumRunning += 3;
