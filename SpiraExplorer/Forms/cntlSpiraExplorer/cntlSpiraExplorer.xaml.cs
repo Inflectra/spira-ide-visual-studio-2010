@@ -4,6 +4,7 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business;
 using Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Properties;
+using Microsoft.VisualStudio.Shell;
 
 namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 {
@@ -11,9 +12,9 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 	public partial class cntlSpiraExplorer : UserControl
 	{
 		#region Internal Vars
-		string _solutionName = null;
-		private TreeViewItem _nodeNoSolution = null;
-		private TreeViewItem _nodeNoProjects = null;
+		string _solutionName;
+		private TreeViewItem _nodeNoSolution;
+		private TreeViewItem _nodeNoProjects;
 		#endregion
 		#region Public Events
 		public event EventHandler<OpenItemEventArgs> OpenDetails;
@@ -263,9 +264,39 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 		}
 		#endregion
 
+		/// <summary>Possibly hit when the user double-clicks on an item in the treenode.</summary>
+		/// <param name="sender">Object</param>
+		/// <param name="e">MouseButtonEventArgs</param>
 		private void TreeNode_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
 		{
+			//If it's not a folder and an artifact, open a details screen.
+			//Try to get the data item.
+			ContentControl trvContainer = sender as ContentControl;
+			if (trvContainer != null)
+			{
+				Grid trvGrid = trvContainer.Content as Grid;
+				if (trvGrid != null)
+				{
+					TreeViewArtifact trvArtifact = trvGrid.DataContext as TreeViewArtifact;
+					if (trvArtifact != null)
+					{
+						if (!trvArtifact.ArtifactIsFolder &&
+							(trvArtifact.ArtifactType == TreeViewArtifact.ArtifactTypeEnum.Incident ||
+							trvArtifact.ArtifactType == TreeViewArtifact.ArtifactTypeEnum.Requirement ||
+							trvArtifact.ArtifactType == TreeViewArtifact.ArtifactTypeEnum.Task))
+						{
+							//Okay then, let's open up the details.
+							((SpiraExplorerPackage)this.Pane.Package).OpenDetailsToolWindow(trvArtifact);
+						}
+					}
+				}
+			}
+		}
 
+		public ToolWindowPane Pane
+		{
+			get;
+			set;
 		}
 	}
 }

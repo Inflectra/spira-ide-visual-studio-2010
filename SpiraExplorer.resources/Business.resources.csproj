@@ -149,10 +149,6 @@
     <Resource Include="Resources\imgProject.png" />
     <Resource Include="Resources\imgRelease.png" />
     <Resource Include="Resources\imgTaskTime.png" />
-    <Resource Include="Resources\imgTimer.png" />
-    <Resource Include="Resources\imgSave.png" />
-    <Resource Include="Resources\imgOpenWeb.png" />
-    <Resource Include="Resources\imgReload.png" />
     <Content Include="Resources\Spira.ico" />
     <None Include="Resources\Spira_NoComp.ico" />
     <None Include="Resources\Spira_XP.ico" />

@@ -32,20 +32,13 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 		public frmDetailsIncident(ToolWindowPane ParentWindow)
 			: this()
 		{
-			this.ParentWindow = ParentWindow;
+			this.ParentWindowPane = ParentWindow;
 		}
 
 		public frmDetailsIncident(TreeViewArtifact artifactDetails, ToolWindowPane parentWindow)
 			: this(parentWindow)
 		{
 			this.ArtifactDetail = artifactDetails;
-		}
-
-		/// <summary>The parent ToolWindowPane of this details screen.</summary>
-		public ToolWindowPane ParentWindow
-		{
-			get;
-			set;
 		}
 
 		/// <summary>The detail item for this display.</summary>
@@ -199,8 +192,8 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 				if (!this.isInLoadMode)
 				{
 					//Update window title to indicate there's a change.
-					if (!this.ParentWindow.Caption.EndsWith("*"))
-						this.ParentWindow.Caption = this.ParentWindow.Caption + " *";
+					if (!this.ParentWindowPane.Caption.EndsWith("*"))
+						this.ParentWindowPane.Caption = this.ParentWindowPane.Caption + " *";
 
 					//See if they selected the original setting..
 					if ((this.cntrlType.SelectedItem != null) && (this.cntrlStatus.SelectedItem != null))
@@ -243,9 +236,9 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			{
 				if (!this.isInLoadMode)
 				{
-					if (!this.ParentWindow.Caption.EndsWith("*"))
+					if (!this.ParentWindowPane.Caption.EndsWith("*"))
 					{
-						this.ParentWindow.Caption = this.ParentWindow.Caption + " *";
+						this.ParentWindowPane.Caption = this.ParentWindowPane.Caption + " *";
 					}
 
 					this._isFieldChanged = true;
@@ -301,7 +294,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 		/// <summary>Hit when a toolbar is loaded. Hides the overflow arrow.</summary>
 		/// <param name="sender">ToolBar</param>
 		/// <param name="e">RoutedEventArgsparam>
-		private void _toolbar_Loaded(object sender, RoutedEventArgs e)
+		private void _toolbar_Loaded(object sender, EventArgs e)
 		{
 			ToolBar toolBar = sender as ToolBar;
 			var overflowGrid = toolBar.Template.FindName("OverflowGrid", toolBar) as FrameworkElement;
@@ -311,5 +304,11 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			}
 		}
 
+		/// <summary>The parent windowframe of the control, for accessing window settings.</summary>
+		public ToolWindowPane ParentWindowPane
+		{
+			get;
+			set;
+		}
 	}
 }

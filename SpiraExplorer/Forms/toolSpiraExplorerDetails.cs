@@ -1,4 +1,5 @@
-﻿using Microsoft.VisualStudio.Shell;
+﻿using Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Controls;
+using Microsoft.VisualStudio.Shell;
 
 namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 {
@@ -11,7 +12,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 	/// This class derives from the ToolWindowPane class provided from the MPF in order to use its 
 	/// implementation of the IVsUIElementPane interface.
 	/// </summary>
-	//[Guid("cfe746fb-e114-49da-8cb5-d2f8a1b0274e")]
+	//[Guid("76C22C24-36B6-4C0C-BF60-FFCB65D1B05B")]
 	public class toolSpiraExplorerDetails : ToolWindowPane
 	{
 		/// <summary>
@@ -20,8 +21,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 		public toolSpiraExplorerDetails() :
 			base(null)
 		{
-			// Set the window title reading it from the resources.
-			this.Caption = Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Resources.ToolWindowTitle;
+			base.Caption = "";
 			// Set the image that will appear on the tab of the window frame
 			// when docked with an other window
 			// The resource ID correspond to the one defined in the resx file
@@ -29,6 +29,8 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			// the strip being 16x16.
 			this.BitmapResourceID = 301;
 			this.BitmapIndex = 1;
+
+			base.Content = new cntrlDetailsForm();
 		}
 
 		public toolSpiraExplorerDetails(object ContentControl)

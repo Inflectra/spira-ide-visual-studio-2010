@@ -96,14 +96,14 @@
 			<ToolBar Name="toolbarSaveReload" Band="0" BandIndex="0" Loaded="_toolbar_Loaded">
 				<Button Name="btnSave" IsEnabled="False"  ToolBar.OverflowMode="Never" IsEnabledChanged="toolButton_IsEnabledChanged" Click="btnSave_Click">
 					<StackPanel Orientation="Horizontal">
-						<Image Name="toolImgSave" Height="16" Width="16" Source="/Business.resources;component/Resources/imgSave.png" />
+						<Image Name="toolImgSave" Height="16" Width="16" Source="/SpiraExplorer;component/Resources/imgSave.png" />
 						<TextBlock Name="toolTxtSave" Margin="2,0,0,0" />
 					</StackPanel>
 				</Button>
 				<Separator ToolBar.OverflowMode="Never" />
 				<Button Name="btnRefresh" ToolBar.OverflowMode="Never">
 					<StackPanel Orientation="Horizontal">
-						<Image Name="toolImgRefresh" Height="16" Width="16" Source="/Business.resources;component/Resources/imgReload.png" />
+						<Image Name="toolImgRefresh" Height="16" Width="16" Source="/SpiraExplorer;component/Resources/imgReload.png" />
 						<TextBlock Name="toolTxtRefresh" Margin="2,0,0,0" />
 					</StackPanel>
 				</Button>
@@ -111,7 +111,7 @@
 			<ToolBar Name="toolbarLoadWeb" Band="0" BandIndex="2" Loaded="_toolbar_Loaded">
 				<Button Name="btnLoadWeb" ToolBar.OverflowMode="Never">
 					<StackPanel Orientation="Horizontal">
-						<Image Name="toolImgLoadWeb" Height="16" Width="16" Source="Business.resources;component/Resources/imgOpenWeb.png" />
+						<Image Name="toolImgLoadWeb" Height="16" Width="16" Source="/SpiraExplorer;component/Resources/imgOpenWeb.png" />
 						<TextBlock Name="toolTxtLoadWeb" Margin="2,0,0,0" />
 					</StackPanel>
 				</Button>
@@ -119,7 +119,7 @@
 			<ToolBar Name="toolbarTimer" Band="0" BandIndex="2" Loaded="_toolbar_Loaded">
 				<Button Name="btnStartStopTimer" ToolBar.OverflowMode="Never">
 					<StackPanel Orientation="Horizontal">
-						<Image Name="toolImgTimer" Height="16" Width="16" Source="Business.resources;component/Resources/imgTimer.png" />
+						<Image Name="toolImgTimer" Height="16" Width="16" Source="/SpiraExplorer;component/Resources/imgTimer.png" />
 						<TextBlock Name="toolTxtTimer" Margin="2,0,0,0" />
 					</StackPanel>
 				</Button>

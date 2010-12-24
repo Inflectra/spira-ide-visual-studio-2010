@@ -147,8 +147,11 @@
     <Compile Include="Forms\frmNewServerProject\frmNewServerProject.xaml.cs">
       <DependentUpon>frmNewServerProject.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Forms\cntlSpiraExplorer\toolSpiraExplorer.cs" />
+    <Compile Include="Forms\toolSpiraExplorer.cs" />
     <Compile Include="Forms\toolSpiraExplorerDetails.cs" />
+    <Compile Include="Forms\cntrlDetailsForm.xaml.cs">
+      <DependentUpon>cntrlDetailsForm.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Guids.cs" />
     <Compile Include="Properties\Settings.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -214,6 +217,10 @@
     <Resource Include="Forms\cntrlRichTextEditor\Resources\img_listnumber.png" />
     <Resource Include="Forms\cntrlRichTextEditor\Resources\img_outdent.png" />
     <Resource Include="Forms\cntrlRichTextEditor\Resources\img_underline.png" />
+    <Resource Include="Resources\imgOpenWeb.png" />
+    <Resource Include="Resources\imgReload.png" />
+    <Resource Include="Resources\imgSave.png" />
+    <Resource Include="Resources\imgTimer.png" />
     <Content Include="Resources\Package.ico" />
   </ItemGroup>
   <ItemGroup>
@@ -248,6 +255,10 @@
     <Page Include="Forms\frmNewServerProject\frmNewServerProject.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Forms\cntrlDetailsForm.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
   <ItemGroup>

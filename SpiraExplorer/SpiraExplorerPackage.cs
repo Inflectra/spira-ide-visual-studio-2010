@@ -4,9 +4,9 @@ using System.ComponentModel.Design;
 using System.Diagnostics;
 using System.Globalization;
 using System.Runtime.InteropServices;
-using System.Windows;
 using EnvDTE;
 using Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business;
+using Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Controls;
 using Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms;
 using Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Properties;
 using Microsoft.VisualStudio.Shell;
@@ -28,13 +28,14 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010
 	[InstalledProductRegistration("#110", "#112", "1.0", IconResourceID = 400)] // This attribute is used to register the information needed to show the this package in the Help/About dialog of Visual Studio.
 	[ProvideMenuResource("Menus.ctmenu", 1)] // This attribute is needed to let the shell know that this package exposes some menus.
 	[ProvideToolWindow(typeof(toolSpiraExplorer), MultiInstances = false, Window = "3ae79031-e1bc-11d0-8f78-00a0c9110057")] // This attribute registers a tool window exposed by this package.
+	[ProvideToolWindow(typeof(toolSpiraExplorerDetails), MultiInstances = true, Window = "76C22C24-36B6-4C0C-BF60-FFCB65D1B05B")] // This attribute registers a tool window exposed by this package.
 	[Guid(GuidList.guidSpiraExplorerPkgString)]
 	public sealed class SpiraExplorerPackage : Package
 	{
 		private EnvDTE.Events _EnvironEvents;
 		SolutionEvents _SolEvents;
-		static Dictionary<string, int> _windowGuids;
-		static int _numWindowIds;
+		static Dictionary<TreeViewArtifact, int> _windowDetails;
+		static int _numWindowIds = -1;
 
 		/// <summary>Default constructor of the package. Inside this method you can place any initialization code that does not require any Visual Studio service because at this point the package object is created but not sited yet inside Visual Studio environment. The place to do all the other initialization is the Initialize method.</summary>
 		public SpiraExplorerPackage()
@@ -61,6 +62,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010
 			// is actually the only one.
 			// The last flag is set to true so that if the tool window does not exists it will be created.
 			ToolWindowPane window = this.FindToolWindow(typeof(toolSpiraExplorer), 0, true);
+
 			if ((null == window) || (null == window.Frame))
 			{
 				throw new NotSupportedException(Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Resources.CanNotCreateWindow);
@@ -160,33 +162,61 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010
 		}
 		#endregion
 
-		static void OpenDetailsToolWindow(TreeViewArtifact Artifact)
+		public void OpenDetailsToolWindow(TreeViewArtifact Artifact)
 		{
-			if (SpiraExplorerPackage._windowGuids == null)
-				SpiraExplorerPackage._windowGuids = new Dictionary<string, int>();
+			if (SpiraExplorerPackage._windowDetails == null)
+				SpiraExplorerPackage._windowDetails = new Dictionary<TreeViewArtifact, int>();
 
 			//Get the window ID if it already exists.
 			int NextId = -1;
-			if (SpiraExplorerPackage._windowGuids.ContainsKey(Artifact.ArtifactIDDisplay)) //Get the ID if it exists.
-				NextId = SpiraExplorerPackage._windowGuids[Artifact.ArtifactIDDisplay];
+			if (SpiraExplorerPackage._windowDetails.ContainsKey(Artifact)) //Get the ID if it exists.
+				NextId = SpiraExplorerPackage._windowDetails[Artifact];
 			else //Figure out the next ID.
 			{
 				SpiraExplorerPackage._numWindowIds++;
 				NextId = SpiraExplorerPackage._numWindowIds;
-				SpiraExplorerPackage._windowGuids.Add(Artifact.ArtifactIDDisplay, SpiraExplorerPackage._numWindowIds);
+				SpiraExplorerPackage._windowDetails.Add(Artifact, SpiraExplorerPackage._numWindowIds);
 			}
 
 			//Now generate the window..
-			toolSpiraExplorerDetails window = (toolSpiraExplorerDetails)new SpiraExplorerPackage().FindToolWindow(typeof(toolSpiraExplorerDetails), NextId, true);
+			//IVsUIShell vsUIShell = (IVsUIShell)Package.GetGlobalService(typeof(SVsUIShell));
+			//IVsWindowFrame windowFrame = null;
+			//Guid guidToolWindow2 = typeof(toolSpiraExplorerDetails).GUID;
+			//vsUIShell.FindToolWindow((uint)__VSFINDTOOLWIN.FTW_fForceCreate, ref guidToolWindow2, out windowFrame);
 
-			
+			toolSpiraExplorerDetails window = this.FindToolWindow(typeof(toolSpiraExplorerDetails), NextId, true) as toolSpiraExplorerDetails;
 
-			// Get the instance number 0 of this tool window. This window is single instance so this instance
-			// is actually the only one.
-			// The last flag is set to true so that if the tool window does not exists it will be created.
-			//ToolWindowPane window = this.FindToolWindow(typeof(toolSpiraExplorer), 0, true);
+			//Generate the details screen.
+			object detailContent = null;
+			switch (Artifact.ArtifactType)
+			{
+				case TreeViewArtifact.ArtifactTypeEnum.Incident:
+					frmDetailsIncident detIncident = new frmDetailsIncident();
+					detIncident.ArtifactDetail = Artifact;
+					detIncident.ParentWindowPane = window;
+					detailContent = detIncident;
+					break;
 
-			MessageBox.Show("Tried to open " + Artifact.ArtifactType.ToString() + " #" + Artifact.ArtifactId.ToString());
+				case TreeViewArtifact.ArtifactTypeEnum.Requirement:
+					//TODO: Create requirement detail screen.
+					break;
+
+				case TreeViewArtifact.ArtifactTypeEnum.Task:
+					//TODO: Create task detail screen.
+					break;
+			}
+
+			//Set toolwindow's content.
+			if (detailContent != null)
+			{
+				((cntrlDetailsForm)window.FormControl).Content = detailContent;
+
+				//Get the frame. Needed because we're on a different thread.
+				IVsWindowFrame windowFrame = (IVsWindowFrame)window.Frame;
+				Microsoft.VisualStudio.ErrorHandler.ThrowOnFailure(windowFrame.Show());
+			}
+
+			//MessageBox.Show("Tried to open " + Artifact.ArtifactType.ToString() + " #" + Artifact.ArtifactId.ToString());
 		}
 	}
 }

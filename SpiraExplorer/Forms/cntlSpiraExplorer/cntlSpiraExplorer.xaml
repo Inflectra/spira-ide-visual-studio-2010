@@ -16,7 +16,7 @@
 		<TreeView Name="trvProject" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" MinHeight="150" SelectedItemChanged="trvProject_SelectedItemChanged">
 			<TreeView.Resources>
 				<HierarchicalDataTemplate DataType="{x:Type local:TreeViewArtifact}" ItemsSource="{Binding Path=Items}">
-					<ContentControl Content="{Binding Path=ArtifactHeaderDisplay,Mode=OneWay}" MouseDoubleClick="TreeNode_MouseDoubleClick" />
+					<ContentControl Content="{Binding Path=ArtifactHeaderDisplay,Mode=OneWay}" MouseDoubleClick="TreeNode_MouseDoubleClick"  />
 				</HierarchicalDataTemplate>
 			</TreeView.Resources>
 			<TreeView.ItemContainerStyle>

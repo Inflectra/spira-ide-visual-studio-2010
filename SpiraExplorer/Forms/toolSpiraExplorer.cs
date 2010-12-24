@@ -11,9 +11,11 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 	/// This class derives from the ToolWindowPane class provided from the MPF in order to use its 
 	/// implementation of the IVsUIElementPane interface.
 	/// </summary>
-	//[Guid("cfe746fb-e114-49da-8cb5-d2f8a1b0274e")]
+	//[Guid("3ae79031-e1bc-11d0-8f78-00a0c9110057")]
 	public class toolSpiraExplorer : ToolWindowPane
 	{
+		private SpiraExplorerPackage _Package;
+
 		/// <summary>
 		/// Standard constructor for the tool window.
 		/// </summary>
@@ -33,7 +35,11 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			// This is the user control hosted by the tool window; Note that, even if this class implements IDisposable,
 			// we are not calling Dispose on this object. This is because ToolWindowPane calls Dispose on 
 			// the object returned by the Content property.
-			base.Content = new cntlSpiraExplorer();
+
+			cntlSpiraExplorer explorerWindow = new cntlSpiraExplorer();
+			explorerWindow.Pane = this;
+
+			base.Content = explorerWindow;
 		}
 	}
 }
