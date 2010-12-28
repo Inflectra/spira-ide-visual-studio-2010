@@ -53,6 +53,10 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010
 				Settings.Default.AllProjects = new Business.SerializableList<string>();
 				Settings.Default.Save();
 			}
+			if (SpiraExplorerPackage._windowDetails == null)
+			{
+				SpiraExplorerPackage._windowDetails = new Dictionary<TreeViewArtifact, int>();
+			}
 		}
 
 		/// <summary>This function is called when the user clicks the menu item that shows the tool window. See the Initialize method to see how the menu item is associated to this function using the OleMenuCommandService service and the MenuCommand class.</summary>
@@ -144,6 +148,17 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010
 				cntlSpiraExplorer toolWindow = (cntlSpiraExplorer)window.Content;
 				toolWindow.loadSolution(null);
 			}
+
+			//Close all open details windows.
+			lock (SpiraExplorerPackage._windowDetails)
+			{
+				foreach (KeyValuePair<TreeViewArtifact, int> detailWindow in SpiraExplorerPackage._windowDetails)
+				{
+					ToolWindowPane windowDetail = this.FindToolWindow(typeof(toolSpiraExplorerDetails), detailWindow.Value, false);
+					if (windowDetail != null)
+						((IVsWindowFrame)windowDetail.Frame).Hide();
+				}
+			}
 		}
 
 		/// <summary>Hit when a solution is opened.</summary>
@@ -179,10 +194,6 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010
 			}
 
 			//Now generate the window..
-			//IVsUIShell vsUIShell = (IVsUIShell)Package.GetGlobalService(typeof(SVsUIShell));
-			//IVsWindowFrame windowFrame = null;
-			//Guid guidToolWindow2 = typeof(toolSpiraExplorerDetails).GUID;
-			//vsUIShell.FindToolWindow((uint)__VSFINDTOOLWIN.FTW_fForceCreate, ref guidToolWindow2, out windowFrame);
 
 			toolSpiraExplorerDetails window = this.FindToolWindow(typeof(toolSpiraExplorerDetails), NextId, true) as toolSpiraExplorerDetails;
 
@@ -191,9 +202,9 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010
 			switch (Artifact.ArtifactType)
 			{
 				case TreeViewArtifact.ArtifactTypeEnum.Incident:
-					frmDetailsIncident detIncident = new frmDetailsIncident();
-					detIncident.ArtifactDetail = Artifact;
-					detIncident.ParentWindowPane = window;
+					frmDetailsIncident detIncident = new frmDetailsIncident(Artifact, window);
+					//detIncident.ArtifactDetail = Artifact;
+					//detIncident.ParentWindowPane = window;
 					detailContent = detIncident;
 					break;
 
@@ -213,6 +224,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010
 
 				//Get the frame. Needed because we're on a different thread.
 				IVsWindowFrame windowFrame = (IVsWindowFrame)window.Frame;
+				windowFrame.SetProperty((int)__VSFPROPID.VSFPROPID_FrameMode, VSFRAMEMODE.VSFM_MdiChild);
 				Microsoft.VisualStudio.ErrorHandler.ThrowOnFailure(windowFrame.Show());
 			}
 

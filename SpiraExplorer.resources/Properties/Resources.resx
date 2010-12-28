@@ -361,7 +361,7 @@ http://server/SpiraTeam/</value>
   <data name="app_Task_ID" xml:space="preserve">
     <value>Task ID</value>
   </data>
-  <data name="app_Task_ActualEffort" xml:space="preserve">
+  <data name="app_General_ActEffort" xml:space="preserve">
     <value>Actual Effort</value>
   </data>
   <data name="app_Task_AssociatedRelease" xml:space="preserve">
@@ -370,14 +370,8 @@ http://server/SpiraTeam/</value>
   <data name="app_Task_AssociatedRequirement" xml:space="preserve">
     <value>Assigned Requirement</value>
   </data>
-  <data name="app_Task_EndDate" xml:space="preserve">
-    <value>End Date</value>
-  </data>
   <data name="app_Task_RemainingEffort" xml:space="preserve">
     <value>Remaining Effort</value>
-  </data>
-  <data name="app_Task_StartDate" xml:space="preserve">
-    <value>Start Date</value>
   </data>
   <data name="app_General_CommunicationErrorMessage" xml:space="preserve">
     <value>An error occurred while communicating with the SpiraTeam server.</value>
@@ -435,5 +429,47 @@ http://server/SpiraTeam/</value>
   </data>
   <data name="app_General_None" xml:space="preserve">
     <value>-- None --</value>
+  </data>
+  <data name="app_Incident_Loading" xml:space="preserve">
+    <value>Loading Incident Details, please wait...</value>
+  </data>
+  <data name="app_General_Description" xml:space="preserve">
+    <value>Description</value>
+  </data>
+  <data name="app_General_EndDate" xml:space="preserve">
+    <value>End Date</value>
+  </data>
+  <data name="app_General_Name" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="app_General_StartDate" xml:space="preserve">
+    <value>Start Date</value>
+  </data>
+  <data name="app_Incident_DetectedBy" xml:space="preserve">
+    <value>Detected By</value>
+  </data>
+  <data name="app_Incident_ExpanderCustom" xml:space="preserve">
+    <value>Custom Properties</value>
+  </data>
+  <data name="app_Incident_ExpanderDetails" xml:space="preserve">
+    <value>Details / Description</value>
+  </data>
+  <data name="app_Incident_ExpanderResolution" xml:space="preserve">
+    <value>Resolutions / Comments</value>
+  </data>
+  <data name="app_Incident_ExpanderSchedule" xml:space="preserve">
+    <value>Schedule</value>
+  </data>
+  <data name="app_Incident_OwnedBy" xml:space="preserve">
+    <value>Owned By</value>
+  </data>
+  <data name="app_Incident_PerComplete" xml:space="preserve">
+    <value>Percent Complete</value>
+  </data>
+  <data name="app_Incident_Status" xml:space="preserve">
+    <value>Status</value>
+  </data>
+  <data name="app_Incident_Type" xml:space="preserve">
+    <value>Type</value>
   </data>
 </root>

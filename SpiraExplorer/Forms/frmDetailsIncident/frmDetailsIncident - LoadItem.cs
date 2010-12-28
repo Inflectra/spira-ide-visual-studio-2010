@@ -55,6 +55,9 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			bool retValue = false;
 			if (this.ArtifactDetail != null)
 			{
+				//Set flag.
+				this.IsLoading = true;
+
 				//Create a client.
 				this._client = null;
 				this._client = StaticFuncs.CreateClient(((SpiraProject)this.ArtifactDetail.ArtifactParentProject.ArtifactTag).ServerURL.ToString());
@@ -1051,6 +1054,9 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 				this.cntrlActEffortM.Text = ((incident.ActualEffort.HasValue) ? ((double)incident.ActualEffort % (double)60).ToString() : "");
 				// - Custom Properties
 				//TODO: Custom Props (need API update on workflow for field statuses)
+
+				//Clear the loading flag..
+				this.IsLoading = false;
 			}
 			catch (Exception ex)
 			{

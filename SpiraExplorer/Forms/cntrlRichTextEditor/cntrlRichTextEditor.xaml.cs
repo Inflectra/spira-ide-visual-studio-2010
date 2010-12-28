@@ -1,12 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Input;
+using System.Windows.Markup;
 using System.Windows.Media;
 using System.Windows.Threading;
+using System.Xml;
 
 namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Controls
 {
@@ -320,11 +323,19 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Controls
 			}
 			set
 			{
-				string strFlow = Business.HTMLandXAML.HtmlToXamlConverter.ConvertHtmlToXaml(value, false);
-				this._TextBox.Document.Blocks.Clear();
+				string strFlow = Business.HTMLandXAML.HtmlToXamlConverter.ConvertHtmlToXaml(value, true);
+
 				if (!string.IsNullOrEmpty(strFlow))
 				{
-					this._TextBox.Selection.Load(new System.IO.MemoryStream(Encoding.UTF8.GetBytes(strFlow)), DataFormats.Xaml);
+					FlowDocument doc = null;
+
+					try
+					{
+						doc = (XamlReader.Load(new XmlTextReader(new StringReader(strFlow)))) as FlowDocument;
+					}
+					catch { }
+
+					this._TextBox.Document = doc;
 				}
 				this._TextBox.CaretPosition = this._TextBox.Selection.Start.DocumentStart;
 			}
@@ -382,5 +393,6 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Controls
 			}
 		}
 		#endregion
+
 	}
 }

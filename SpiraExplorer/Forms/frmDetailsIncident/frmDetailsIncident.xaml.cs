@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media.Animation;
 using Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business;
 using Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business.SpiraTeam_Client;
 using Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Controls;
 using Microsoft.VisualStudio.Shell;
+using Microsoft.VisualStudio.Shell.Interop;
 
 namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 {
@@ -16,9 +18,12 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 		private const string CLASS = "frmDetailsIncident:";
 
 		#region Private Data-Changed Vars
-		private bool _isDescChanged = false;
-		private bool _isResChanged = false;
-		private bool _isFieldChanged = false;
+		private bool _isDescChanged;
+		private bool _isResChanged;
+		private bool _isFieldChanged;
+		#endregion
+		#region Private Mode Vars
+		private bool _isLoadingInformation;
 		#endregion
 
 		private TreeViewArtifact _ArtifactDetails;
@@ -27,6 +32,32 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 		public frmDetailsIncident()
 		{
 			InitializeComponent();
+
+			//Load images needed..
+			this.imgLoadingIncident.Source = StaticFuncs.getImage("imgInfoWPF", new Size(48, 48)).Source;
+			this.imgLoadingError.Source = StaticFuncs.getImage("imgErrorWPF", new Size(48, 48)).Source;
+			//Load strings needed..
+			this.lblLoadingIncident.Text = StaticFuncs.getCultureResource.GetString("app_Incident_Loading");
+			this.lblExpanderDetails.Text = StaticFuncs.getCultureResource.GetString("app_Incident_ExpanderDetails");
+			this.lblName.Text = StaticFuncs.getCultureResource.GetString("app_General_Name") + ":";
+			this.lblType.Text = StaticFuncs.getCultureResource.GetString("app_Incident_Type") + ":";
+			this.lblStatus.Text = StaticFuncs.getCultureResource.GetString("app_Incident_Status") + ":";
+			this.lblDetectedBy.Text = StaticFuncs.getCultureResource.GetString("app_Incident_DetectedBy") + ":";
+			this.lblOwnedBy.Text = StaticFuncs.getCultureResource.GetString("app_Incident_OwnedBy") + ":";
+			this.lblPriority.Text = StaticFuncs.getCultureResource.GetString("app_General_Priority") + ":";
+			this.lblSeverity.Text = StaticFuncs.getCultureResource.GetString("app_Incident_Severity") + ":";
+			this.lblDetectedIn.Text = StaticFuncs.getCultureResource.GetString("app_Incident_DetectedRelease") + ":";
+			this.lblResolvedIn.Text = StaticFuncs.getCultureResource.GetString("app_Incident_ResolvedRelease") + ":";
+			this.lblVerifiedIn.Text = StaticFuncs.getCultureResource.GetString("app_Incident_VerifiedRelease") + ":";
+			this.lblDescription.Text = StaticFuncs.getCultureResource.GetString("app_General_Description") + ":";
+			this.lblExpanderResolution.Text = StaticFuncs.getCultureResource.GetString("app_Incident_ExpanderResolution");
+			this.lblExpanderSchedule.Text = StaticFuncs.getCultureResource.GetString("app_Incident_ExpanderSchedule");
+			this.lblPerComplete.Text = StaticFuncs.getCultureResource.GetString("app_Incident_PerComplete") + ":";
+			this.lblStartDate.Text = StaticFuncs.getCultureResource.GetString("app_General_StartDate") + ":";
+			this.lblEndDate.Text = StaticFuncs.getCultureResource.GetString("app_General_EndDate") + ":";
+			this.lblEstEffort.Text = StaticFuncs.getCultureResource.GetString("app_Incident_EstEffort") + ":";
+			this.lblActEffort.Text = StaticFuncs.getCultureResource.GetString("app_General_ActEffort") + ":";
+			this.lblExpanderCustom.Text = StaticFuncs.getCultureResource.GetString("app_Incident_ExpanderCustom");
 		}
 
 		public frmDetailsIncident(ToolWindowPane ParentWindow)
@@ -196,7 +227,9 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 				{
 					//Update window title to indicate there's a change.
 					if (!this.ParentWindowPane.Caption.EndsWith("*"))
-						this.ParentWindowPane.Caption = this.ParentWindowPane.Caption + " *";
+						((IVsWindowFrame)this.ParentWindowPane.Frame).SetProperty((int)__VSFPROPID2.VSFPROPID_OverrideDirtyState, true);
+
+					//this.ParentWindowPane.Caption = this.ParentWindowPane.Caption + " *";
 
 					//See if they selected the original setting..
 					if ((this.cntrlType.SelectedItem != null) && (this.cntrlStatus.SelectedItem != null))
@@ -241,7 +274,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 				{
 					if (!this.ParentWindowPane.Caption.EndsWith("*"))
 					{
-						this.ParentWindowPane.Caption = this.ParentWindowPane.Caption + " *";
+						((IVsWindowFrame)this.ParentWindowPane.Frame).SetProperty((int)__VSFPROPID2.VSFPROPID_OverrideDirtyState, true);
 					}
 
 					this._isFieldChanged = true;
@@ -312,6 +345,48 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 		{
 			get;
 			set;
+		}
+
+		private bool IsLoading
+		{
+			get
+			{
+				return this._isLoadingInformation;
+			}
+			set
+			{
+				if (this._isLoadingInformation != value)
+				{
+					if (value)
+					{
+						//Show the div..
+						this.panelStatus.Visibility = System.Windows.Visibility.Visible;
+					}
+					else
+					{
+						//Fade it out.
+						Storyboard storyFadeOut = new Storyboard();
+						DoubleAnimation animFadeOut = new DoubleAnimation(1, 0, new TimeSpan(0, 0, 0, 0, 500));
+						Storyboard.SetTarget(animFadeOut, this.panelStatus);
+						Storyboard.SetTargetProperty(animFadeOut, new PropertyPath(Control.OpacityProperty));
+						animFadeOut.Completed += new EventHandler(animFadeOut_Completed);
+						storyFadeOut.Children.Add(animFadeOut);
+
+						//Start the animation.
+						storyFadeOut.Begin();
+					}
+
+					this._isLoadingInformation = value;
+				}
+			}
+		}
+
+		/// <summary>Hit when the fadeout is complete.</summary>
+		/// <param name="sender">DoubleAnimation</param>
+		/// <param name="e">EventArgs</param>
+		private void animFadeOut_Completed(object sender, EventArgs e)
+		{
+			this.panelStatus.Visibility = System.Windows.Visibility.Collapsed;
 		}
 	}
 }

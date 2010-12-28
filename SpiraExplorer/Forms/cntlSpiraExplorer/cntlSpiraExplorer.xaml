@@ -2,16 +2,21 @@
 	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 	xmlns:local="clr-namespace:Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business;assembly=Business"
-	Height="Auto" Width="Auto">
+	xmlns:vsfx="clr-namespace:Microsoft.VisualStudio.Shell;assembly=Microsoft.VisualStudio.Shell.10.0"
+	Height="Auto" Width="Auto"
+	Foreground="{DynamicResource {x:Static vsfx:VsBrushes.ToolWindowTextKey}}"
+	Background="{DynamicResource {x:Static vsfx:VsBrushes.ToolboxBackgroundKey}}">
 
 	<DockPanel LastChildFill="True" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-		<ToolBar Height="Auto" DockPanel.Dock="Top" VerticalAlignment="Top">
-			<Button Name="btnRefresh" ToolTip="Refresh Listings"  IsEnabledChanged="toolButton_IsEnabledChanged" Click="btnRefresh_Click" />
-			<Separator />
-			<ToggleButton Name="btnShowClosed" ToolTip="Show Closed &amp; Completed Items" IsEnabledChanged="toolButton_IsEnabledChanged" Click="btnShowClosed_Click" />
-			<Separator />
-			<Button Name="btnConfig" ToolTip="Project Explorer Configuration" Click="btnConfig_Click" />
-		</ToolBar>
+		<ToolBarPanel Height="Auto" DockPanel.Dock="Top" Background="{DynamicResource {x:Static vsfx:VsBrushes.CommandShelfBackgroundGradientKey}}">
+		<ToolBar HorizontalAlignment="Stretch" VerticalAlignment="Stretch" VerticalContentAlignment="Center" Background="{DynamicResource {x:Static vsfx:VsBrushes.CommandBarGradientKey}}">
+				<Button Name="btnRefresh" ToolTip="Refresh Listings"  IsEnabledChanged="toolButton_IsEnabledChanged" Click="btnRefresh_Click" />
+				<Separator />
+				<ToggleButton Name="btnShowClosed" ToolTip="Show Closed &amp; Completed Items" IsEnabledChanged="toolButton_IsEnabledChanged" Click="btnShowClosed_Click" />
+				<Separator />
+				<Button Name="btnConfig" ToolTip="Project Explorer Configuration" Click="btnConfig_Click" />
+			</ToolBar>
+		</ToolBarPanel>
 		<ProgressBar DockPanel.Dock="Bottom" Height="10" IsIndeterminate="True" Foreground="Orange" Visibility="Hidden" Name="barLoading" />
 		<TreeView Name="trvProject" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" MinHeight="150" SelectedItemChanged="trvProject_SelectedItemChanged">
 			<TreeView.Resources>

@@ -3,10 +3,15 @@
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 	xmlns:bus_client="clr-namespace:Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business.SpiraTeam_Client;assembly=Business"
 	xmlns:ui_cntrl="clr-namespace:Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Controls"
+	xmlns:vsfx="clr-namespace:Microsoft.VisualStudio.Shell;assembly=Microsoft.VisualStudio.Shell.10.0"
+	xmlns:resources="clr-namespace:Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Properties"
 	Padding="0"
 	FontFamily="Segoe UI"
 	FontSize="10pt"
-	Width="Auto" Height="Auto">
+	Width="Auto" Height="Auto"
+	Foreground="{DynamicResource {x:Static vsfx:VsBrushes.ToolWindowTextKey}}"
+	Background="{DynamicResource {x:Static vsfx:VsBrushes.ToolboxBackgroundKey}}"
+	>
 
 	<UserControl.Resources>
 		<!-- Display Templates -->
@@ -83,214 +88,490 @@
 				</Trigger>
 			</Style.Triggers>
 		</Style>
+		<!-- Expander Animations -->
+		<Style x:Key="ExpanderHeaderFocusVisual">
+			<Setter Property="Control.Template">
+				<Setter.Value>
+					<ControlTemplate>
+						<Border>
+							<Rectangle SnapsToDevicePixels="true" Margin="0" Stroke="Black" 
+
+StrokeDashArray="1 2" StrokeThickness="1"/>
+						</Border>
+					</ControlTemplate>
+				</Setter.Value>
+			</Setter>
+		</Style>
+		<LinearGradientBrush x:Key="ButtonNormalBackgroundFill" EndPoint="0.5,1" StartPoint="0.5,0">
+			<GradientStop Color="White" Offset="0"/>
+			<GradientStop Color="#FFE3E5F0" Offset="0.5"/>
+			<GradientStop Color="#FFC6C5D7" Offset="1.0"/>
+		</LinearGradientBrush>
+		<LinearGradientBrush x:Key="ExpanderShadowFill" EndPoint="0,1" StartPoint="0,0">
+			<GradientStop Color="Transparent" Offset="0.5"/>
+			<GradientStop Color="#30111111" Offset="1"/>
+		</LinearGradientBrush>
+		<Style x:Key="ExpanderDownHeaderStyle" TargetType="{x:Type ToggleButton}">
+			<Setter Property="Template">
+				<Setter.Value>
+					<ControlTemplate TargetType="{x:Type ToggleButton}">
+						<Border Padding="{TemplateBinding Padding}">
+							<Grid SnapsToDevicePixels="False" Background="Transparent">
+								<Grid.ColumnDefinitions>
+									<ColumnDefinition Width="19"/>
+									<ColumnDefinition Width="*"/>
+								</Grid.ColumnDefinitions>
+								<Ellipse HorizontalAlignment="Center" x:Name="circle" VerticalAlignment="Center" Width="19" Height="19" Fill="{DynamicResource ButtonNormalBackgroundFill}" Stroke="DarkGray"/>
+								<Ellipse Visibility="Hidden" HorizontalAlignment="Center" x:Name="shadow" VerticalAlignment="Center" Width="17" Height="17" Fill="{DynamicResource ExpanderShadowFill}" />
+								<Path SnapsToDevicePixels="false" HorizontalAlignment="Center" x:Name="arrow" VerticalAlignment="Center" Stroke="#666" StrokeThickness="2" Data="M 1,1.5 L 4.5,5 L 8,1.5" />
+								<ContentPresenter SnapsToDevicePixels="True" HorizontalAlignment="Left" Margin="4,0,0,0" VerticalAlignment="Center" Grid.Column="1" RecognizesAccessKey="True" />
+							</Grid>
+						</Border>
+						<ControlTemplate.Triggers>
+							<Trigger Property="IsChecked" Value="true">
+								<Setter Property="Data" TargetName="arrow" Value="M 1,4.5  L 4.5,1  L 8,4.5"/>
+							</Trigger>
+							<Trigger Property="IsMouseOver" Value="true">
+								<Setter Property="Stroke" TargetName="circle" Value="#666"/>
+								<Setter Property="Stroke" TargetName="arrow" Value="#222"/>
+								<Setter Property="Visibility" TargetName="shadow" Value="Visible"/>
+							</Trigger>
+						</ControlTemplate.Triggers>
+					</ControlTemplate>
+				</Setter.Value>
+			</Setter>
+		</Style>
+		<Style x:Key="ExpanderRightHeaderStyle" TargetType="{x:Type ToggleButton}">
+			<Setter Property="Template">
+				<Setter.Value>
+					<ControlTemplate TargetType="{x:Type ToggleButton}">
+						<Border Padding="{TemplateBinding Padding}">
+							<Grid SnapsToDevicePixels="False" Background="Transparent">
+								<Grid.RowDefinitions>
+									<RowDefinition Height="19"/>
+									<RowDefinition Height="*"/>
+								</Grid.RowDefinitions>
+								<Grid>
+									<Grid.LayoutTransform>
+										<TransformGroup>
+											<TransformGroup.Children>
+												<TransformCollection>
+													<RotateTransform Angle="-90"/>
+												</TransformCollection>
+											</TransformGroup.Children>
+										</TransformGroup>
+									</Grid.LayoutTransform>
+									<Ellipse HorizontalAlignment="Center" x:Name="circle" VerticalAlignment="Center" Width="19" Height="19" Fill="{DynamicResource ButtonNormalBackgroundFill}" Stroke="DarkGray" />
+									<Ellipse Visibility="Hidden" HorizontalAlignment="Center" x:Name="shadow" VerticalAlignment="Center" Width="17" Height="17" Fill="{DynamicResource ExpanderShadowFill}" />
+									<Path SnapsToDevicePixels="false" HorizontalAlignment="Center" x:Name="arrow" VerticalAlignment="Center" Stroke="#666" StrokeThickness="2" Data="M 1,1.5  L 4.5,5  L 8,1.5" />
+								</Grid>
+								<ContentPresenter SnapsToDevicePixels="True" HorizontalAlignment="Center" Margin="0,4,0,0" VerticalAlignment="Top" Grid.Row="1" RecognizesAccessKey="True"/>
+							</Grid>
+						</Border>
+						<ControlTemplate.Triggers>
+							<Trigger Property="IsChecked" Value="true">
+								<Setter Property="Data" TargetName="arrow" Value="M 1,4.5  L 4.5,1  L 8,4.5"/>
+							</Trigger>
+							<Trigger Property="IsMouseOver" Value="true">
+								<Setter Property="Stroke" TargetName="circle" Value="#666"/>
+								<Setter Property="Stroke" TargetName="arrow" Value="#222"/>
+								<Setter Property="Visibility" TargetName="shadow" Value="Visible"/>
+							</Trigger>
+						</ControlTemplate.Triggers>
+					</ControlTemplate>
+				</Setter.Value>
+			</Setter>
+		</Style>
+		<Style x:Key="ExpanderUpHeaderStyle" TargetType="{x:Type ToggleButton}">
+			<Setter Property="Template">
+				<Setter.Value>
+					<ControlTemplate TargetType="{x:Type ToggleButton}">
+						<Border Padding="{TemplateBinding Padding}">
+							<Grid SnapsToDevicePixels="False" Background="Transparent">
+								<Grid.ColumnDefinitions>
+									<ColumnDefinition Width="19"/>
+									<ColumnDefinition Width="*"/>
+								</Grid.ColumnDefinitions>
+								<Grid>
+									<Grid.LayoutTransform>
+										<TransformGroup>
+											<TransformGroup.Children>
+												<TransformCollection>
+													<RotateTransform Angle="180"/>
+												</TransformCollection>
+											</TransformGroup.Children>
+										</TransformGroup>
+									</Grid.LayoutTransform>
+									<Ellipse HorizontalAlignment="Center" x:Name="circle" VerticalAlignment="Center" Width="19" Height="19" Fill="{DynamicResource ButtonNormalBackgroundFill}" Stroke="DarkGray"/>
+									<Ellipse Visibility="Hidden" HorizontalAlignment="Center" x:Name="shadow" VerticalAlignment="Center" Width="17" Height="17" Fill="{DynamicResource ExpanderShadowFill}"/>
+									<Path SnapsToDevicePixels="false" HorizontalAlignment="Center" x:Name="arrow" VerticalAlignment="Center" Stroke="#666" StrokeThickness="2" Data="M 1,1.5  L 4.5,5  L 8,1.5"/>
+								</Grid>
+								<ContentPresenter SnapsToDevicePixels="True" HorizontalAlignment="Left" Margin="4,0,0,0" VerticalAlignment="Center" Grid.Column="1" RecognizesAccessKey="True"/>
+							</Grid>
+						</Border>
+						<ControlTemplate.Triggers>
+							<Trigger Property="IsChecked" Value="true">
+								<Setter Property="Data" TargetName="arrow" Value="M 1,4.5  L 4.5,1  L 8,4.5"/>
+							</Trigger>
+							<Trigger Property="IsMouseOver" Value="true">
+								<Setter Property="Stroke" TargetName="circle" Value="#666"/>
+								<Setter Property="Stroke" TargetName="arrow" Value="#222"/>
+								<Setter Property="Visibility" TargetName="shadow" Value="Visible"/>
+							</Trigger>
+						</ControlTemplate.Triggers>
+					</ControlTemplate>
+				</Setter.Value>
+			</Setter>
+		</Style>
+		<Style x:Key="ExpanderLeftHeaderStyle" TargetType="{x:Type ToggleButton}">
+			<Setter Property="Template">
+				<Setter.Value>
+					<ControlTemplate TargetType="{x:Type ToggleButton}">
+						<Border Padding="{TemplateBinding Padding}">
+							<Grid SnapsToDevicePixels="False" Background="Transparent">
+								<Grid.RowDefinitions>
+									<RowDefinition Height="19"/>
+									<RowDefinition Height="*"/>
+								</Grid.RowDefinitions>
+								<Grid>
+									<Grid.LayoutTransform>
+										<TransformGroup>
+											<TransformGroup.Children>
+												<TransformCollection>
+													<RotateTransform Angle="90"/>
+												</TransformCollection>
+											</TransformGroup.Children>
+										</TransformGroup>
+									</Grid.LayoutTransform>
+									<Ellipse HorizontalAlignment="Center" x:Name="circle" VerticalAlignment="Center" Width="19" Height="19" Fill="{DynamicResource ButtonNormalBackgroundFill}" Stroke="DarkGray"/>
+									<Ellipse Visibility="Hidden" HorizontalAlignment="Center" x:Name="shadow" VerticalAlignment="Center" Width="17" Height="17" Fill="{DynamicResource ExpanderShadowFill}"/>
+									<Path SnapsToDevicePixels="false" HorizontalAlignment="Center" x:Name="arrow" VerticalAlignment="Center" Stroke="#666" StrokeThickness="2" Data="M 1,1.5 L 4.5,5 L 8,1.5"/>
+								</Grid>
+								<ContentPresenter SnapsToDevicePixels="True" HorizontalAlignment="Center" Margin="0,4,0,0" VerticalAlignment="Top" Grid.Row="1" RecognizesAccessKey="True"/>
+							</Grid>
+						</Border>
+						<ControlTemplate.Triggers>
+							<Trigger Property="IsChecked" Value="true">
+								<Setter Property="Data" TargetName="arrow" Value="M 1,4.5  L 4.5,1  L 8,4.5"/>
+							</Trigger>
+							<Trigger Property="IsMouseOver" Value="true">
+								<Setter Property="Stroke" TargetName="circle" Value="#666"/>
+								<Setter Property="Stroke" TargetName="arrow" Value="#222"/>
+								<Setter Property="Visibility" TargetName="shadow" Value="Visible"/>
+							</Trigger>
+						</ControlTemplate.Triggers>
+					</ControlTemplate>
+				</Setter.Value>
+			</Setter>
+		</Style>
+		<Style x:Key="ExpanderStyle1" TargetType="{x:Type Expander}">
+			<Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"/>
+			<Setter Property="Background" Value="Transparent"/>
+			<Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+			<Setter Property="VerticalContentAlignment" Value="Stretch"/>
+			<Setter Property="BorderBrush" Value="Transparent"/>
+			<Setter Property="BorderThickness" Value="1"/>
+			<Setter Property="Template">
+				<Setter.Value>
+					<ControlTemplate TargetType="{x:Type Expander}">
+						<ControlTemplate.Resources>
+							<Storyboard x:Key="Timeline1">
+								<DoubleAnimationUsingKeyFrames BeginTime="00:00:00" Duration="00:00:0.25" Storyboard.TargetName="ExpandSite" Storyboard.TargetProperty="(FrameworkElement.LayoutTransform).(TransformGroup.Children)[0].(ScaleTransform.ScaleY)">
+									<SplineDoubleKeyFrame KeyTime="00:00:0.25" Value="1"/>
+								</DoubleAnimationUsingKeyFrames>
+							</Storyboard>
+							<Storyboard x:Key="Timeline2">
+								<DoubleAnimationUsingKeyFrames BeginTime="00:00:00" Duration="00:00:00.45" Storyboard.TargetName="ExpandSite" Storyboard.TargetProperty="(FrameworkElement.LayoutTransform).(TransformGroup.Children)[0].(ScaleTransform.ScaleY)">
+									<SplineDoubleKeyFrame KeyTime="00:00:0.45" Value="0"/>
+								</DoubleAnimationUsingKeyFrames>
+							</Storyboard>
+						</ControlTemplate.Resources>
+						<Border SnapsToDevicePixels="true" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="3">
+							<DockPanel>
+								<ToggleButton FontFamily="{TemplateBinding FontFamily}" FontSize="{TemplateBinding FontSize}" FontStretch="{TemplateBinding FontStretch}" FontStyle="{TemplateBinding FontStyle}" FontWeight="{TemplateBinding FontWeight}" Foreground="{TemplateBinding Foreground}" HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}" Padding="{TemplateBinding Padding}" VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}" FocusVisualStyle="{StaticResource ExpanderHeaderFocusVisual}" Margin="1" MinHeight="0" MinWidth="0" x:Name="HeaderSite" Style="{StaticResource ExpanderDownHeaderStyle}" Content="{TemplateBinding Header}" ContentTemplate="{TemplateBinding HeaderTemplate}" ContentTemplateSelector="{TemplateBinding HeaderTemplateSelector}" IsChecked="{Binding Path=IsExpanded,Mode=TwoWay,RelativeSource={RelativeSource TemplatedParent}}" DockPanel.Dock="Top" />
+								<ContentPresenter Focusable="false" Visibility="Visible" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" Margin="{TemplateBinding Padding}" x:Name="ExpandSite" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" DockPanel.Dock="Bottom">
+									<ContentPresenter.LayoutTransform>
+										<TransformGroup>
+											<ScaleTransform ScaleX="1" ScaleY="0"/>
+											<SkewTransform AngleX="0" AngleY="0"/>
+											<RotateTransform Angle="0"/>
+											<TranslateTransform X="0" Y="0"/>
+										</TransformGroup>
+									</ContentPresenter.LayoutTransform>
+								</ContentPresenter>
+							</DockPanel>
+						</Border>
+						<ControlTemplate.Triggers>
+							<Trigger Property="IsExpanded" Value="True">
+								<Trigger.EnterActions>
+									<BeginStoryboard Storyboard="{StaticResource Timeline1}"/>
+								</Trigger.EnterActions>
+								<Trigger.ExitActions>
+									<BeginStoryboard Storyboard="{StaticResource Timeline2}"/>
+								</Trigger.ExitActions>
+							</Trigger>
+							<Trigger Property="ExpandDirection" Value="Right">
+								<Setter Property="DockPanel.Dock" TargetName="ExpandSite" Value="Right"/>
+								<Setter Property="DockPanel.Dock" TargetName="HeaderSite" Value="Left"/>
+								<Setter Property="Style" TargetName="HeaderSite" Value="{StaticResource ExpanderRightHeaderStyle}"/>
+							</Trigger>
+							<Trigger Property="ExpandDirection" Value="Up">
+								<Setter Property="DockPanel.Dock" TargetName="ExpandSite" Value="Top"/>
+								<Setter Property="DockPanel.Dock" TargetName="HeaderSite" Value="Bottom"/>
+								<Setter Property="Style" TargetName="HeaderSite" Value="{StaticResource ExpanderUpHeaderStyle}"/>
+							</Trigger>
+							<Trigger Property="ExpandDirection" Value="Left">
+								<Setter Property="DockPanel.Dock" TargetName="ExpandSite" Value="Left"/>
+								<Setter Property="DockPanel.Dock" TargetName="HeaderSite" Value="Right"/>
+								<Setter Property="Style" TargetName="HeaderSite" Value="{StaticResource ExpanderLeftHeaderStyle}"/>
+							</Trigger>
+							<Trigger Property="IsEnabled" Value="false">
+								<Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"/>
+							</Trigger>
+						</ControlTemplate.Triggers>
+					</ControlTemplate>
+				</Setter.Value>
+			</Setter>
+		</Style>
+
 	</UserControl.Resources>
 
-	<DockPanel LastChildFill="True">
-		<ToolBarTray DockPanel.Dock="Top" Orientation="Horizontal">
-			<ToolBar Name="toolbarIncidentStatus" Band="0" BandIndex="1" Loaded="_toolbar_Loaded">
-				<StackPanel Orientation="Horizontal" ToolBar.OverflowMode="Never">
-					<TextBlock Height="Auto" VerticalAlignment="Center">Actions:</TextBlock>
-					<ComboBox Name="cntrlStatus" DisplayMemberPath="Name" Margin="2,0,0,0" SelectionChanged="_cntrlStatusType_Changed" />
+	<Grid>
+		<!-- Loading Grid -->
+		<Grid Name="panelStatus" Grid.Column="0" Grid.Row="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Panel.ZIndex="5" Cursor="Wait">
+			<Border Opacity=".75" Background="{DynamicResource {x:Static vsfx:VsBrushes.EnvironmentBackgroundGradientKey}}" Panel.ZIndex="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
+			<Border Background="{DynamicResource {x:Static vsfx:VsBrushes.EnvironmentBackgroundGradientKey}}" Panel.ZIndex="0" HorizontalAlignment="Center" VerticalAlignment="Center" CornerRadius="10" BorderBrush="{DynamicResource {x:Static vsfx:VsBrushes.AutoHideTabBorderKey}}" BorderThickness="3">
+				<StackPanel Orientation="Horizontal">
+					<Image Name="imgLoadingIncident" HorizontalAlignment="Center" VerticalAlignment="Center" Height="48" Width="48" Margin="5" />
+					<TextBlock Name="lblLoadingIncident" Foreground="{DynamicResource {x:Static vsfx:VsBrushes.ToolWindowTabTextKey}}" FontWeight="Bold"  HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10" />
 				</StackPanel>
-			</ToolBar>
-			<ToolBar Name="toolbarSaveReload" Band="0" BandIndex="0" Loaded="_toolbar_Loaded">
-				<Button Name="btnSave" IsEnabled="False"  ToolBar.OverflowMode="Never" IsEnabledChanged="toolButton_IsEnabledChanged" Click="btnSave_Click">
-					<StackPanel Orientation="Horizontal">
-						<Image Name="toolImgSave" Height="16" Width="16" Source="/SpiraExplorer;component/Resources/imgSave.png" />
-						<TextBlock Name="toolTxtSave" Margin="2,0,0,0" />
-					</StackPanel>
-				</Button>
-				<Separator ToolBar.OverflowMode="Never" />
-				<Button Name="btnRefresh" ToolBar.OverflowMode="Never">
-					<StackPanel Orientation="Horizontal">
-						<Image Name="toolImgRefresh" Height="16" Width="16" Source="/SpiraExplorer;component/Resources/imgReload.png" />
-						<TextBlock Name="toolTxtRefresh" Margin="2,0,0,0" />
-					</StackPanel>
-				</Button>
-			</ToolBar>
-			<ToolBar Name="toolbarLoadWeb" Band="0" BandIndex="2" Loaded="_toolbar_Loaded">
-				<Button Name="btnLoadWeb" ToolBar.OverflowMode="Never">
-					<StackPanel Orientation="Horizontal">
-						<Image Name="toolImgLoadWeb" Height="16" Width="16" Source="/SpiraExplorer;component/Resources/imgOpenWeb.png" />
-						<TextBlock Name="toolTxtLoadWeb" Margin="2,0,0,0" />
-					</StackPanel>
-				</Button>
-			</ToolBar>
-			<ToolBar Name="toolbarTimer" Band="0" BandIndex="2" Loaded="_toolbar_Loaded">
-				<Button Name="btnStartStopTimer" ToolBar.OverflowMode="Never">
-					<StackPanel Orientation="Horizontal">
-						<Image Name="toolImgTimer" Height="16" Width="16" Source="/SpiraExplorer;component/Resources/imgTimer.png" />
-						<TextBlock Name="toolTxtTimer" Margin="2,0,0,0" />
-					</StackPanel>
-				</Button>
-			</ToolBar>
-		</ToolBarTray>
-		
-		<StatusBar DockPanel.Dock="Bottom" MinHeight="20">
-			<TextBlock>Loading Incident...</TextBlock>
-		</StatusBar>
+			</Border>
+		</Grid>
 
-		<ListBox SelectionMode="Multiple">
-			<ListBox.Resources>
-				<Style TargetType="{x:Type Expander}">
-					<Setter Property="IsExpanded" Value="{Binding Path=IsSelected, RelativeSource={RelativeSource AncestorType={x:Type ListBoxItem}}}"/>
-				</Style>
-			</ListBox.Resources>
-			<ListBox.Template>
-				<ControlTemplate TargetType="{x:Type ListBox}">
-					<ItemsPresenter />
-				</ControlTemplate>
-			</ListBox.Template>
-			<ListBox.ItemContainerStyle>
-				<Style TargetType="{x:Type ListBoxItem}">
-					<Setter Property="Template">
-						<Setter.Value>
-							<ControlTemplate TargetType="{x:Type ListBoxItem}">
-								<ContentPresenter Content="{TemplateBinding Content}"/>
-							</ControlTemplate>
-						</Setter.Value>
-					</Setter>
-				</Style>
-			</ListBox.ItemContainerStyle>
-			<Expander Header="Details / Description">
-				<Grid HorizontalAlignment="Stretch">
-					<Grid.ColumnDefinitions>
-						<ColumnDefinition Width="Auto" />
-						<!-- COL0: Left Labels -->
-						<ColumnDefinition Width="6*" />
-						<!-- COL1: Left Dropdowns -->
-						<ColumnDefinition Width="10" />
-						<!-- COL2: Empty Space (Pink Floyd) -->
-						<ColumnDefinition Width="Auto" />
-						<!-- COL3: Right Labels -->
-						<ColumnDefinition Width="6*" />
-						<!-- COL4: Right Dropdowns -->
-					</Grid.ColumnDefinitions>
-					<Grid.RowDefinitions>
-						<RowDefinition Height="Auto" />
-						<!-- ROW0: Incident Name -->
-						<RowDefinition Height="Auto" />
-						<!-- ROW1: Status, Type -->
-						<RowDefinition Height="Auto" />
-						<!-- ROW2: Detected By, Owned By -->
-						<RowDefinition Height="Auto" />
-						<!-- ROW3: Priority, Seveity -->
-						<RowDefinition Height="Auto" />
-						<!-- ROW4: DetectedIn, ResolvedIn -->
-						<RowDefinition Height="Auto" />
-						<!-- ROW5: VerifiedIn -->
-						<RowDefinition Height="Auto" />
-						<!-- ROW6: Description -->
-						<RowDefinition Height="Auto" />
-						<!-- ROW7: Tab Control -->
-					</Grid.RowDefinitions>
+		<!-- Error Grid -->
+		<Grid Name="panelError" Grid.Column="0" Grid.Row="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Panel.ZIndex="10" Visibility="Collapsed">
+			<Border Opacity=".75" Background="{DynamicResource {x:Static vsfx:VsBrushes.EnvironmentBackgroundGradientKey}}" Panel.ZIndex="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
+			<Border Background="{DynamicResource {x:Static vsfx:VsBrushes.EnvironmentBackgroundGradientKey}}" Panel.ZIndex="0" HorizontalAlignment="Center" VerticalAlignment="Center" CornerRadius="10" BorderBrush="{DynamicResource {x:Static vsfx:VsBrushes.AutoHideTabBorderKey}}" BorderThickness="3">
+				<StackPanel Orientation="Horizontal">
+					<Image Name="imgLoadingError" HorizontalAlignment="Center" VerticalAlignment="Center" Height="48" Width="48" Margin="5" />
+					<TextBlock Name="lblLoadingError" Foreground="{DynamicResource {x:Static vsfx:VsBrushes.ToolWindowTabTextKey}}" FontWeight="Bold"  HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10" />
+				</StackPanel>
+			</Border>
+		</Grid>
 
-					<!-- ROW0: Incident Name -->
-					<DockPanel Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="5" LastChildFill="True">
-						<TextBlock VerticalAlignment="Center" FontWeight="Bold" Style="{StaticResource PaddedLabel}">Incident Name:</TextBlock>
-						<StackPanel Orientation="Horizontal" DockPanel.Dock="Right" Margin="4,0,0,0">
-							<Label Padding="0" VerticalAlignment="Center">[</Label>
-							<Label Padding="0" VerticalAlignment="Center" Name="lblItemTag" />
-							<Label Padding="0" VerticalAlignment="Center">]</Label>
+		<DockPanel LastChildFill="True" Grid.Column="0" Grid.Row="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Panel.ZIndex="1">
+			<ToolBarTray DockPanel.Dock="Top" Orientation="Horizontal">
+				<ToolBar Name="toolbarIncidentStatus" Band="0" BandIndex="1" Loaded="_toolbar_Loaded">
+					<StackPanel Orientation="Horizontal" ToolBar.OverflowMode="Never">
+						<TextBlock Height="Auto" VerticalAlignment="Center">Actions:</TextBlock>
+						<ComboBox Name="cntrlStatus" DisplayMemberPath="Name" Margin="2,0,0,0" SelectionChanged="_cntrlStatusType_Changed" />
+					</StackPanel>
+				</ToolBar>
+				<ToolBar Name="toolbarSaveReload" Band="0" BandIndex="0" Loaded="_toolbar_Loaded">
+					<Button Name="btnSave" IsEnabled="False"  ToolBar.OverflowMode="Never" IsEnabledChanged="toolButton_IsEnabledChanged" Click="btnSave_Click">
+						<StackPanel Orientation="Horizontal">
+							<Image Name="toolImgSave" Height="16" Width="16" Source="/SpiraExplorer;component/Resources/imgSave.png" />
+							<TextBlock Name="toolTxtSave" Margin="2,0,0,0" />
 						</StackPanel>
-						<TextBox Name="cntrlIncidentName" HorizontalAlignment="Stretch" Width="Auto" Margin="3,3,0,3" VerticalAlignment="Center" TextChanged="_cntrl_TextChanged" Style="{StaticResource ConcurrencyHighlight}" />
-					</DockPanel>
-					<!-- ROW1: Status, Type -->
-					<TextBlock Name="lblType" Grid.Column="0" Grid.Row="1" Style="{StaticResource PaddedLabel}">Type:</TextBlock>
-					<ComboBox Grid.Column="1" Grid.Row="1" Name="cntrlType" Style="{StaticResource PaddedDropdown}" DisplayMemberPath="Name" SelectionChanged="_cntrlStatusType_Changed" />
-					<TextBlock Name="lblStatus" Grid.Column="3" Grid.Row="1" Style="{StaticResource PaddedLabel}">Status:</TextBlock>
-					<TextBlock Grid.Column="4" Grid.Row="1" HorizontalAlignment="Left" Style="{StaticResource PaddedLabel}">[Status]</TextBlock>
-					<!-- ROW2: Detected By, Owned By -->
-					<TextBlock Name="lblDetectedBy" Grid.Column="0" Grid.Row="2" Style="{StaticResource PaddedLabel}">Detected By:</TextBlock>
-					<ComboBox Grid.Column="1" Grid.Row="2" Name="cntrlDetectedBy" Style="{StaticResource PaddedDropdown}" SelectionChanged="_cntrl_TextChanged" />
-					<TextBlock  Name="lblOwnedBy" Grid.Column="3" Grid.Row="2" Style="{StaticResource PaddedLabel}">Owned By:</TextBlock>
-					<ComboBox Grid.Column="4" Grid.Row="2" Name="cntrlOwnedBy" Style="{StaticResource PaddedDropdown}" SelectionChanged="_cntrl_TextChanged" />
-					<!-- ROW3: Priority, Severity -->
-					<TextBlock  Name="lblPriority" Grid.Column="0" Grid.Row="3" Style="{StaticResource PaddedLabel}">Priority:</TextBlock>
-					<ComboBox Grid.Column="1" Grid.Row="3" Name="cntrlPriority" Style="{StaticResource PaddedDropdown}" DisplayMemberPath="Name" SelectionChanged="_cntrl_TextChanged" />
-					<TextBlock  Name="lblSeverity" Grid.Column="3" Grid.Row="3" Style="{StaticResource PaddedLabel}">Severity:</TextBlock>
-					<ComboBox Grid.Column="4" Grid.Row="3" Name="cntrlSeverity" Style="{StaticResource PaddedDropdown}" DisplayMemberPath="Name" SelectionChanged="_cntrl_TextChanged" />
-					<!-- ROW4: DetectedIn, ResolvedIn -->
-					<TextBlock  Name="lblDetectedIn" Grid.Column="0" Grid.Row="4" Style="{StaticResource PaddedLabel}">Detected In Release:</TextBlock>
-					<ComboBox Grid.Column="1" Grid.Row="4" Name="cntrlDetectedIn" Style="{StaticResource PaddedDropdown}" SelectionChanged="_cntrl_TextChanged" />
-					<TextBlock Name="lblResolvedIn" Grid.Column="3" Grid.Row="4" Style="{StaticResource PaddedLabel}">Resolved In Release:</TextBlock>
-					<ComboBox Grid.Column="4" Grid.Row="4" Name="cntrlResolvedIn" Style="{StaticResource PaddedDropdown}" SelectionChanged="_cntrl_TextChanged" />
-					<!-- ROW5: VerifiedIn -->
-					<TextBlock Name="lblVerifiedIn" Grid.Column="3" Grid.Row="5" Style="{StaticResource PaddedLabel}">Verified In Release:</TextBlock>
-					<ComboBox Grid.Column="4" Grid.Row="5" Name="cntrlVerifiedIn" Style="{StaticResource PaddedDropdown}" SelectionChanged="_cntrl_TextChanged" />
-					<!-- ROW6: Description -->
-					<GroupBox Grid.Column="0" Grid.Row="6" Grid.ColumnSpan="5" Name="grpDescription" Style="{StaticResource ConcurrencyHighlight}">
-						<GroupBox.Header>
-							<TextBlock FontWeight="Bold">Description:</TextBlock>
-						</GroupBox.Header>
-						<GroupBox.Content>
-							<ui_cntrl:cntrlRichTextEditor x:Name="cntrlDescription" Height="200" Width="Auto" TextChanged="_cntrl_TextChanged" IsSpellcheckEnabled="True" />
-						</GroupBox.Content>
-					</GroupBox>
-				</Grid>
-			</Expander>
-			<Expander Header="Resolutions / Comments">
-				<StackPanel Orientation="Vertical">
-					<Grid Name="grpResolution">
-						<ui_cntrl:cntrlRichTextEditor x:Name="cntrlResolution" Height="100" Width="Auto" Padding="2" TextChanged="_cntrl_TextChanged" IsSpellcheckEnabled="True"  />
-					</Grid>
-					<StackPanel Name="cntrlDiscussion" Orientation="Vertical" />
-				</StackPanel>
-			</Expander>
-			<Expander Header="Schedule">
-				<Grid HorizontalAlignment="Stretch">
-					<Grid.ColumnDefinitions>
-						<ColumnDefinition Width="Auto" />
-						<!-- COL0: Left Labels -->
-						<ColumnDefinition Width="6*" />
-						<!-- COL1: Left Dropdowns -->
-						<ColumnDefinition Width="1*" />
-						<!-- COL2: Empty Spaces (Pink Floyd) -->
-						<ColumnDefinition Width="Auto" />
-						<!-- COL3: Right Labels -->
-						<ColumnDefinition Width="6*" />
-						<!-- COL4: Right Dropdowns -->
-					</Grid.ColumnDefinitions>
-					<Grid.RowDefinitions>
-						<RowDefinition Height="Auto" />
-						<!-- ROW0: Start Date / Closed On -->
-						<RowDefinition Height="Auto" />
-						<!-- ROW1: % Complete / Est. Effort -->
-						<RowDefinition Height="Auto" />
-						<!-- ROW2: Act. Effort -->
-					</Grid.RowDefinitions>
-					<!-- ROW0: Start Date / End Date -->
-					<TextBlock Name="lblStartDate" Grid.Column="0" Grid.Row="0" Style="{StaticResource PaddedLabel}">Start Date:</TextBlock>
-					<DatePicker Grid.Column="1" Grid.Row="0" Name="cntrlStartDate" IsTodayHighlighted="True" SelectedDateFormat="Short" Style="{StaticResource PaddedDropdown}" Height="Auto" />
-					<TextBlock Name="lblEndDate" Grid.Column="3" Grid.Row="0" Style="{StaticResource PaddedLabel}">End Date:</TextBlock>
-					<DatePicker Grid.Column="4" Grid.Row="0" Name="cntrlEndDate" IsTodayHighlighted="True" SelectedDateFormat="Short" Style="{StaticResource PaddedDropdown}" Height="Auto" />
-					<!-- ROW1: % Complete / Est. Effort -->
-					<TextBlock Name="lblPerComplete" Grid.Column="0" Grid.Row="1" Style="{StaticResource PaddedLabel}">% Complete:</TextBlock>
-					<StackPanel Grid.Column="1" Grid.Row="1" Orientation="Horizontal">
-						<TextBox MaxLength="3" Name="cntrlPerComplete" Style="{StaticResource PaddedDropdown}" Width="30" MinWidth="0"  />
-						<TextBlock Style="{StaticResource PaddedLabel}" FontWeight="Bold">%</TextBlock>
-					</StackPanel>
-					<TextBlock Name="lblEstEffort" Grid.Column="3" Grid.Row="1" Style="{StaticResource PaddedLabel}">Estimated Effort:</TextBlock>
-					<StackPanel Grid.Column="4" Grid.Row="1" Orientation="Horizontal">
-						<ui_cntrl:cntrlMaskedTextBox MaxLength="3" x:Name="cntrlEstEffortH" Style="{StaticResource PaddedDropdown}" Width="30" MinWidth="0" Mask="###" />
-						<TextBlock Style="{StaticResource PaddedLabel}">hours,</TextBlock>
-						<ui_cntrl:cntrlMaskedTextBox MaxLength="2" x:Name="cntrlEstEffortM" Style="{StaticResource PaddedDropdown}" Width="30" MinWidth="0" Mask="##" />
-						<TextBlock Style="{StaticResource PaddedLabel}">minutes</TextBlock>
-					</StackPanel>
-					<!-- ROW2: Actual Effort -->
-					<TextBlock Name="lblActEffort" Grid.Column="3" Grid.Row="2" Style="{StaticResource PaddedLabel}">Actual Effort:</TextBlock>
-					<StackPanel Grid.Column="4" Grid.Row="2" Orientation="Horizontal">
-						<TextBox MaxLength="3" Name="cntrlActEffortH" Style="{StaticResource PaddedDropdown}" Width="30" MinWidth="0" />
-						<TextBlock Style="{StaticResource PaddedLabel}">hours,</TextBlock>
-						<TextBox MaxLength="2" Name="cntrlActEffortM" Style="{StaticResource PaddedDropdown}" Width="30" MinWidth="0" />
-						<TextBlock Style="{StaticResource PaddedLabel}">minutes</TextBlock>
-					</StackPanel>
-				</Grid>
-			</Expander>
-			<Expander Header="Custom Properties">
-				<!-- TODO: Generate Custom Field controls -->
-			</Expander>
-			<!-- <Expander Header="History" /> -->
-		</ListBox>
-	</DockPanel>
+					</Button>
+					<Separator ToolBar.OverflowMode="Never" />
+					<Button Name="btnRefresh" ToolBar.OverflowMode="Never">
+						<StackPanel Orientation="Horizontal">
+							<Image Name="toolImgRefresh" Height="16" Width="16" Source="/SpiraExplorer;component/Resources/imgReload.png" />
+							<TextBlock Name="toolTxtRefresh" Margin="2,0,0,0" />
+						</StackPanel>
+					</Button>
+				</ToolBar>
+				<ToolBar Name="toolbarLoadWeb" Band="0" BandIndex="2" Loaded="_toolbar_Loaded">
+					<Button Name="btnLoadWeb" ToolBar.OverflowMode="Never">
+						<StackPanel Orientation="Horizontal">
+							<Image Name="toolImgLoadWeb" Height="16" Width="16" Source="/SpiraExplorer;component/Resources/imgOpenWeb.png" />
+							<TextBlock Name="toolTxtLoadWeb" Margin="2,0,0,0" />
+						</StackPanel>
+					</Button>
+				</ToolBar>
+				<ToolBar Name="toolbarTimer" Band="0" BandIndex="2" Loaded="_toolbar_Loaded">
+					<Button Name="btnStartStopTimer" ToolBar.OverflowMode="Never">
+						<StackPanel Orientation="Horizontal">
+							<Image Name="toolImgTimer" Height="16" Width="16" Source="/SpiraExplorer;component/Resources/imgTimer.png" />
+							<TextBlock Name="toolTxtTimer" Margin="2,0,0,0" />
+						</StackPanel>
+					</Button>
+				</ToolBar>
+			</ToolBarTray>
+
+			<ScrollViewer Grid.Column="0" Grid.Row="0" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" Panel.ZIndex="1">
+				<ListBox Grid.Row="1" SelectionMode="Single">
+					<ListBox.Resources>
+						<Style TargetType="{x:Type Expander}">
+							<Setter Property="IsExpanded" Value="{Binding Path=IsSelected, RelativeSource={RelativeSource AncestorType={x:Type ListBoxItem}}}"/>
+						</Style>
+					</ListBox.Resources>
+					<ListBox.Template>
+						<ControlTemplate TargetType="{x:Type ListBox}">
+							<ItemsPresenter />
+						</ControlTemplate>
+					</ListBox.Template>
+					<ListBox.ItemContainerStyle>
+						<Style TargetType="{x:Type ListBoxItem}">
+							<Setter Property="Template">
+								<Setter.Value>
+									<ControlTemplate TargetType="{x:Type ListBoxItem}">
+										<ContentPresenter Content="{TemplateBinding Content}"/>
+									</ControlTemplate>
+								</Setter.Value>
+							</Setter>
+						</Style>
+					</ListBox.ItemContainerStyle>
+					<Expander Grid.Row="0" Style="{DynamicResource ExpanderStyle1}" IsExpanded="True">
+						<Expander.Header>
+							<TextBlock Name="lblExpanderDetails" VerticalAlignment="Center" />
+						</Expander.Header>
+						<Grid HorizontalAlignment="Stretch">
+							<Grid.ColumnDefinitions>
+								<ColumnDefinition Width="Auto" />
+								<!-- COL0: Left Labels -->
+								<ColumnDefinition Width="6*" />
+								<!-- COL1: Left Dropdowns -->
+								<ColumnDefinition Width="10" />
+								<!-- COL2: Empty Space (Pink Floyd) -->
+								<ColumnDefinition Width="Auto" />
+								<!-- COL3: Right Labels -->
+								<ColumnDefinition Width="6*" />
+								<!-- COL4: Right Dropdowns -->
+							</Grid.ColumnDefinitions>
+							<Grid.RowDefinitions>
+								<RowDefinition Height="Auto" />
+								<!-- ROW0: Incident Name -->
+								<RowDefinition Height="Auto" />
+								<!-- ROW1: Status, Type -->
+								<RowDefinition Height="Auto" />
+								<!-- ROW2: Detected By, Owned By -->
+								<RowDefinition Height="Auto" />
+								<!-- ROW3: Priority, Seveity -->
+								<RowDefinition Height="Auto" />
+								<!-- ROW4: DetectedIn, ResolvedIn -->
+								<RowDefinition Height="Auto" />
+								<!-- ROW5: VerifiedIn -->
+								<RowDefinition Height="Auto" />
+								<!-- ROW6: Description -->
+								<RowDefinition Height="Auto" />
+								<!-- ROW7: Tab Control -->
+							</Grid.RowDefinitions>
+
+							<!-- ROW0: Incident Name -->
+							<DockPanel Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="5" LastChildFill="True">
+								<TextBlock DockPanel.Dock="Left" Name="lblName" VerticalAlignment="Center" FontWeight="Bold" Style="{StaticResource PaddedLabel}" />
+								<TextBlock DockPanel.Dock="Right" Name="lblToken" Margin="4,0,0,0" />
+								<TextBox Name="cntrlIncidentName" HorizontalAlignment="Stretch" Width="Auto" Margin="3,3,0,3" VerticalAlignment="Center" TextChanged="_cntrl_TextChanged" Style="{StaticResource ConcurrencyHighlight}" />
+							</DockPanel>
+							<!-- ROW1: Status, Type -->
+							<TextBlock Name="lblType" Grid.Column="0" Grid.Row="1" Style="{StaticResource PaddedLabel}" />
+							<ComboBox Grid.Column="1" Grid.Row="1" Name="cntrlType" Style="{StaticResource PaddedDropdown}" DisplayMemberPath="Name" SelectionChanged="_cntrlStatusType_Changed" />
+							<TextBlock Name="lblStatus" Grid.Column="3" Grid.Row="1" Style="{StaticResource PaddedLabel}" />
+							<TextBlock Grid.Column="4" Grid.Row="1" HorizontalAlignment="Left" Style="{StaticResource PaddedLabel}">[Status]</TextBlock>
+							<!-- ROW2: Detected By, Owned By -->
+							<TextBlock Name="lblDetectedBy" Grid.Column="0" Grid.Row="2" Style="{StaticResource PaddedLabel}" />
+							<ComboBox Grid.Column="1" Grid.Row="2" Name="cntrlDetectedBy" Style="{StaticResource PaddedDropdown}" SelectionChanged="_cntrl_TextChanged" />
+							<TextBlock  Name="lblOwnedBy" Grid.Column="3" Grid.Row="2" Style="{StaticResource PaddedLabel}" />
+							<ComboBox Grid.Column="4" Grid.Row="2" Name="cntrlOwnedBy" Style="{StaticResource PaddedDropdown}" SelectionChanged="_cntrl_TextChanged" />
+							<!-- ROW3: Priority, Severity -->
+							<TextBlock  Name="lblPriority" Grid.Column="0" Grid.Row="3" Style="{StaticResource PaddedLabel}" />
+							<ComboBox Grid.Column="1" Grid.Row="3" Name="cntrlPriority" Style="{StaticResource PaddedDropdown}" DisplayMemberPath="Name" SelectionChanged="_cntrl_TextChanged" />
+							<TextBlock  Name="lblSeverity" Grid.Column="3" Grid.Row="3" Style="{StaticResource PaddedLabel}" />
+							<ComboBox Grid.Column="4" Grid.Row="3" Name="cntrlSeverity" Style="{StaticResource PaddedDropdown}" DisplayMemberPath="Name" SelectionChanged="_cntrl_TextChanged" />
+							<!-- ROW4: DetectedIn, ResolvedIn -->
+							<TextBlock  Name="lblDetectedIn" Grid.Column="0" Grid.Row="4" Style="{StaticResource PaddedLabel}" />
+							<ComboBox Grid.Column="1" Grid.Row="4" Name="cntrlDetectedIn" Style="{StaticResource PaddedDropdown}" SelectionChanged="_cntrl_TextChanged" />
+							<TextBlock Name="lblResolvedIn" Grid.Column="3" Grid.Row="4" Style="{StaticResource PaddedLabel}" />
+							<ComboBox Grid.Column="4" Grid.Row="4" Name="cntrlResolvedIn" Style="{StaticResource PaddedDropdown}" SelectionChanged="_cntrl_TextChanged" />
+							<!-- ROW5: VerifiedIn -->
+							<TextBlock Name="lblVerifiedIn" Grid.Column="3" Grid.Row="5" Style="{StaticResource PaddedLabel}" />
+							<ComboBox Grid.Column="4" Grid.Row="5" Name="cntrlVerifiedIn" Style="{StaticResource PaddedDropdown}" SelectionChanged="_cntrl_TextChanged" />
+							<!-- ROW6: Description -->
+							<GroupBox Grid.Column="0" Grid.Row="6" Grid.ColumnSpan="5" Name="grpDescription" Style="{StaticResource ConcurrencyHighlight}">
+								<GroupBox.Header>
+									<TextBlock Name="lblDescription" FontWeight="Bold" />
+								</GroupBox.Header>
+								<GroupBox.Content>
+									<ui_cntrl:cntrlRichTextEditor x:Name="cntrlDescription" Height="200" Width="Auto" TextChanged="_cntrl_TextChanged" IsSpellcheckEnabled="True" />
+								</GroupBox.Content>
+							</GroupBox>
+						</Grid>
+					</Expander>
+					<Expander Style="{DynamicResource ExpanderStyle1}">
+						<Expander.Header>
+							<TextBlock Name="lblExpanderResolution" VerticalAlignment="Center" />
+						</Expander.Header>
+						<StackPanel Orientation="Vertical">
+							<Grid Name="grpResolution">
+								<ui_cntrl:cntrlRichTextEditor x:Name="cntrlResolution" Height="100" Width="Auto" Padding="2" TextChanged="_cntrl_TextChanged" IsSpellcheckEnabled="True"  />
+							</Grid>
+							<StackPanel Name="cntrlDiscussion" Orientation="Vertical" />
+						</StackPanel>
+					</Expander>
+					<Expander Style="{DynamicResource ExpanderStyle1}">
+						<Expander.Header>
+							<TextBlock Name="lblExpanderSchedule" VerticalAlignment="Center" />
+						</Expander.Header>
+						<Grid HorizontalAlignment="Stretch">
+							<Grid.ColumnDefinitions>
+								<ColumnDefinition Width="Auto" />
+								<!-- COL0: Left Labels -->
+								<ColumnDefinition Width="6*" />
+								<!-- COL1: Left Dropdowns -->
+								<ColumnDefinition Width="1*" />
+								<!-- COL2: Empty Spaces (Pink Floyd) -->
+								<ColumnDefinition Width="Auto" />
+								<!-- COL3: Right Labels -->
+								<ColumnDefinition Width="6*" />
+								<!-- COL4: Right Dropdowns -->
+							</Grid.ColumnDefinitions>
+							<Grid.RowDefinitions>
+								<RowDefinition Height="Auto" />
+								<!-- ROW0: Start Date / Closed On -->
+								<RowDefinition Height="Auto" />
+								<!-- ROW1: % Complete / Est. Effort -->
+								<RowDefinition Height="Auto" />
+								<!-- ROW2: Act. Effort -->
+							</Grid.RowDefinitions>
+							<!-- ROW0: Start Date / End Date -->
+							<TextBlock Name="lblStartDate" Grid.Column="0" Grid.Row="0" Style="{StaticResource PaddedLabel}" />
+							<DatePicker Grid.Column="1" Grid.Row="0" Name="cntrlStartDate" IsTodayHighlighted="True" SelectedDateFormat="Short" Style="{StaticResource PaddedDropdown}" Height="Auto" />
+							<TextBlock Name="lblEndDate" Grid.Column="3" Grid.Row="0" Style="{StaticResource PaddedLabel}" />
+							<DatePicker Grid.Column="4" Grid.Row="0" Name="cntrlEndDate" IsTodayHighlighted="True" SelectedDateFormat="Short" Style="{StaticResource PaddedDropdown}" Height="Auto" />
+							<!-- ROW1: % Complete / Est. Effort -->
+							<TextBlock Name="lblPerComplete" Grid.Column="0" Grid.Row="1" Style="{StaticResource PaddedLabel}" />
+							<StackPanel Grid.Column="1" Grid.Row="1" Orientation="Horizontal">
+								<TextBox MaxLength="3" Name="cntrlPerComplete" Style="{StaticResource PaddedDropdown}" Width="30" MinWidth="0"  />
+								<TextBlock Style="{StaticResource PaddedLabel}" FontWeight="Bold">%</TextBlock>
+							</StackPanel>
+							<TextBlock Name="lblEstEffort" Grid.Column="3" Grid.Row="1" Style="{StaticResource PaddedLabel}" />
+							<StackPanel Grid.Column="4" Grid.Row="1" Orientation="Horizontal">
+								<ui_cntrl:cntrlMaskedTextBox MaxLength="3" x:Name="cntrlEstEffortH" Style="{StaticResource PaddedDropdown}" Width="30" MinWidth="0" Mask="###" />
+								<TextBlock Style="{StaticResource PaddedLabel}">hours,</TextBlock>
+								<ui_cntrl:cntrlMaskedTextBox MaxLength="2" x:Name="cntrlEstEffortM" Style="{StaticResource PaddedDropdown}" Width="30" MinWidth="0" Mask="##" />
+								<TextBlock Style="{StaticResource PaddedLabel}">minutes</TextBlock>
+							</StackPanel>
+							<!-- ROW2: Actual Effort -->
+							<TextBlock Name="lblActEffort" Grid.Column="3" Grid.Row="2" Style="{StaticResource PaddedLabel}" />
+							<StackPanel Grid.Column="4" Grid.Row="2" Orientation="Horizontal">
+								<TextBox MaxLength="3" Name="cntrlActEffortH" Style="{StaticResource PaddedDropdown}" Width="30" MinWidth="0" />
+								<TextBlock Style="{StaticResource PaddedLabel}">hours,</TextBlock>
+								<TextBox MaxLength="2" Name="cntrlActEffortM" Style="{StaticResource PaddedDropdown}" Width="30" MinWidth="0" />
+								<TextBlock Style="{StaticResource PaddedLabel}">minutes</TextBlock>
+							</StackPanel>
+						</Grid>
+					</Expander>
+					<Expander Style="{DynamicResource ExpanderStyle1}">
+						<Expander.Header>
+							<TextBlock Name="lblExpanderCustom" VerticalAlignment="Center" />
+						</Expander.Header>
+						<!-- TODO: Generate Custom Field controls -->
+					</Expander>
+					<!-- <Expander Header="History" /> -->
+				</ListBox>
+			</ScrollViewer>
+		</DockPanel>
+	</Grid>
 </UserControl>

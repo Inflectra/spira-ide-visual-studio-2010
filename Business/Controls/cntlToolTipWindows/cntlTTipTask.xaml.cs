@@ -26,10 +26,10 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business.Forms
 			this.txtPriority.Text = StaticFuncs.getCultureResource.GetString("app_General_Priority") + ":";
 			this.txtRelease.Text = StaticFuncs.getCultureResource.GetString("app_Task_AssociatedRelease") + ":";
 			this.txtStatus.Text = StaticFuncs.getCultureResource.GetString("app_General_Status") + ":";
-			this.txtStartDate.Text = StaticFuncs.getCultureResource.GetString("app_Task_StartDate") + ":";
-			this.txtEndDate.Text = StaticFuncs.getCultureResource.GetString("app_Task_EndDate") + ":";
+			this.txtStartDate.Text = StaticFuncs.getCultureResource.GetString("app_General_StartDate") + ":";
+			this.txtEndDate.Text = StaticFuncs.getCultureResource.GetString("app_General_EndDate") + ":";
 			this.tstProjEff.Text = StaticFuncs.getCultureResource.GetString("app_General_ProjEffort") + ":";
-			this.tstActEff.Text = StaticFuncs.getCultureResource.GetString("app_Task_ActualEffort") + ":";
+			this.tstActEff.Text = StaticFuncs.getCultureResource.GetString("app_General_ActEffort") + ":";
 			this.tstRemEff.Text = StaticFuncs.getCultureResource.GetString("app_Task_RemainingEffort") + ":";
 		}
 

@@ -18,7 +18,7 @@
 			<Setter Property="Control.Margin" Value="3,0,3,0" />
 		</Style>
 	</UserControl.Resources>
-	<DockPanel LastChildFill="True">
+	<DockPanel LastChildFill="True" Name="_DockPanel">
 		<ToolBarTray DockPanel.Dock="Top" IsLocked="True">
 			<ToolBar Name="_MenuBar" Height="25">
 				<ToggleButton Name="_toolBold" Command="EditingCommands.ToggleBold" Style="{StaticResource toolbarButton}" ToolBar.OverflowMode="Never">
@@ -98,6 +98,6 @@
 				</Button>
 			</ToolBar>
 		</ToolBarTray>
-		<RichTextBox Name="_TextBox" FontFamily="Arial" Foreground="Black" FontSize="10" Height="Auto" Width="Auto" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" SpellCheck.IsEnabled="True" AcceptsTab="True" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" SelectionChanged="_TextBox_Selection_Changed" TextChanged="_TextBox_TextChanged" />
+		<RichTextBox Name="_TextBox" FontFamily="Arial" Foreground="Black" FontSize="10" Width="{Binding ElementName=_DockPanel,Path=ActualWidth}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" SpellCheck.IsEnabled="True" AcceptsTab="True" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" SelectionChanged="_TextBox_Selection_Changed" TextChanged="_TextBox_TextChanged" />
 	</DockPanel>
 </UserControl>
