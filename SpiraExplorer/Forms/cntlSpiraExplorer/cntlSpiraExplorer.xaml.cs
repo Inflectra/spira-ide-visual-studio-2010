@@ -56,7 +56,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			}
 			catch (Exception ex)
 			{
-				//TODO: Log error.
+				Logger.LogMessage(ex);
 				throw ex;
 			}
 		}
@@ -75,7 +75,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			}
 			catch (Exception ex)
 			{
-				//TODO: Log error here.
+				Logger.LogMessage(ex);
 			}
 		}
 
@@ -109,7 +109,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			}
 			catch (Exception ex)
 			{
-				//TODO: Error logging here.
+				Logger.LogMessage(ex);
 			}
 		}
 
@@ -141,7 +141,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			}
 			catch (Exception ex)
 			{
-				//TODO: Error logging.
+				Logger.LogMessage(ex);
 			}
 		}
 
@@ -165,7 +165,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			}
 			catch (Exception ex)
 			{
-				//TODO: Error logging.
+				Logger.LogMessage(ex);
 			}
 			e.Handled = true;
 		}
@@ -200,7 +200,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			}
 			catch (Exception ex)
 			{
-				//TODO: Log error.
+				Logger.LogMessage(ex);
 			}
 		}
 
@@ -224,7 +224,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			}
 			catch (Exception ex)
 			{
-				//TODO: Log error.
+				Logger.LogMessage(ex);
 				return new StackPanel();
 			}
 		}
@@ -245,7 +245,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			}
 			catch (Exception ex)
 			{
-				//TODO: Log error.
+				Logger.LogMessage(ex);
 			}
 		}
 

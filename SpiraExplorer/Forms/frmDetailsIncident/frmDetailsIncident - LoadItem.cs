@@ -80,6 +80,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 				this._client.CustomProperty_RetrieveForArtifactTypeCompleted += new EventHandler<CustomProperty_RetrieveForArtifactTypeCompletedEventArgs>(_client_CustomProperty_RetrieveForArtifactTypeCompleted);
 
 				//Fire the connection off here.
+				this._clientNumRunning++;
 				this._client.Connection_Authenticate2Async(this._Project.UserName, this._Project.UserPass, StaticFuncs.getCultureResource.GetString("app_ReportName"));
 
 			}
@@ -126,7 +127,14 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 				}
 				else
 				{
-					//TODO: Error logging in. Report error.
+					if (e.Error != null)
+					{
+						Logger.LogMessage(e.Error);
+					}
+					else
+					{
+						Logger.LogMessage("Could not log in!");
+					}
 					this._client.Connection_DisconnectAsync();
 				}
 			}
@@ -148,27 +156,24 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			{
 				if (e.Error == null && e.Result)
 				{
+					this._clientNumRunning += 8;
 					//Here we need to fire off all data retrieval functions:
 					// - Project users.
-					this._clientNumRunning++;
 					this._client.Project_RetrieveUserMembershipAsync(this._clientNum++);
 					// - Incident Statuses, Types, Priorities, Severities
-					this._clientNumRunning += 5;
 					this._client.Incident_RetrievePrioritiesAsync(this._clientNum++);
 					this._client.Incident_RetrieveSeveritiesAsync(this._clientNum++);
 					this._client.Incident_RetrieveStatusesAsync(this._clientNum++);
 					this._client.Incident_RetrieveTypesAsync(this._clientNum++);
 					this._client.CustomProperty_RetrieveForArtifactTypeAsync(3, this._clientNum++);
 					// - Available Releases
-					this._clientNumRunning++;
 					this._client.Release_RetrieveAsync(true, this._clientNum++);
 					//Resolutions / Comments
-					this._clientNumRunning++;
 					this._client.Incident_RetrieveResolutionsAsync(this.ArtifactDetail.ArtifactId, this._clientNum++);
 				}
 				else
 				{
-					//TODO: Log an error.
+					Logger.LogMessage(e.Error);
 					this._client.Connection_DisconnectAsync();
 				}
 			}
@@ -196,7 +201,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 				}
 				else
 				{
-					//TODO: Log error
+					Logger.LogMessage(e.Error);
 					this._client.Connection_DisconnectAsync();
 				}
 			}
@@ -224,7 +229,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 				}
 				else
 				{
-					//TODO: Log error
+					Logger.LogMessage(e.Error);
 					this._client.Connection_DisconnectAsync();
 				}
 			}
@@ -252,7 +257,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 				}
 				else
 				{
-					//TODO: Log error
+					Logger.LogMessage(e.Error);
 					this._client.Connection_DisconnectAsync();
 				}
 			}
@@ -280,7 +285,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 				}
 				else
 				{
-					//TODO: Log error
+					Logger.LogMessage(e.Error);
 					this._client.Connection_DisconnectAsync();
 				}
 			}
@@ -306,7 +311,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			}
 			else
 			{
-				//TODO: Log error
+				Logger.LogMessage(e.Error);
 				this._client.Connection_DisconnectAsync();
 			}
 
@@ -333,7 +338,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 				}
 				else
 				{
-					//TODO: Log error
+					Logger.LogMessage(e.Error);
 					this._client.Connection_DisconnectAsync();
 				}
 			}
@@ -362,7 +367,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 				}
 				else
 				{
-					//TODO: Log error
+					Logger.LogMessage(e.Error);
 					this._client.Connection_DisconnectAsync();
 				}
 			}
@@ -397,7 +402,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 				}
 				else
 				{
-					//TODO: Log error
+					Logger.LogMessage(e.Error);
 					this._client.Connection_DisconnectAsync();
 				}
 			}
@@ -426,7 +431,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 				}
 				else
 				{
-					//TODO: Log error
+					Logger.LogMessage(e.Error);
 					this._client.Connection_DisconnectAsync();
 				}
 			}
@@ -455,7 +460,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 				}
 				else
 				{
-					//TODO: Log error
+					Logger.LogMessage(e.Error);
 					this._client.Connection_DisconnectAsync();
 				}
 			}
@@ -484,7 +489,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 				}
 				else
 				{
-					//TODO: Log error
+					Logger.LogMessage(e.Error);
 					this._client.Connection_DisconnectAsync();
 				}
 			}
@@ -511,9 +516,13 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 					//Now here we need to create text boxes.
 					//TODO: Create our needed textboxes.
 					//Now here we need to get our lists.
+
+					//HACK: See if we're ready to get the actual data.
+					this.load_IsReadyToGetMainData();
 				}
 				else
 				{
+					Logger.LogMessage(e.Error);
 				}
 			}
 
@@ -542,7 +551,14 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 					}
 					else
 					{
-						//TODO: Log error.
+						if (e.Error != null)
+						{
+							Logger.LogMessage(e.Error);
+						}
+						else
+						{
+							Logger.LogMessage("Could not log in.", System.Diagnostics.EventLogEntryType.Error);
+						}
 					}
 				}
 			}
@@ -572,7 +588,14 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 					}
 					else
 					{
-						//TODO: Log an error.
+						if (e.Error != null)
+						{
+							Logger.LogMessage(e.Error);
+						}
+						else
+						{
+							Logger.LogMessage("Could not log in.", System.Diagnostics.EventLogEntryType.Error);
+						}
 					}
 				}
 			}
@@ -601,7 +624,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 					}
 					else
 					{
-						//TODO: Log error.
+						Logger.LogMessage(e.Error);
 					}
 				}
 			}
@@ -630,7 +653,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 					}
 					else
 					{
-						//TODO: Log error
+						Logger.LogMessage(e.Error);
 					}
 				}
 			}
@@ -644,6 +667,8 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 		/// </summary>
 		private void load_IsReadyToGetMainData()
 		{
+			Logger.LogTrace("load_IsReadyToGetMainData: Clients Running " + this._clientNumRunning.ToString());
+
 			if (this._clientNumRunning == 0)
 			{
 				//No clients are currently running, we can get the main data now.
@@ -657,6 +682,8 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 		/// </summary>
 		private void load_IsReadyToDisplayData()
 		{
+			Logger.LogTrace("load_IsReadyToDisplayData: Clients Running " + this._clientNumRunning.ToString());
+
 			if (this._clientNumRunning == 0)
 			{
 				this.loadItem_DisplayInformation(this._Incident);
@@ -692,7 +719,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			}
 			catch (Exception ex)
 			{
-				//TODO: Log error.
+				Logger.LogMessage(ex);
 				return new Dictionary<int, int>();
 			}
 		}
@@ -722,7 +749,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			}
 			catch (Exception ex)
 			{
-				//TODO: Log error.
+				Logger.LogMessage(ex);
 				return new Dictionary<int, int>();
 			}
 		}

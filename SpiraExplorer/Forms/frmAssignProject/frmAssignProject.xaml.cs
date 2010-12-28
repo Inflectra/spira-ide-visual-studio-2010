@@ -43,7 +43,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 				}
 				catch (Exception ex)
 				{
-					//TODO: Log Error.
+					Logger.LogMessage(ex);
 				}
 
 				//Load logos and images.
@@ -81,7 +81,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			}
 			catch (Exception ex)
 			{
-				//TODO: Log Error.
+				Logger.LogMessage(ex);
 			}
 		}
 
@@ -104,7 +104,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			}
 			catch (Exception ex)
 			{
-				//TODO: Log Error.
+				Logger.LogMessage(ex);
 			}
 		}
 
@@ -130,7 +130,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			}
 			catch (Exception ex)
 			{
-				//TODO: Log Error.
+				Logger.LogMessage(ex);
 			}
 		}
 
@@ -169,7 +169,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			}
 			catch (Exception ex)
 			{
-				//TODO: Log Error.
+				Logger.LogMessage(ex);
 			}
 		}
 
@@ -207,7 +207,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			}
 			catch (Exception ex)
 			{
-				//TODO: Log Error.
+				Logger.LogMessage(ex);
 			}
 		}
 
@@ -232,7 +232,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			}
 			catch (Exception ex)
 			{
-				//TODO: Log Error.
+				Logger.LogMessage(ex);
 			}
 		}
 
@@ -306,7 +306,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			}
 			catch (Exception ex)
 			{
-				//TODO: Log Error.
+				Logger.LogMessage(ex);
 			}
 		}
 
@@ -322,7 +322,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			}
 			catch (Exception ex)
 			{
-				//TODO: Log error.
+				Logger.LogMessage(ex);
 			}
 		}
 
@@ -370,7 +370,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			}
 			catch (Exception ex)
 			{
-				//TODO: Log Error.
+				Logger.LogMessage(ex);
 			}
 		}
 		#endregion
@@ -398,7 +398,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			}
 			catch (Exception ex)
 			{
-				//TODO: Log Error.
+				Logger.LogMessage(ex);
 			}
 		}
 
@@ -422,7 +422,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			}
 			catch (Exception ex)
 			{
-				//TODO: Log Error.
+				Logger.LogMessage(ex);
 			}
 		}
 
@@ -461,7 +461,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			}
 			catch (Exception ex)
 			{
-				//TODO: Log Error.
+				Logger.LogMessage(ex);
 			}
 		}
 	}

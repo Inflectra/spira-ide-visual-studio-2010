@@ -588,7 +588,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business
 				}
 				catch (Exception ex)
 				{
-					//TODO: Log error message.
+					Logger.LogMessage(ex);
 					MessageBox.Show("Error launching browser.", "Launch URL", MessageBoxButton.OK, MessageBoxImage.Warning);
 				}
 			}

@@ -48,7 +48,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			}
 			catch (Exception ex)
 			{
-				//TODO: Log error.
+				Logger.LogMessage(ex);
 			}
 		}
 
@@ -210,7 +210,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			}
 			catch (Exception ex)
 			{
-				//TODO: Log error.
+				Logger.LogMessage(ex);
 			}
 		}
 
@@ -252,7 +252,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			else
 			{
 				//No parent node. Log error, exit.
-				//TODO: Log error.
+				Logger.LogMessage("Did not get a parent folder!", System.Diagnostics.EventLogEntryType.Error);
 			}
 
 			//Disconnect the client, subtract from the count.
@@ -338,7 +338,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 						else
 						{
 							// Do nothing. Something wrong.
-							//TODO: Log error.
+							Logger.LogMessage("Folder has invalid name.", System.Diagnostics.EventLogEntryType.Error);
 							this._numActiveClients--;
 							this.refreshTree();
 						}
@@ -362,7 +362,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 						else
 						{
 							// Do nothing. Something wrong.
-							//TODO: Log error.
+							Logger.LogMessage("Folder has invalid name.", System.Diagnostics.EventLogEntryType.Error);
 							this._numActiveClients--;
 							this.refreshTree();
 						}
@@ -386,7 +386,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 						else
 						{
 							// Do nothing. Something wrong.
-							//TODO: Log error.
+							Logger.LogMessage("Folder has invalid name.", System.Diagnostics.EventLogEntryType.Error);
 							this._numActiveClients--;
 							this.refreshTree();
 						}
@@ -449,7 +449,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			else
 			{
 				//No parent node. Log error, exit.
-				//TODO: Log error.
+				Logger.LogMessage("No parent folder.", System.Diagnostics.EventLogEntryType.Error);
 			}
 
 			//Disconnect the client, subtract from the count.
@@ -500,7 +500,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			else
 			{
 				//No parent node. Log error, exit.
-				//TODO: Log error.
+				Logger.LogMessage("No parent node!", System.Diagnostics.EventLogEntryType.Error);
 			}
 
 			//Disconnect the client, subtract from the count.
@@ -541,7 +541,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			}
 			catch (Exception ex)
 			{
-				//TODO: Log Error.
+				Logger.LogMessage(ex);
 			}
 		}
 
@@ -560,7 +560,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			}
 			catch (Exception ex)
 			{
-				//TODO: Log Error.
+				Logger.LogMessage(ex);
 			}
 		}
 

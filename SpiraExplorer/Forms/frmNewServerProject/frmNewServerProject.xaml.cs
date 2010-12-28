@@ -37,7 +37,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 				}
 				catch (Exception ex)
 				{
-					//TODO: Log error.
+					Logger.LogMessage(ex);
 				}
 
 				//Set initial colors and form status.
@@ -54,7 +54,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			}
 			catch (Exception ex)
 			{
-				//TODO: Log error.
+				Logger.LogMessage(ex);
 			}
 		}
 
@@ -84,7 +84,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			}
 			catch (Exception ex)
 			{
-				//TODO: Log error.
+				Logger.LogMessage(ex);
 			}
 		}
 
@@ -140,7 +140,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			}
 			catch (Exception ex)
 			{
-				//TODO: Log error.
+				Logger.LogMessage(ex);
 			}
 		}
 
@@ -218,7 +218,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 				}
 				catch (Exception ex)
 				{
-					//TODO: Log error.
+					Logger.LogMessage(ex);
 					//Reset form.
 					this.btnConnect_Click(null, null);
 					//Just act like they canceled the service, then set error flag.
@@ -230,7 +230,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			}
 			else
 			{
-				//TODO: Log error.
+				Logger.LogMessage(e.Error);
 				//Reset form.
 				this.btnConnect_Click(null, null);
 				//Just act like they canceled the service, then set error flag.

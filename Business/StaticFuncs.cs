@@ -90,7 +90,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business
 			}
 			catch (Exception ex)
 			{
-				//TODO: Log Error.
+				Logger.LogMessage(ex);
 			}
 
 			return retImage;
@@ -144,7 +144,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business
 			}
 			catch (Exception ex)
 			{
-				//TODO: Log error.
+				Logger.LogMessage(ex);
 				retClient = null;
 			}
 

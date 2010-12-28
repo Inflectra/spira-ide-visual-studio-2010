@@ -228,7 +228,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business
 			}
 			catch (Exception ex)
 			{
-				//TODO: Error logging.
+				Logger.LogMessage(ex);
 				return null;
 			}
 		}
