@@ -57,6 +57,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			{
 				//Set flag.
 				this.IsLoading = true;
+				this.barLoadingIncident.Value = 0;
 
 				//Create a client.
 				this._client = null;
@@ -116,6 +117,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			System.Diagnostics.Debug.WriteLine(CLASS + METHOD + " ENTER. Clients - Running: " + this._clientNumRunning.ToString() + ", Total: " + this._clientNum.ToString());
 
 			this._clientNumRunning--;
+			this.barLoadingIncident.Value += (1D / 15D);
 
 			if (!e.Cancelled)
 			{
@@ -151,6 +153,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			System.Diagnostics.Debug.WriteLine(CLASS + METHOD + " ENTER. Clients - Running: " + this._clientNumRunning.ToString() + ", Total: " + this._clientNum.ToString());
 
 			this._clientNumRunning--;
+			this.barLoadingIncident.Value += (1D / 15D);
 
 			if (!e.Cancelled)
 			{
@@ -190,6 +193,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			System.Diagnostics.Debug.WriteLine(CLASS + METHOD + " ENTER. Clients - Running: " + this._clientNumRunning.ToString() + ", Total: " + this._clientNum.ToString());
 
 			this._clientNumRunning--;
+			this.barLoadingIncident.Value += (1D / 15D);
 
 			if (!e.Cancelled)
 			{
@@ -218,6 +222,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			System.Diagnostics.Debug.WriteLine(CLASS + METHOD + " ENTER. Clients - Running: " + this._clientNumRunning.ToString() + ", Total: " + this._clientNum.ToString());
 
 			this._clientNumRunning--;
+			this.barLoadingIncident.Value += (1D / 15D);
 
 			if (!e.Cancelled)
 			{
@@ -246,6 +251,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			System.Diagnostics.Debug.WriteLine(CLASS + METHOD + " ENTER. Clients - Running: " + this._clientNumRunning.ToString() + ", Total: " + this._clientNum.ToString());
 
 			this._clientNumRunning--;
+			this.barLoadingIncident.Value += (1D / 15D);
 
 			if (!e.Cancelled)
 			{
@@ -274,6 +280,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			System.Diagnostics.Debug.WriteLine(CLASS + METHOD + " ENTER. Clients - Running: " + this._clientNumRunning.ToString() + ", Total: " + this._clientNum.ToString());
 
 			this._clientNumRunning--;
+			this.barLoadingIncident.Value += (1D / 15D);
 
 			if (!e.Cancelled)
 			{
@@ -302,6 +309,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			System.Diagnostics.Debug.WriteLine(CLASS + METHOD + " ENTER. Clients - Running: " + this._clientNumRunning.ToString() + ", Total: " + this._clientNum.ToString());
 
 			this._clientNumRunning--;
+			this.barLoadingIncident.Value += (1D / 15D);
 
 			if (e.Error == null)
 			{
@@ -327,6 +335,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			System.Diagnostics.Debug.WriteLine(CLASS + METHOD + " ENTER. Clients - Running: " + this._clientNumRunning.ToString() + ", Total: " + this._clientNum.ToString());
 
 			this._clientNumRunning--;
+			this.barLoadingIncident.Value += (1D / 15D);
 
 			if (!e.Cancelled)
 			{
@@ -355,6 +364,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			System.Diagnostics.Debug.WriteLine(CLASS + METHOD + " ENTER. Clients - Running: " + this._clientNumRunning.ToString() + ", Total: " + this._clientNum.ToString());
 
 			this._clientNumRunning--;
+			this.barLoadingIncident.Value += (1D / 15D);
 
 			if (!e.Cancelled)
 			{
@@ -384,6 +394,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			System.Diagnostics.Debug.WriteLine(CLASS + METHOD + " ENTER. Clients - Running: " + this._clientNumRunning.ToString() + ", Total: " + this._clientNum.ToString());
 
 			this._clientNumRunning--;
+			this.barLoadingIncident.Value += (1D / 15D);
 
 			if (!e.Cancelled)
 			{
@@ -419,6 +430,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			System.Diagnostics.Debug.WriteLine(CLASS + METHOD + " ENTER. Clients - Running: " + this._clientNumRunning.ToString() + ", Total: " + this._clientNum.ToString());
 
 			this._clientNumRunning--;
+			this.barLoadingIncident.Value += (1D / 15D);
 
 			if (!e.Cancelled)
 			{
@@ -448,6 +460,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			System.Diagnostics.Debug.WriteLine(CLASS + METHOD + " ENTER. Clients - Running: " + this._clientNumRunning.ToString() + ", Total: " + this._clientNum.ToString());
 
 			this._clientNumRunning--;
+			this.barLoadingIncident.Value += (1D / 15D);
 
 			if (!e.Cancelled)
 			{
@@ -477,6 +490,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			System.Diagnostics.Debug.WriteLine(CLASS + METHOD + " ENTER. Clients - Running: " + this._clientNumRunning.ToString() + ", Total: " + this._clientNum.ToString());
 
 			this._clientNumRunning--;
+			this.barLoadingIncident.Value += (1D / 15D);
 
 			if (!e.Cancelled)
 			{
@@ -506,6 +520,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			System.Diagnostics.Debug.WriteLine(CLASS + METHOD + " ENTER. Clients - Running: " + this._clientNumRunning.ToString() + ", Total: " + this._clientNum.ToString());
 
 			this._clientNumRunning--;
+			this.barLoadingIncident.Value += (1D / 15D);
 
 			if (!e.Cancelled)
 			{

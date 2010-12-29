@@ -361,9 +361,12 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 					{
 						//Show the div..
 						this.panelStatus.Visibility = System.Windows.Visibility.Visible;
+						this.barLoadingIncident.Value = 0;
 					}
 					else
 					{
+						this.barLoadingIncident.Value = 1;
+
 						//Fade it out.
 						Storyboard storyFadeOut = new Storyboard();
 						DoubleAnimation animFadeOut = new DoubleAnimation(1, 0, new TimeSpan(0, 0, 0, 0, 500));

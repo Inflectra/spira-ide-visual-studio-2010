@@ -345,7 +345,7 @@ StrokeDashArray="1 2" StrokeThickness="1"/>
 					<Image Name="imgLoadingIncident" HorizontalAlignment="Center" VerticalAlignment="Center" Height="48" Width="48" Margin="5" />
 					<StackPanel Orientation="Vertical" VerticalAlignment="Center" Margin="10">
 						<TextBlock Name="lblLoadingIncident" Foreground="{DynamicResource {x:Static vsfx:VsBrushes.ToolWindowTabTextKey}}" FontWeight="Bold"  HorizontalAlignment="Center" Margin="0,0,0,3"  />
-						<ProgressBar HorizontalAlignment="Stretch" Height="10" Margin="5,0,5,0" Maximum="1" LargeChange="0.1" SmallChange="0.01" IsIndeterminate="True" />
+						<ProgressBar Name="barLoadingIncident" HorizontalAlignment="Stretch" Height="10" Margin="5,0,5,0" Maximum="1" LargeChange="0.1" SmallChange="0.07" />
 					</StackPanel>
 				</StackPanel>
 			</Border>
@@ -403,7 +403,7 @@ StrokeDashArray="1 2" StrokeThickness="1"/>
 				</ToolBar>
 			</ToolBarTray>
 
-			<ScrollViewer Grid.Column="0" Grid.Row="0" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" Panel.ZIndex="1">
+			<ScrollViewer Grid.Column="0" Grid.Row="0" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Panel.ZIndex="1">
 				<ListBox Grid.Row="1" SelectionMode="Single">
 					<ListBox.Resources>
 						<Style TargetType="{x:Type Expander}">
