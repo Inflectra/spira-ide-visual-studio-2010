@@ -60,6 +60,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			this.lblExpanderCustom.Text = StaticFuncs.getCultureResource.GetString("app_Incident_ExpanderCustom");
 		}
 
+		#region Class Initializers
 		public frmDetailsIncident(ToolWindowPane ParentWindow)
 			: this()
 		{
@@ -72,22 +73,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			this.ArtifactDetail = artifactDetails;
 		}
 
-		/// <summary>The detail item for this display.</summary>
-		public TreeViewArtifact ArtifactDetail
-		{
-			get
-			{
-				return this._ArtifactDetails;
-			}
-			set
-			{
-				this._ArtifactDetails = value;
-				this._Project = value.ArtifactParentProject.ArtifactTag as SpiraProject;
-
-				//TODO: Load details information.
-				this.load_LoadItem();
-			}
-		}
+		#endregion
 
 		#region Control Event Handlers
 
@@ -309,24 +295,6 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 				control.Opacity = ((control.IsEnabled) ? 1 : .5);
 		}
 
-		#endregion
-
-		/// <summary>Generates a pretty Error message string.</summary>
-		/// <param name="e">Exception.</param>
-		/// <returns>String of the error messages.</returns>
-		private string getErrorMessage(Exception e)
-		{
-			Exception ex = e;
-			string errMsg = "» " + ex.Message;
-			while (ex.InnerException != null)
-			{
-				errMsg += Environment.NewLine + "» " + ex.InnerException.Message;
-				ex = ex.InnerException;
-			}
-
-			return errMsg;
-		}
-
 		/// <summary>Hit when a toolbar is loaded. Hides the overflow arrow.</summary>
 		/// <param name="sender">ToolBar</param>
 		/// <param name="e">RoutedEventArgsparam>
@@ -340,6 +308,17 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			}
 		}
 
+		/// <summary>Hit when the fadeout is complete.</summary>
+		/// <param name="sender">DoubleAnimation</param>
+		/// <param name="e">EventArgs</param>
+		private void animFadeOut_Completed(object sender, EventArgs e)
+		{
+			this.panelStatus.Visibility = System.Windows.Visibility.Collapsed;
+		}
+
+		#endregion
+
+		#region Properties
 		/// <summary>The parent windowframe of the control, for accessing window settings.</summary>
 		public ToolWindowPane ParentWindowPane
 		{
@@ -347,6 +326,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			set;
 		}
 
+		/// <summary>This specifies whether or not we are in the process of loading data for display.</summary>
 		private bool IsLoading
 		{
 			get
@@ -384,12 +364,39 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			}
 		}
 
-		/// <summary>Hit when the fadeout is complete.</summary>
-		/// <param name="sender">DoubleAnimation</param>
-		/// <param name="e">EventArgs</param>
-		private void animFadeOut_Completed(object sender, EventArgs e)
+		/// <summary>Returns the string that it to be displayed in the docked tab.</summary>
+		public string TabTitle
 		{
-			this.panelStatus.Visibility = System.Windows.Visibility.Collapsed;
+			get
+			{
+				if (this._ArtifactDetails != null)
+					return this._ArtifactDetails.ArtifactName + " " + this._ArtifactDetails.ArtifactIDDisplay;
+				else
+					return "";
+			}
 		}
+
+		/// <summary>The detail item for this display.</summary>
+		public TreeViewArtifact ArtifactDetail
+		{
+			get
+			{
+				return this._ArtifactDetails;
+			}
+			set
+			{
+				this._ArtifactDetails = value;
+				this._Project = value.ArtifactParentProject.ArtifactTag as SpiraProject;
+
+				//Set tab title.
+				if (this.ParentWindowPane != null)
+					this.ParentWindowPane.Caption = this.TabTitle;
+
+				//TODO: Load details information.
+				this.load_LoadItem();
+			}
+		}
+		#endregion
+
 	}
 }

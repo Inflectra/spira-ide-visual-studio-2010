@@ -152,5 +152,19 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business
 
 		}
 
+		/// <summary>Generates a pretty Error message string.</summary>
+		/// <param name="e">Exception.</param>
+		/// <returns>String of the error messages.</returns>
+		public static string getErrorMessage(Exception e)
+		{
+			string errMsg = "» " + e.Message;
+			while (e.InnerException != null)
+			{
+				errMsg += Environment.NewLine + "» " + e.InnerException.Message;
+				e = e.InnerException;
+			}
+
+			return errMsg;
+		}
 	}
 }

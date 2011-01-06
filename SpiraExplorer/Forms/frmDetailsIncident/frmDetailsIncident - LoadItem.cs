@@ -1095,10 +1095,16 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 				this.cntrlActEffortH.Text = ((incident.ActualEffort.HasValue) ? Math.Floor(((double)incident.ActualEffort / (double)60)).ToString() : "");
 				this.cntrlActEffortM.Text = ((incident.ActualEffort.HasValue) ? ((double)incident.ActualEffort % (double)60).ToString() : "");
 				// - Custom Properties
-				//TODO: Custom Props (need API update on workflow for field statuses)
+				//TODO: Custom Props
 
-				//Clear the loading flag..
+				//Clear the loading flag & dirty flags
 				this.IsLoading = false;
+				this._isDescChanged = false;
+				this._isResChanged = false;
+				this._isFieldChanged = false;
+
+				//Set the tab title.
+				this.ParentWindowPane.Caption = this.TabTitle;
 			}
 			catch (Exception ex)
 			{
