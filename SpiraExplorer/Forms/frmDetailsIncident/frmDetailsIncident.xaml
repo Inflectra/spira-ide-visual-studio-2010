@@ -10,23 +10,26 @@
 	FontSize="10pt"
 	Width="Auto" Height="Auto"
 	Foreground="{DynamicResource {x:Static vsfx:VsBrushes.ToolWindowTextKey}}"
-	Background="{DynamicResource {x:Static vsfx:VsBrushes.ToolWindowBackgroundKey}}"
-	>
+	Background="{DynamicResource {x:Static vsfx:VsBrushes.ToolWindowBackgroundKey}}">
 
 	<UserControl.Resources>
 		<!-- Display Templates -->
 		<DataTemplate DataType="{x:Type bus_client:RemoteRelease}">
 			<StackPanel Orientation="Horizontal" >
-				<TextBlock Height="Auto" Width="Auto" Text="{Binding Path=VersionNumber}" />
-				<TextBlock Height="Auto" Width="Auto" Text=" - " />
-				<TextBlock Height="Auto" Width="Auto" Text="{Binding Path=Name}" />
+				<TextBlock Height="Auto" Width="Auto">
+					<Run Text="{Binding Path=VersionNumber}" />
+					<Run Text=" - " />
+					<Run Text="{Binding Path=Name}" />
+				</TextBlock>
 			</StackPanel>
 		</DataTemplate>
 		<DataTemplate DataType="{x:Type bus_client:RemoteUser}">
 			<StackPanel Orientation="Horizontal" >
-				<TextBlock Height="Auto" Width="Auto" Text="{Binding Path=LastName}" />
-				<TextBlock Height="Auto" Width="Auto" Text=", " />
-				<TextBlock Height="Auto" Width="Auto" Text="{Binding Path=FirstName}" />
+				<TextBlock Height="Auto" Width="Auto">
+					<Run Text="{Binding Path=LastName}" />
+					<Run Text=", " />
+					<Run Text="{Binding Path=FirstName}" />
+				</TextBlock>
 			</StackPanel>
 		</DataTemplate>
 		<!-- Brushes for Backgrounds -->
@@ -102,15 +105,6 @@ StrokeDashArray="1 2" StrokeThickness="1"/>
 				</Setter.Value>
 			</Setter>
 		</Style>
-		<LinearGradientBrush x:Key="ButtonNormalBackgroundFill" EndPoint="0.5,1" StartPoint="0.5,0">
-			<GradientStop Color="White" Offset="0"/>
-			<GradientStop Color="#FFE3E5F0" Offset="0.5"/>
-			<GradientStop Color="#FFC6C5D7" Offset="1.0"/>
-		</LinearGradientBrush>
-		<LinearGradientBrush x:Key="ExpanderShadowFill" EndPoint="0,1" StartPoint="0,0">
-			<GradientStop Color="Transparent" Offset="0.5"/>
-			<GradientStop Color="#30111111" Offset="1"/>
-		</LinearGradientBrush>
 		<Style x:Key="ExpanderDownHeaderStyle" TargetType="{x:Type ToggleButton}">
 			<Setter Property="Template">
 				<Setter.Value>
@@ -241,7 +235,19 @@ StrokeDashArray="1 2" StrokeThickness="1"/>
 				</Setter.Value>
 			</Setter>
 		</Style>
-
+		<!-- Menu Hover Styles -->
+		<Style x:Key="MenuHoverStyle" TargetType="{x:Type MenuItem}">
+			<Style.Triggers>
+				<Trigger Property="IsMouseOver" Value="True">
+					<Setter Property="Background" Value="{DynamicResource {x:Static vsfx:VsBrushes.CommandBarMouseOverBackgroundGradientKey}}" />
+					<Setter Property="BorderBrush" Value="{DynamicResource {x:Static vsfx:VsBrushes.CommandBarSelectedBorderKey}}" />
+				</Trigger>
+				<Trigger Property="IsSubmenuOpen" Value="True">
+					<Setter Property="Background" Value="{DynamicResource {x:Static vsfx:VsBrushes.CommandBarMenuBackgroundGradientBeginKey}}" />
+					<Setter Property="BorderBrush" Value="{DynamicResource {x:Static vsfx:VsBrushes.CommandBarSelectedBorderKey}}" />
+				</Trigger>
+			</Style.Triggers>
+		</Style>
 	</UserControl.Resources>
 
 	<Grid>
@@ -253,7 +259,7 @@ StrokeDashArray="1 2" StrokeThickness="1"/>
 					<Image Name="imgLoadingIncident" HorizontalAlignment="Center" VerticalAlignment="Center" Height="48" Width="48" Margin="5" />
 					<StackPanel Orientation="Vertical" VerticalAlignment="Center" Margin="10">
 						<TextBlock Name="lblLoadingIncident" Foreground="{DynamicResource {x:Static vsfx:VsBrushes.ToolWindowTabTextKey}}" FontWeight="Bold"  HorizontalAlignment="Center" Margin="0,0,0,3"  />
-						<ProgressBar Name="barLoadingIncident" HorizontalAlignment="Stretch" Height="10" Margin="5,0,5,0" Maximum="1" LargeChange="0.1" SmallChange="0.07" />
+						<ProgressBar Name="barLoadingIncident" HorizontalAlignment="Stretch" Height="10" Margin="5,0,5,0" Maximum="1" Minimum="0" />
 					</StackPanel>
 				</StackPanel>
 			</Border>
@@ -271,42 +277,41 @@ StrokeDashArray="1 2" StrokeThickness="1"/>
 		</Grid>
 
 		<DockPanel LastChildFill="True" Grid.Column="0" Grid.Row="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Panel.ZIndex="1">
-			<ToolBarTray IsLocked="True" DockPanel.Dock="Top" Orientation="Horizontal" Background="{DynamicResource {x:Static vsfx:VsBrushes.CommandShelfBackgroundGradientKey}}">
-				<ToolBar Name="toolbarIncidentStatus" Band="0" BandIndex="1" Loaded="_toolbar_Loaded" Background="{DynamicResource {x:Static vsfx:VsBrushes.CommandBarGradientKey}}">
-					<Button Name="btnSave" IsEnabled="False"  ToolBar.OverflowMode="Never" IsEnabledChanged="toolButton_IsEnabledChanged" Click="btnSave_Click">
+			<ToolBarPanel HorizontalAlignment="Stretch" DockPanel.Dock="Top" Orientation="Horizontal" Background="{DynamicResource {x:Static vsfx:VsBrushes.CommandShelfBackgroundGradientKey}}">
+				<ToolBar Name="toolbarIncidentStatus" Loaded="_toolbar_Loaded" Background="{DynamicResource {x:Static vsfx:VsBrushes.CommandBarGradientKey}}" Width="{Binding Path=ActualWidth,RelativeSource={RelativeSource AncestorType={x:Type ToolBarPanel}}}" HorizontalAlignment="Stretch">
+					<Menu Background="Transparent" Foreground="{DynamicResource {x:Static vsfx:VsBrushes.CommandBarTextActiveKey}}" VerticalAlignment="Center">
+						<MenuItem Name="mnuActions" MenuItem.Click="mnuActions_Click" Header="_actions" Width="Auto" DisplayMemberPath="Name" Style="{StaticResource ResourceKey=MenuHoverStyle}" />
+					</Menu>
+					<Separator ToolBar.OverflowMode="Never" />
+					<Button  Name="btnSave" IsEnabled="False"  ToolBar.OverflowMode="Never" IsEnabledChanged="toolButton_IsEnabledChanged" Click="btnSave_Click">
 						<StackPanel Orientation="Horizontal">
 							<Image Name="toolImgSave" Height="16" Width="16" Source="/SpiraExplorer;component/Resources/imgSave.png" />
 							<TextBlock Name="toolTxtSave" Margin="2,0,0,0" />
 						</StackPanel>
 					</Button>
 					<Separator ToolBar.OverflowMode="Never" />
-					<Button Name="btnRefresh" ToolBar.OverflowMode="Never">
+					<Button DockPanel.Dock="Left" Name="btnRefresh" ToolBar.OverflowMode="Never">
 						<StackPanel Orientation="Horizontal">
 							<Image Name="toolImgRefresh" Height="16" Width="16" Source="/SpiraExplorer;component/Resources/imgReload.png" />
 							<TextBlock Name="toolTxtRefresh" Margin="2,0,0,0" />
 						</StackPanel>
 					</Button>
 					<Separator ToolBar.OverflowMode="Never" />
-					<StackPanel Orientation="Horizontal" ToolBar.OverflowMode="Never">
-						<TextBlock Height="Auto" VerticalAlignment="Center">Actions:</TextBlock>
-						<ComboBox Name="cntrlStatus" DisplayMemberPath="Name" Margin="2,0,0,0" SelectionChanged="_cntrlStatusType_Changed" />
-					</StackPanel>
-					<Separator ToolBar.OverflowMode="Never" />
-					<Button Name="btnLoadWeb" ToolBar.OverflowMode="Never">
+					<Button DockPanel.Dock="Left" Name="btnLoadWeb" ToolBar.OverflowMode="Never">
 						<StackPanel Orientation="Horizontal">
 							<Image Name="toolImgLoadWeb" Height="16" Width="16" Source="/SpiraExplorer;component/Resources/imgOpenWeb.png" />
 							<TextBlock Name="toolTxtLoadWeb" Margin="2,0,0,0" />
 						</StackPanel>
 					</Button>
 					<Separator ToolBar.OverflowMode="Never" />
-					<Button Name="btnStartStopTimer" ToolBar.OverflowMode="Never">
+					<Button  Name="btnStartStopTimer" ToolBar.OverflowMode="Never">
 						<StackPanel Orientation="Horizontal">
 							<Image Name="toolImgTimer" Height="16" Width="16" Source="/SpiraExplorer;component/Resources/imgTimer.png" />
 							<TextBlock Name="toolTxtTimer" Margin="2,0,0,0" />
 						</StackPanel>
 					</Button>
 				</ToolBar>
-			</ToolBarTray>
+			</ToolBarPanel>
 
 			<ScrollViewer Grid.Column="0" Grid.Row="0" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Panel.ZIndex="1">
 				<Grid>
@@ -358,9 +363,9 @@ StrokeDashArray="1 2" StrokeThickness="1"/>
 							</DockPanel>
 							<!-- ROW1: Status, Type -->
 							<TextBlock Name="lblType" Grid.Column="0" Grid.Row="1" Style="{StaticResource PaddedLabel}" />
-							<ComboBox Grid.Column="1" Grid.Row="1" Name="cntrlType" Style="{StaticResource PaddedDropdown}" DisplayMemberPath="Name" SelectionChanged="_cntrlStatusType_Changed" />
+							<ComboBox Grid.Column="1" Grid.Row="1" Name="cntrlType" Style="{StaticResource PaddedDropdown}" DisplayMemberPath="Name" SelectionChanged="_cntrlType_Changed" />
 							<TextBlock Name="lblStatus" Grid.Column="3" Grid.Row="1" Style="{StaticResource PaddedLabel}" />
-							<TextBlock Grid.Column="4" Grid.Row="1" HorizontalAlignment="Left" Style="{StaticResource PaddedLabel}">[Status]</TextBlock>
+							<TextBlock Name="cntrlIncidentStatus" Grid.Column="4" Grid.Row="1" HorizontalAlignment="Left" Style="{StaticResource PaddedLabel}">[Status]</TextBlock>
 							<!-- ROW2: Detected By, Owned By -->
 							<TextBlock Name="lblDetectedBy" Grid.Column="0" Grid.Row="2" Style="{StaticResource PaddedLabel}" />
 							<ComboBox Grid.Column="1" Grid.Row="2" Name="cntrlDetectedBy" Style="{StaticResource PaddedDropdown}" SelectionChanged="_cntrl_TextChanged" />
@@ -412,6 +417,7 @@ StrokeDashArray="1 2" StrokeThickness="1"/>
 								</Setter>
 							</Style>
 						</ListBox.ItemContainerStyle>
+						<!-- Resolution / Comments -->
 						<Expander IsExpanded="{Binding IsSelected, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListBoxItem}}}" Style="{DynamicResource ExpanderStyle1}">
 							<Expander.Header>
 								<TextBlock Name="lblExpanderResolution" VerticalAlignment="Center" />
@@ -423,6 +429,7 @@ StrokeDashArray="1 2" StrokeThickness="1"/>
 								<StackPanel Name="cntrlDiscussion" Orientation="Vertical" />
 							</StackPanel>
 						</Expander>
+						<!-- Schedule -->
 						<Expander IsExpanded="{Binding IsSelected, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListBoxItem}}}" Style="{DynamicResource ExpanderStyle1}">
 							<Expander.Header>
 								<TextBlock Name="lblExpanderSchedule" VerticalAlignment="Center" />
@@ -476,12 +483,45 @@ StrokeDashArray="1 2" StrokeThickness="1"/>
 								</StackPanel>
 							</Grid>
 						</Expander>
+						<!-- Custom Properties -->
 						<Expander IsExpanded="{Binding IsSelected, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListBoxItem}}}" Style="{DynamicResource ExpanderStyle1}">
 							<Expander.Header>
 								<TextBlock Name="lblExpanderCustom" VerticalAlignment="Center" />
 							</Expander.Header>
+							<Grid Name="gridCustomProperties" Background="{DynamicResource {x:Static vsfx:VsBrushes.DesignerBackgroundKey}}">
+								<Grid.ColumnDefinitions>
+									<ColumnDefinition Width="Auto" />
+									<!-- COL0: Left Labels -->
+									<ColumnDefinition Width="6*" />
+									<!-- COL1: Left Dropdowns -->
+									<ColumnDefinition Width="10" />
+									<!-- COL2: Empty Space (Pink Floyd) -->
+									<ColumnDefinition Width="Auto" />
+									<!-- COL3: Right Labels -->
+									<ColumnDefinition Width="6*" />
+									<!-- COL4: Right Dropdowns -->
+								</Grid.ColumnDefinitions>
+							</Grid>
+						</Expander>
+						<!-- Attachments -->
+						<Expander IsExpanded="{Binding IsSelected, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListBoxItem}}}" Style="{DynamicResource ExpanderStyle1}">
+							<Expander.Header>
+								<TextBlock Name="lblExpanderAttachments" VerticalAlignment="Center" />
+							</Expander.Header>
 							<!-- TODO: Generate Custom Field controls -->
-							<Grid Background="{DynamicResource {x:Static vsfx:VsBrushes.DesignerBackgroundKey}}">
+							<Grid Name="gridAttachments" Background="{DynamicResource {x:Static vsfx:VsBrushes.DesignerBackgroundKey}}">
+								<Grid.ColumnDefinitions>
+									<ColumnDefinition Width="Auto" />
+									<!-- COL0: Left Labels -->
+									<ColumnDefinition Width="6*" />
+									<!-- COL1: Left Dropdowns -->
+									<ColumnDefinition Width="10" />
+									<!-- COL2: Empty Space (Pink Floyd) -->
+									<ColumnDefinition Width="Auto" />
+									<!-- COL3: Right Labels -->
+									<ColumnDefinition Width="6*" />
+									<!-- COL4: Right Dropdowns -->
+								</Grid.ColumnDefinitions>
 							</Grid>
 						</Expander>
 						<!-- <Expander Header="History" /> -->

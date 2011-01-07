@@ -13,8 +13,8 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 	{
 		#region Client Values
 		private ImportExportClient _client;
-		private int _clientNumRunning;
-		private int _clientNum;
+		private int _clientNumRunning; //Holds the number current executing.
+		private int _clientNum; //Holds the total amount. Needed to multiple ASYNC() calls.
 		private int _clientNumWorkflow;
 		#endregion
 
@@ -41,10 +41,11 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 		private Dictionary<int, int> _IncWkfCustom_Updated;
 		private int? _IncCurrentType;
 		private int? _IncCurrentStatus;
+		private int? _IncSelectedStatus;
+		private int? _IncSelectedType;
 		#endregion
 
 		// Are we in read-only mode? Are we saving?
-		private bool isInLoadMode = false;
 		private bool isInSaveMode = false;
 		private bool isInConcMode = false;
 
@@ -82,13 +83,13 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 
 				//Fire the connection off here.
 				this._clientNumRunning++;
+				this.barLoadingIncident.Maximum = 15;
 				this._client.Connection_Authenticate2Async(this._Project.UserName, this._Project.UserPass, StaticFuncs.getCultureResource.GetString("app_ReportName"));
 
 			}
 
 			return retValue;
 		}
-
 
 		#region Client Events
 
@@ -117,7 +118,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			System.Diagnostics.Debug.WriteLine(CLASS + METHOD + " ENTER. Clients - Running: " + this._clientNumRunning.ToString() + ", Total: " + this._clientNum.ToString());
 
 			this._clientNumRunning--;
-			this.barLoadingIncident.Value += (1D / 15D);
+			this.barLoadingIncident.Value++;
 
 			if (!e.Cancelled)
 			{
@@ -153,7 +154,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			System.Diagnostics.Debug.WriteLine(CLASS + METHOD + " ENTER. Clients - Running: " + this._clientNumRunning.ToString() + ", Total: " + this._clientNum.ToString());
 
 			this._clientNumRunning--;
-			this.barLoadingIncident.Value += (1D / 15D);
+			this.barLoadingIncident.Value++;
 
 			if (!e.Cancelled)
 			{
@@ -193,7 +194,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			System.Diagnostics.Debug.WriteLine(CLASS + METHOD + " ENTER. Clients - Running: " + this._clientNumRunning.ToString() + ", Total: " + this._clientNum.ToString());
 
 			this._clientNumRunning--;
-			this.barLoadingIncident.Value += (1D / 15D);
+			this.barLoadingIncident.Value++;
 
 			if (!e.Cancelled)
 			{
@@ -222,7 +223,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			System.Diagnostics.Debug.WriteLine(CLASS + METHOD + " ENTER. Clients - Running: " + this._clientNumRunning.ToString() + ", Total: " + this._clientNum.ToString());
 
 			this._clientNumRunning--;
-			this.barLoadingIncident.Value += (1D / 15D);
+			this.barLoadingIncident.Value++;
 
 			if (!e.Cancelled)
 			{
@@ -251,7 +252,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			System.Diagnostics.Debug.WriteLine(CLASS + METHOD + " ENTER. Clients - Running: " + this._clientNumRunning.ToString() + ", Total: " + this._clientNum.ToString());
 
 			this._clientNumRunning--;
-			this.barLoadingIncident.Value += (1D / 15D);
+			this.barLoadingIncident.Value++;
 
 			if (!e.Cancelled)
 			{
@@ -280,7 +281,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			System.Diagnostics.Debug.WriteLine(CLASS + METHOD + " ENTER. Clients - Running: " + this._clientNumRunning.ToString() + ", Total: " + this._clientNum.ToString());
 
 			this._clientNumRunning--;
-			this.barLoadingIncident.Value += (1D / 15D);
+			this.barLoadingIncident.Value++;
 
 			if (!e.Cancelled)
 			{
@@ -309,7 +310,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			System.Diagnostics.Debug.WriteLine(CLASS + METHOD + " ENTER. Clients - Running: " + this._clientNumRunning.ToString() + ", Total: " + this._clientNum.ToString());
 
 			this._clientNumRunning--;
-			this.barLoadingIncident.Value += (1D / 15D);
+			this.barLoadingIncident.Value++;
 
 			if (e.Error == null)
 			{
@@ -335,7 +336,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			System.Diagnostics.Debug.WriteLine(CLASS + METHOD + " ENTER. Clients - Running: " + this._clientNumRunning.ToString() + ", Total: " + this._clientNum.ToString());
 
 			this._clientNumRunning--;
-			this.barLoadingIncident.Value += (1D / 15D);
+			this.barLoadingIncident.Value++;
 
 			if (!e.Cancelled)
 			{
@@ -364,7 +365,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			System.Diagnostics.Debug.WriteLine(CLASS + METHOD + " ENTER. Clients - Running: " + this._clientNumRunning.ToString() + ", Total: " + this._clientNum.ToString());
 
 			this._clientNumRunning--;
-			this.barLoadingIncident.Value += (1D / 15D);
+			this.barLoadingIncident.Value++;
 
 			if (!e.Cancelled)
 			{
@@ -394,7 +395,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			System.Diagnostics.Debug.WriteLine(CLASS + METHOD + " ENTER. Clients - Running: " + this._clientNumRunning.ToString() + ", Total: " + this._clientNum.ToString());
 
 			this._clientNumRunning--;
-			this.barLoadingIncident.Value += (1D / 15D);
+			this.barLoadingIncident.Value++;
 
 			if (!e.Cancelled)
 			{
@@ -430,7 +431,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			System.Diagnostics.Debug.WriteLine(CLASS + METHOD + " ENTER. Clients - Running: " + this._clientNumRunning.ToString() + ", Total: " + this._clientNum.ToString());
 
 			this._clientNumRunning--;
-			this.barLoadingIncident.Value += (1D / 15D);
+			this.barLoadingIncident.Value++;
 
 			if (!e.Cancelled)
 			{
@@ -460,7 +461,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			System.Diagnostics.Debug.WriteLine(CLASS + METHOD + " ENTER. Clients - Running: " + this._clientNumRunning.ToString() + ", Total: " + this._clientNum.ToString());
 
 			this._clientNumRunning--;
-			this.barLoadingIncident.Value += (1D / 15D);
+			this.barLoadingIncident.Value++;
 
 			if (!e.Cancelled)
 			{
@@ -490,7 +491,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			System.Diagnostics.Debug.WriteLine(CLASS + METHOD + " ENTER. Clients - Running: " + this._clientNumRunning.ToString() + ", Total: " + this._clientNum.ToString());
 
 			this._clientNumRunning--;
-			this.barLoadingIncident.Value += (1D / 15D);
+			this.barLoadingIncident.Value++;
 
 			if (!e.Cancelled)
 			{
@@ -520,17 +521,78 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			System.Diagnostics.Debug.WriteLine(CLASS + METHOD + " ENTER. Clients - Running: " + this._clientNumRunning.ToString() + ", Total: " + this._clientNum.ToString());
 
 			this._clientNumRunning--;
-			this.barLoadingIncident.Value += (1D / 15D);
+			this.barLoadingIncident.Value++;
 
 			if (!e.Cancelled)
 			{
 				if (e.Error == null)
 				{
-					//Here we need to create the labels.
-					//TODO: Get labels for custom properties.
-					//Now here we need to create text boxes.
-					//TODO: Create our needed textboxes.
-					//Now here we need to get our lists.
+					//Here create the grid to hold the data.
+					this.gridCustomProperties.Children.Clear();
+					this.gridCustomProperties.RowDefinitions.Clear();
+					for (int i = 0; i < Math.Ceiling(e.Result.Count / 2D); i++)
+						this.gridCustomProperties.RowDefinitions.Add(new RowDefinition() { Height = GridLength.Auto });
+
+					//Here, create the contols..
+					bool IsOnFirst = true;
+					for (int j = 0; j < e.Result.Count; j++)
+					{
+						//** The label first.
+						TextBlock lblCustProp = new TextBlock();
+						lblCustProp.Text = e.Result[j].Alias + ":";
+						lblCustProp.Style = (Style)this.FindResource("PaddedLabel");
+						lblCustProp.VerticalAlignment = System.Windows.VerticalAlignment.Top;
+
+						//Add it to the row/column.
+						Grid.SetColumn(lblCustProp, ((IsOnFirst) ? 0 : 3));
+						Grid.SetRow(lblCustProp, (int)Math.Floor(j / 2D));
+						//Add it to the grid.
+						this.gridCustomProperties.Children.Add(lblCustProp);
+
+						//** Now the control.
+						Control custControl = null;
+						if (e.Result[j].CustomPropertyTypeId == 1) //Text field.
+						{
+							TextBox txtControl = new TextBox();
+							txtControl.AcceptsReturn = true;
+							txtControl.AcceptsTab = true;
+							txtControl.MaxLines = 2;
+							txtControl.MinLines = 2;
+							txtControl.TextChanged += new TextChangedEventHandler(_cntrl_TextChanged);
+							custControl = txtControl;
+						}
+						else if (e.Result[j].CustomPropertyTypeId == 2) //List field.
+						{
+							ComboBox lsbControl = new ComboBox();
+							lsbControl.SelectedValuePath = "Key";
+							lsbControl.DisplayMemberPath = "Value";
+							lsbControl.SelectionChanged += new SelectionChangedEventHandler(_cntrl_TextChanged);
+
+							//Load selectable items.
+							lsbControl.Items.Add(new KeyValuePair<int, string>(-1, ""));
+							foreach (RemoteCustomListValue list in e.Result[j].CustomList.Values)
+							{
+								KeyValuePair<int, string> item = new KeyValuePair<int, string>(list.CustomPropertyValueId.Value, list.Name);
+								lsbControl.Items.Add(item);
+							}
+
+							custControl = lsbControl;
+						}
+						custControl.Style = (Style)this.FindResource("PaddedDropdown");
+						custControl.Tag = e.Result[j];
+						custControl.HorizontalAlignment = System.Windows.HorizontalAlignment.Stretch;
+						custControl.VerticalAlignment = System.Windows.VerticalAlignment.Top;
+						//Add it to the row/column.
+						Grid.SetColumn(custControl, ((IsOnFirst) ? 1 : 4));
+						Grid.SetRow(custControl, (int)Math.Floor(j / 2D));
+						//Add it to the grid.
+						this.gridCustomProperties.Children.Add(custControl);
+
+						//Create link between label and control. (For setting enabled/required)
+						lblCustProp.Tag = custControl;
+						//Flip the IsOnFirst..
+						IsOnFirst = !IsOnFirst;
+					}
 
 					//HACK: See if we're ready to get the actual data.
 					this.load_IsReadyToGetMainData();
@@ -553,6 +615,9 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			const string METHOD = "wkfClient_Connection_Authenticate2Completed()";
 			System.Diagnostics.Debug.WriteLine(CLASS + METHOD + " ENTER.");
 
+			this._clientNumRunning--;
+			this.barLoadingIncident.Value++;
+
 			if (sender is ImportExportClient)
 			{
 				ImportExportClient client = sender as ImportExportClient;
@@ -562,6 +627,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 					if (e.Error == null && e.Result)
 					{
 						//Connect to our project.
+						this._clientNumRunning++;
 						client.Connection_ConnectToProjectAsync(((SpiraProject)this._ArtifactDetails.ArtifactParentProject.ArtifactTag).ProjectID, this._clientNum++);
 					}
 					else
@@ -589,6 +655,9 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			const string METHOD = "wkfClient_Connection_ConnectToProjectCompleted()";
 			System.Diagnostics.Debug.WriteLine(CLASS + METHOD + " ENTER.");
 
+			this._clientNumRunning--;
+			this.barLoadingIncident.Value++;
+
 			if (sender is ImportExportClient)
 			{
 				ImportExportClient client = sender as ImportExportClient;
@@ -597,9 +666,13 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 				{
 					if (e.Error == null && e.Result)
 					{
+						//Get the current status/type..
+						int intStatus = ((this._IncSelectedStatus.HasValue) ? this._IncSelectedStatus.Value : this._IncCurrentStatus.Value);
+						int intType = ((this._IncSelectedType.HasValue) ? this._IncSelectedType.Value : this._IncCurrentType.Value);
 						//Get the current workflow fields here.
-						client.Incident_RetrieveWorkflowCustomPropertiesAsync(((RemoteIncidentType)this.cntrlType.SelectedItem).IncidentTypeId.Value, ((RemoteIncidentStatus)this.cntrlStatus.SelectedItem).IncidentStatusId.Value, this._clientNum++);
-						client.Incident_RetrieveWorkflowFieldsAsync(((RemoteIncidentType)this.cntrlType.SelectedItem).IncidentTypeId.Value, ((RemoteIncidentStatus)this.cntrlStatus.SelectedItem).IncidentStatusId.Value, this._clientNum++);
+						this._clientNumRunning += 2;
+						client.Incident_RetrieveWorkflowCustomPropertiesAsync(intType, intStatus, this._clientNum++);
+						client.Incident_RetrieveWorkflowFieldsAsync(intType, intStatus, this._clientNum++);
 					}
 					else
 					{
@@ -626,6 +699,9 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			const string METHOD = "wkfClient_Incident_RetrieveWorkflowFieldsCompleted()";
 			System.Diagnostics.Debug.WriteLine(CLASS + METHOD + " ENTER.");
 
+			this._clientNumRunning--;
+			this.barLoadingIncident.Value++;
+
 			if (sender is ImportExportClient)
 			{
 				if (!e.Cancelled)
@@ -635,7 +711,11 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 						this._IncWkfFields_Updated = this.load_ScanWorkFlowFields(e.Result);
 
 						//Update main workflow fields.
-						this.loadItem_SetEnabledFields(this._IncWkfFields_Updated);
+						this.workflow_SetEnabledFields(this._IncWkfFields_Updated);
+
+						//Hide the status if needed.
+						if (this._clientNumRunning == 0)
+							this.display_SetStatusWindow(Visibility.Hidden);
 					}
 					else
 					{
@@ -654,6 +734,9 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			const string METHOD = "wkfClient_Incident_RetrieveWorkflowCustomPropertiesCompleted()";
 			System.Diagnostics.Debug.WriteLine(CLASS + METHOD + " ENTER.");
 
+			this._clientNumRunning--;
+			this.barLoadingIncident.Value++;
+
 			if (sender is ImportExportClient)
 			{
 				if (!e.Cancelled)
@@ -663,8 +746,11 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 						this._IncWkfCustom_Updated = this.load_ScanWorkFlowCustomFields(e.Result);
 
 						//Update custom workflow fields.
-						//TODO: Create function to enable/mark custom fields.
-						//this.loadItem_SetEnabledFields(this._IncWkfFields_Updated);
+						this.workflow_SetEnabledCustomFields(this._IncWkfCustom_Updated);
+
+						//Hide the status if needed.
+						if (this._clientNumRunning == 0)
+							this.display_SetStatusWindow(Visibility.Hidden);
 					}
 					else
 					{
@@ -704,8 +790,8 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 				this.loadItem_DisplayInformation(this._Incident);
 
 				//Set Workflow Data. (To disable Fields)
-				this.loadItem_SetEnabledFields(this._IncWkfFields_Current);
-				//TODO: Create function to enable/mark custom fields.
+				this.workflow_SetEnabledFields(this._IncWkfFields_Current);
+				this.workflow_SetEnabledCustomFields(this._IncWkfCustom_Current);
 			}
 		}
 
@@ -913,23 +999,23 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 		/// <summary>Loads the list of available statuses and workflow transitions into the specified ComboBox.</summary>
 		/// <param name="box">The ComboBox to load statuses into.</param>
 		/// <param name="SelectedUserID">The StatusId to select.</param>
-		private void loadItem_PopulateStatus(ComboBox box, int? SelectedItem)
+		private void loadItem_PopulateStatus(MenuItem menu, int? SelectedItem)
 		{
 			//Loop through all the available ones. We only add the ones that are in the 
 			//  workflow transition, or the current status, making sure the current
 			//  one is selected.
 			try
 			{
-				//Clear items already there.
-				box.Items.Clear();
+				//Clear items already there, add the null item.
+				menu.Items.Clear();
 
 				//Load ones that are available.
 				foreach (Business.SpiraTeam_Client.RemoteIncidentStatus Status in this._IncStatus)
 				{
 					if (Status.IncidentStatusId == SelectedItem)
 					{
-						int numAdded = box.Items.Add(Status);
-						box.SelectedIndex = numAdded;
+						//Display the current status in the label..
+						this.cntrlIncidentStatus.Text = Status.Name;
 					}
 					else
 					{
@@ -938,8 +1024,8 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 						{
 							if (Transition.IncidentStatusId_Output == Status.IncidentStatusId)
 							{
-								Transition.Name = "» " + Transition.Name;
-								box.Items.Add(Transition);
+								if (!Transition.Name.Trim().StartsWith("»")) Transition.Name = "» " + Transition.Name;
+								menu.Items.Add(Transition);
 							}
 						}
 					}
@@ -947,7 +1033,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			}
 			catch (Exception ex)
 			{
-				//Connect.logEventMessage("wpfDetailsIncident::loadItem_PopulateStatus", ex, System.Diagnostics.EventLogEntryType.Error);
+				Logger.LogMessage(ex);
 			}
 		}
 
@@ -981,6 +1067,20 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 		}
 		#endregion
 
+		/// <summary>Called when the user changes the workflow step, pulls enabled/required fields.</summary>
+		private void workflow_ChangeWorkflowStep()
+		{
+			//This is a potentially different workflow, so create the client to go out and get fields.
+			ImportExportClient wkfClient = StaticFuncs.CreateClient(this._Project.ServerURL.ToString());
+			wkfClient.Connection_Authenticate2Completed += new EventHandler<Connection_Authenticate2CompletedEventArgs>(wkfClient_Connection_Authenticate2Completed);
+			wkfClient.Connection_ConnectToProjectCompleted += new EventHandler<Connection_ConnectToProjectCompletedEventArgs>(wkfClient_Connection_ConnectToProjectCompleted);
+			wkfClient.Incident_RetrieveWorkflowFieldsCompleted += new EventHandler<Incident_RetrieveWorkflowFieldsCompletedEventArgs>(wkfClient_Incident_RetrieveWorkflowFieldsCompleted);
+			wkfClient.Incident_RetrieveWorkflowCustomPropertiesCompleted += new EventHandler<Incident_RetrieveWorkflowCustomPropertiesCompletedEventArgs>(wkfClient_Incident_RetrieveWorkflowCustomPropertiesCompleted);
+
+			//Connect.
+			this._clientNumRunning = 1;
+			wkfClient.Connection_Authenticate2Async(this._Project.UserName, this._Project.UserPass, StaticFuncs.getCultureResource.GetString("app_ReportName"));
+		}
 
 
 
@@ -997,12 +1097,11 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 
 
 
-
-		#region Field Population
+		#region Field Workflow Status
 
 		/// <summary>Set the enabled and required fields for the current stage in the workflow.</summary>
 		/// <param name="WorkFlowFields">The Dictionary of Workflow Fields</param>
-		private void loadItem_SetEnabledFields(Dictionary<int, int> WorkFlowFields)
+		private void workflow_SetEnabledFields(Dictionary<int, int> WorkFlowFields)
 		{
 			try
 			{
@@ -1053,10 +1152,46 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			}
 			catch (Exception ex)
 			{
-				//Connect.logEventMessage("wpfDetailsIncident::loadItem_SetEnabledFields", ex, System.Diagnostics.EventLogEntryType.Error);
+				//Connect.logEventMessage("wpfDetailsIncident::workflow_SetEnabledFields", ex, System.Diagnostics.EventLogEntryType.Error);
 			}
 		}
 
+		/// <summary>Set the enabled and required custom fields for the current stage in the workflow.</summary>
+		/// <param name="WorkFlowFields">The Dictionary of Workflow Custom Fields</param>
+		private void workflow_SetEnabledCustomFields(Dictionary<int, int> CustomFields)
+		{
+			//We need to scan through the custom fields and find any matches. If no match, set it disabled.
+			foreach (UIElement customUI in this.gridCustomProperties.Children)
+			{
+				if (customUI is TextBlock) //Get each label.
+				{
+					//Get the linked control & attached RemoteProperty.
+					Control custLinked = ((TextBlock)customUI).Tag as Control;
+
+					if (custLinked != null)
+					{
+						RemoteCustomProperty custProp = ((Control)custLinked).Tag as RemoteCustomProperty;
+
+						if (custProp != null)
+						{
+							if (CustomFields.ContainsKey(custProp.CustomPropertyId))
+							{
+								//Set IsEnbled
+								custLinked.IsEnabled = true;
+								//Set label:
+								((TextBlock)customUI).FontWeight = (this.workflow_IsFieldRequired(custProp.CustomPropertyId, CustomFields) ? FontWeights.Bold : FontWeights.Normal);
+							}
+							else
+							{
+								//Set IsEnabled
+								custLinked.IsEnabled = false;
+								((TextBlock)customUI).FontWeight = FontWeights.Normal;
+							}
+						}
+					}
+				}
+			}
+		}
 		#endregion
 
 		/// <summary>Load the specified incident into the data fields.</summary>
@@ -1081,7 +1216,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 				this.loadItem_PopulateSeverity(this.cntrlSeverity, incident.SeverityId);
 				// - Type & Status
 				this.loadItem_PopulateType(this.cntrlType, incident.IncidentTypeId);
-				this.loadItem_PopulateStatus(this.cntrlStatus, incident.IncidentStatusId);
+				this.loadItem_PopulateStatus(this.mnuActions, incident.IncidentStatusId);
 				// - Description
 				this.cntrlDescription.HTMLText = incident.Description;
 				// - History
@@ -1095,7 +1230,81 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 				this.cntrlActEffortH.Text = ((incident.ActualEffort.HasValue) ? Math.Floor(((double)incident.ActualEffort / (double)60)).ToString() : "");
 				this.cntrlActEffortM.Text = ((incident.ActualEffort.HasValue) ? ((double)incident.ActualEffort % (double)60).ToString() : "");
 				// - Custom Properties
-				//TODO: Custom Props
+				// We search backwards.
+				foreach (UIElement cntCustom in this.gridCustomProperties.Children)
+				{
+					if ((cntCustom as Control) != null)
+					{
+						if ((cntCustom as Control).Tag.GetType() == typeof(RemoteCustomProperty))
+						{
+							dynamic dynControl = cntCustom;
+							RemoteCustomProperty custProp = (RemoteCustomProperty)((Control)cntCustom).Tag;
+							switch (custProp.CustomPropertyName)
+							{
+								case "TEXT_01":
+									dynControl.Text = incident.Text01;
+									break;
+								case "TEXT_02":
+									dynControl.Text = incident.Text02;
+									break;
+								case "TEXT_03":
+									dynControl.Text = incident.Text03;
+									break;
+								case "TEXT_04":
+									dynControl.Text = incident.Text04;
+									break;
+								case "TEXT_05":
+									dynControl.Text = incident.Text05;
+									break;
+								case "TEXT_06":
+									dynControl.Text = incident.Text06;
+									break;
+								case "TEXT_07":
+									dynControl.Text = incident.Text07;
+									break;
+								case "TEXT_08":
+									dynControl.Text = incident.Text08;
+									break;
+								case "TEXT_09":
+									dynControl.Text = incident.Text09;
+									break;
+								case "TEXT_10":
+									dynControl.Text = incident.Text10;
+									break;
+								case "LIST_01":
+									dynControl.SelectedValue = incident.List01;
+									break;
+								case "LIST_02":
+									dynControl.SelectedValue = incident.List02;
+									break;
+								case "LIST_03":
+									dynControl.SelectedValue = incident.List03;
+									break;
+								case "LIST_04":
+									dynControl.SelectedValue = incident.List04;
+									break;
+								case "LIST_05":
+									dynControl.SelectedValue = incident.List05;
+									break;
+								case "LIST_06":
+									dynControl.SelectedValue = incident.List06;
+									break;
+								case "LIST_07":
+									dynControl.SelectedValue = incident.List07;
+									break;
+								case "LIST_08":
+									dynControl.SelectedValue = incident.List08;
+									break;
+								case "LIST_09":
+									dynControl.SelectedValue = incident.List09;
+									break;
+								case "LIST_10":
+									dynControl.SelectedValue = incident.List10;
+									break;
+							}
+						}
+					}
+				}
 
 				//Clear the loading flag & dirty flags
 				this.IsLoading = false;
@@ -1112,6 +1321,10 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			}
 		}
 
+		/// <summary>Gets the specified Required status for the given field.</summary>
+		/// <param name="FieldID">The Field ID number that is contained in the list.</param>
+		/// <param name="WorkFlow">The list of fields to check against.</param>
+		/// <returns>True if the field is required, fals if not.</returns>
 		private bool workflow_IsFieldRequired(int FieldID, Dictionary<int, int> WorkFlow)
 		{
 			if (WorkFlow.ContainsKey(FieldID) && WorkFlow[FieldID] == 2)
@@ -1129,8 +1342,8 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 				Fields += "Name;";
 			if (this.lblType.FontWeight == FontWeights.Bold && this.cntrlType.SelectedItem.GetType() != typeof(Business.SpiraTeam_Client.RemoteIncidentType))
 				Fields += "Type;";
-			if (this.lblStatus.FontWeight == FontWeights.Bold && this.cntrlStatus.SelectedItem.GetType() != typeof(Business.SpiraTeam_Client.RemoteIncidentStatus))
-				Fields += "Status;";
+			//if (this.lblStatus.FontWeight == FontWeights.Bold && this.cntrlStatus.SelectedItem.GetType() != typeof(Business.SpiraTeam_Client.RemoteIncidentStatus))
+			//     Fields += "Status;";
 			if (this.lblDetectedBy.FontWeight == FontWeights.Bold && this.cntrlDetectedBy.SelectedItem.GetType() != typeof(Business.SpiraTeam_Client.RemoteUser))
 				Fields += "Detected By;";
 			if (this.lblOwnedBy.FontWeight == FontWeights.Bold && this.cntrlOwnedBy.SelectedItem.GetType() != typeof(Business.SpiraTeam_Client.RemoteUser))

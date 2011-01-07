@@ -268,7 +268,6 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 				// - Main fields.
 				this.cntrlIncidentName.Tag = null;
 				this.cntrlType.Tag = null;
-				this.cntrlStatus.Tag = null;
 				this.cntrlDetectedBy.Tag = null;
 				this.cntrlOwnedBy.Tag = null;
 				this.cntrlPriority.Tag = null;

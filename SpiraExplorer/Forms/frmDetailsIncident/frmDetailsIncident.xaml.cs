@@ -24,6 +24,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 		#endregion
 		#region Private Mode Vars
 		private bool _isLoadingInformation;
+		private bool _isWorkflowChanging;
 		#endregion
 
 		private TreeViewArtifact _ArtifactDetails;
@@ -37,6 +38,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			this.imgLoadingIncident.Source = StaticFuncs.getImage("imgInfoWPF", new Size(48, 48)).Source;
 			this.imgLoadingError.Source = StaticFuncs.getImage("imgErrorWPF", new Size(48, 48)).Source;
 			//Load strings needed..
+			this.mnuActions.Header = StaticFuncs.getCultureResource.GetString("app_General_Actions") + ":";
 			this.lblLoadingIncident.Text = StaticFuncs.getCultureResource.GetString("app_Incident_Loading");
 			this.lblExpanderDetails.Text = StaticFuncs.getCultureResource.GetString("app_Incident_ExpanderDetails");
 			this.lblName.Text = StaticFuncs.getCultureResource.GetString("app_General_Name") + ":";
@@ -58,6 +60,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			this.lblEstEffort.Text = StaticFuncs.getCultureResource.GetString("app_Incident_EstEffort") + ":";
 			this.lblActEffort.Text = StaticFuncs.getCultureResource.GetString("app_General_ActEffort") + ":";
 			this.lblExpanderCustom.Text = StaticFuncs.getCultureResource.GetString("app_Incident_ExpanderCustom");
+			this.lblExpanderAttachments.Text = StaticFuncs.getCultureResource.GetString("app_General_Attachments");
 		}
 
 		#region Class Initializers
@@ -100,10 +103,11 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 						//Copy over our base fields..
 						newIncident.Name = this.cntrlIncidentName.Text;
 						newIncident.IncidentTypeId = ((RemoteIncidentType)this.cntrlType.SelectedItem).IncidentTypeId.Value;
-						if (this.cntrlStatus.SelectedItem is RemoteWorkflowIncidentTransition)
-							newIncident.IncidentStatusId = ((RemoteWorkflowIncidentTransition)this.cntrlStatus.SelectedItem).IncidentStatusId_Output;
-						else if (this.cntrlStatus.SelectedItem is RemoteIncidentStatus)
-							newIncident.IncidentStatusId = ((RemoteIncidentStatus)this.cntrlStatus.SelectedItem).IncidentStatusId.Value;
+						//TODO: Convert to handling menu.
+						//if (this.cntrlStatus.SelectedItem is RemoteWorkflowIncidentTransition)
+						//     newIncident.IncidentStatusId = ((RemoteWorkflowIncidentTransition)this.cntrlStatus.SelectedItem).IncidentStatusId_Output;
+						//else if (this.cntrlStatus.SelectedItem is RemoteIncidentStatus)
+						//     newIncident.IncidentStatusId = ((RemoteIncidentStatus)this.cntrlStatus.SelectedItem).IncidentStatusId.Value;
 						newIncident.OpenerId = ((this.cntrlDetectedBy.SelectedItem.GetType() == typeof(RemoteUser)) ? ((RemoteUser)this.cntrlDetectedBy.SelectedItem).UserId.Value : -1);
 						newIncident.OwnerId = ((this.cntrlOwnedBy.SelectedItem.GetType() == typeof(RemoteUser)) ? ((RemoteUser)this.cntrlOwnedBy.SelectedItem).UserId.Value : new int?());
 						newIncident.PriorityId = ((this.cntrlPriority.SelectedItem.GetType() == typeof(RemoteIncidentPriority)) ? ((RemoteIncidentPriority)this.cntrlPriority.SelectedItem).PriorityId : new int?());
@@ -205,47 +209,69 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 		/// <summary>Hit when the Type or Status dropdown is changed. Have to reload workflow and update fields.</summary>
 		/// <param name="sender">cntrlType / cntrlStatus</param>
 		/// <param name="e">Event Args</param>
-		private void _cntrlStatusType_Changed(object sender, SelectionChangedEventArgs e)
+		private void _cntrlType_Changed(object sender, SelectionChangedEventArgs e)
 		{
 			try
 			{
-				if (!this.isInLoadMode)
+				if (!this.IsLoading && !this._isWorkflowChanging)
 				{
-					//Update window title to indicate there's a change.
-					if (!this.ParentWindowPane.Caption.EndsWith("*"))
-						((IVsWindowFrame)this.ParentWindowPane.Frame).SetProperty((int)__VSFPROPID2.VSFPROPID_OverrideDirtyState, true);
+					this._isWorkflowChanging = true;
+					//Show the overlay.
+					this.lblLoadingIncident.Text = StaticFuncs.getCultureResource.GetString("app_Incident_LoadingWorkflow");
+					this.barLoadingIncident.Value = 0;
+					this.barLoadingIncident.Maximum = 4;
+					this.display_SetStatusWindow(Visibility.Visible);
 
-					//this.ParentWindowPane.Caption = this.ParentWindowPane.Caption + " *";
+					//See if they want to or need to confirm..
+					MessageBoxResult areTheySure = MessageBoxResult.Yes;
+					if (this._isFieldChanged || this._isDescChanged || this._isResChanged)
+						areTheySure = MessageBox.Show(StaticFuncs.getCultureResource.GetString("app_General_WorkflowResetFieldsMessage"), StaticFuncs.getCultureResource.GetString("app_General_AreYouSure"), MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.No);
 
-					//See if they selected the original setting..
-					if ((this.cntrlType.SelectedItem != null) && (this.cntrlStatus.SelectedItem != null))
+					if (areTheySure == MessageBoxResult.Yes)
 					{
-						//See if they selected the original setting..
-						if ((this.cntrlStatus.SelectedItem is RemoteIncidentStatus) &&
-							(this.cntrlType.SelectedItem is RemoteIncidentType &&
-							((RemoteIncidentType)this.cntrlType.SelectedItem).IncidentTypeId == this._IncCurrentType))
+						//Update window title to indicate there's a change.
+						if (((RemoteIncidentType)this.cntrlType.SelectedItem).IncidentTypeId.Value != this._Incident.IncidentTypeId.Value)
 						{
-							//We're in the original setting, so restore previous workflow.
-							this.loadItem_SetEnabledFields(this._IncWkfFields_Current);
+							((IVsWindowFrame)this.ParentWindowPane.Frame).SetProperty((int)__VSFPROPID2.VSFPROPID_OverrideDirtyState, true);
+							if (!this.ParentWindowPane.Caption.EndsWith("*"))
+							{
+								this.ParentWindowPane.Caption = this.ParentWindowPane.Caption + " *";
+							}
 						}
 						else
 						{
-							//This is a potentially different workflow, so create the client to go out and get fields.
-							ImportExportClient wkfClient = StaticFuncs.CreateClient(this._Project.ServerURL.ToString());
-							wkfClient.Connection_Authenticate2Completed += new EventHandler<Connection_Authenticate2CompletedEventArgs>(wkfClient_Connection_Authenticate2Completed);
-							wkfClient.Connection_ConnectToProjectCompleted += new EventHandler<Connection_ConnectToProjectCompletedEventArgs>(wkfClient_Connection_ConnectToProjectCompleted);
-							wkfClient.Incident_RetrieveWorkflowFieldsCompleted += new EventHandler<Incident_RetrieveWorkflowFieldsCompletedEventArgs>(wkfClient_Incident_RetrieveWorkflowFieldsCompleted);
-							wkfClient.Incident_RetrieveWorkflowCustomPropertiesCompleted += new EventHandler<Incident_RetrieveWorkflowCustomPropertiesCompletedEventArgs>(wkfClient_Incident_RetrieveWorkflowCustomPropertiesCompleted);
+							((IVsWindowFrame)this.ParentWindowPane.Frame).SetProperty((int)__VSFPROPID2.VSFPROPID_OverrideDirtyState, false);
+							if (this.ParentWindowPane.Caption.EndsWith("*"))
+							{
+								this.ParentWindowPane.Caption = this.ParentWindowPane.Caption.Trim(new char[] { ' ', '*' });
+							}
+						}
 
-							//Connect.
-							wkfClient.Connection_Authenticate2Async(this._Project.UserName, this._Project.UserPass, StaticFuncs.getCultureResource.GetString("app_ReportName"));
+						//Set the selected item..
+						if (this.cntrlType.SelectedItem is RemoteIncidentType)
+						{
+							this._IncSelectedType = ((RemoteIncidentType)this.cntrlType.SelectedItem).IncidentTypeId.Value;
+
+							//Reset data and then reset combobox.
+							this.loadItem_DisplayInformation(this._Incident);
+							this.loadItem_PopulateType(this.cntrlType, this._IncSelectedType);
+
+							//Update workflow fields..
+							this.workflow_ChangeWorkflowStep();
 						}
 					}
+					else
+					{
+						//Reset drop-down..
+						this.loadItem_PopulateType(this.cntrlType, this._Incident.IncidentTypeId.Value);
+						this.display_SetStatusWindow(Visibility.Collapsed);
+					}
+					this._isWorkflowChanging = false;
 				}
 			}
 			catch (Exception ex)
 			{
-				//Connect.logEventMessage("wpfDetailsIncident::_cntrlStatusType_Changed", ex, System.Diagnostics.EventLogEntryType.Error);
+				Logger.LogMessage(ex);
 			}
 		}
 
@@ -256,11 +282,12 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 		{
 			try
 			{
-				if (!this.isInLoadMode)
+				if (!this.IsLoading)
 				{
+					((IVsWindowFrame)this.ParentWindowPane.Frame).SetProperty((int)__VSFPROPID2.VSFPROPID_OverrideDirtyState, true);
 					if (!this.ParentWindowPane.Caption.EndsWith("*"))
 					{
-						((IVsWindowFrame)this.ParentWindowPane.Frame).SetProperty((int)__VSFPROPID2.VSFPROPID_OverrideDirtyState, true);
+						this.ParentWindowPane.Caption = this.ParentWindowPane.Caption + " *";
 					}
 
 					this._isFieldChanged = true;
@@ -339,24 +366,12 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 				{
 					if (value)
 					{
-						//Show the div..
-						this.panelStatus.Visibility = System.Windows.Visibility.Visible;
-						this.barLoadingIncident.Value = 0;
+						this.display_SetStatusWindow(Visibility.Visible);
 					}
 					else
 					{
 						this.barLoadingIncident.Value = 1;
-
-						//Fade it out.
-						Storyboard storyFadeOut = new Storyboard();
-						DoubleAnimation animFadeOut = new DoubleAnimation(1, 0, new TimeSpan(0, 0, 0, 0, 500));
-						Storyboard.SetTarget(animFadeOut, this.panelStatus);
-						Storyboard.SetTargetProperty(animFadeOut, new PropertyPath(Control.OpacityProperty));
-						animFadeOut.Completed += new EventHandler(animFadeOut_Completed);
-						storyFadeOut.Children.Add(animFadeOut);
-
-						//Start the animation.
-						storyFadeOut.Begin();
+						this.display_SetStatusWindow(Visibility.Hidden);
 					}
 
 					this._isLoadingInformation = value;
@@ -398,5 +413,126 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 		}
 		#endregion
 
+		private void mnuActions_Click(object sender, RoutedEventArgs e)
+		{
+			//Show the overlay.
+			this.lblLoadingIncident.Text = StaticFuncs.getCultureResource.GetString("app_Incident_LoadingWorkflow");
+			this.barLoadingIncident.Value = 0;
+			this.barLoadingIncident.Maximum = 4;
+			this.display_SetStatusWindow(Visibility.Visible);
+			this._isWorkflowChanging = true;
+
+			//See if they want to or need to confirm..
+			MessageBoxResult areTheySure = MessageBoxResult.Yes;
+			if (this._isFieldChanged || this._isDescChanged || this._isResChanged)
+				areTheySure = MessageBox.Show(StaticFuncs.getCultureResource.GetString("app_General_WorkflowResetFieldsMessage"), StaticFuncs.getCultureResource.GetString("app_General_AreYouSure"), MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.No);
+
+			if (areTheySure == MessageBoxResult.Yes)
+			{
+
+				//Get the item they clicked.
+				RemoteWorkflowIncidentTransition wkfTrans = (((MenuItem)e.OriginalSource).Header) as RemoteWorkflowIncidentTransition;
+				if (wkfTrans != null)
+				{
+					if (wkfTrans.Name.Trim().StartsWith("»"))
+					{
+						//They selected a different status, update the selected index and call the workflow.
+						this._IncSelectedStatus = wkfTrans.IncidentStatusId_Output;
+
+						//Reset fields..
+						this.loadItem_DisplayInformation(this._Incident);
+
+						//Update the field..
+						this.cntrlIncidentStatus.Text = wkfTrans.Name;
+
+						//Clear menu items, add the 'revert' menu.
+						this.mnuActions.Items.Clear();
+						RemoteWorkflowIncidentTransition tempTrans = new RemoteWorkflowIncidentTransition();
+						tempTrans.Name = String.Format(StaticFuncs.getCultureResource.GetString("app_Incident_Revert"), this._Incident.IncidentStatusName);
+						tempTrans.IncidentStatusId_Output = this._Incident.IncidentStatusId.Value;
+						tempTrans.IncidentStatusName_Output = this._Incident.IncidentStatusName;
+						this.mnuActions.Items.Add(tempTrans);
+
+						//Update workflow fields..
+						this.workflow_ChangeWorkflowStep();
+
+
+						//Set changed flag.
+						((IVsWindowFrame)this.ParentWindowPane.Frame).SetProperty((int)__VSFPROPID2.VSFPROPID_OverrideDirtyState, true);
+						if (!this.ParentWindowPane.Caption.EndsWith("*"))
+						{
+							this.ParentWindowPane.Caption = this.ParentWindowPane.Caption + " *";
+						}
+					}
+					else
+					{
+						//They reverted. Need to reset things here.
+						this._IncSelectedStatus = null;
+						this._IncSelectedType = null;
+
+						//Reset fields..
+						this.loadItem_DisplayInformation(this._Incident);
+
+						//Update workflow fields..
+						this.workflow_ChangeWorkflowStep();
+
+						//Revert changed flag.
+						((IVsWindowFrame)this.ParentWindowPane.Frame).SetProperty((int)__VSFPROPID2.VSFPROPID_OverrideDirtyState, false);
+						if (this.ParentWindowPane.Caption.EndsWith("*"))
+						{
+							this.ParentWindowPane.Caption = this.ParentWindowPane.Caption.Trim(new char[] { ' ', '*' });
+						}
+
+					}
+				}
+			}
+			else
+			{
+				this.display_SetStatusWindow(Visibility.Collapsed);
+			}
+			this._isWorkflowChanging = false;
+		}
+
+		/// <summary>Use to show or hide the Status Window.</summary>
+		/// <param name="visiblity">The visibility of the window.</param>
+		private void display_SetStatusWindow(Visibility visiblity)
+		{
+			//Fade in or out the status window...
+			switch (visiblity)
+			{
+				case System.Windows.Visibility.Visible:
+					//Set initial values..
+					this.panelStatus.Opacity = 0;
+					this.panelStatus.Visibility = System.Windows.Visibility.Visible;
+
+					Storyboard storyFadeIn = new Storyboard();
+					DoubleAnimation animFadeIn = new DoubleAnimation(0, 1, new TimeSpan(0, 0, 0, 0, 150));
+					Storyboard.SetTarget(animFadeIn, this.panelStatus);
+					Storyboard.SetTargetProperty(animFadeIn, new PropertyPath(Control.OpacityProperty));
+					storyFadeIn.Children.Add(animFadeIn);
+
+					//Start the animation.
+					storyFadeIn.Begin();
+
+					break;
+
+				case System.Windows.Visibility.Collapsed:
+				case System.Windows.Visibility.Hidden:
+				default:
+					//Fade it out.
+					Storyboard storyFadeOut = new Storyboard();
+					DoubleAnimation animFadeOut = new DoubleAnimation(1, 0, new TimeSpan(0, 0, 0, 0, 250));
+					Storyboard.SetTarget(animFadeOut, this.panelStatus);
+					Storyboard.SetTargetProperty(animFadeOut, new PropertyPath(Control.OpacityProperty));
+					animFadeOut.Completed += new EventHandler(animFadeOut_Completed);  //To handle actually hiding the layer.
+					storyFadeOut.Children.Add(animFadeOut);
+
+					//Start the animation.
+					storyFadeOut.Begin();
+
+					break;
+			}
+
+		}
 	}
 }

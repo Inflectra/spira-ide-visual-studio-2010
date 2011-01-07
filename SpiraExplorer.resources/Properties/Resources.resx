@@ -472,4 +472,23 @@ http://server/SpiraTeam/</value>
   <data name="app_Incident_Type" xml:space="preserve">
     <value>Type</value>
   </data>
+  <data name="app_General_Actions" xml:space="preserve">
+    <value>_Actions</value>
+  </data>
+  <data name="app_Incident_LoadingWorkflow" xml:space="preserve">
+    <value>Loading Incident Workflow Step, please wait...</value>
+  </data>
+  <data name="app_General_AreYouSure" xml:space="preserve">
+    <value>Are You Sure?</value>
+  </data>
+  <data name="app_General_WorkflowResetFieldsMessage" xml:space="preserve">
+    <value>Due to workflow constraints, all fields will be reset to their initial values. Changes will be lost.
+Are you sure you want to change the status or type of the incident?</value>
+  </data>
+  <data name="app_Incident_Revert" xml:space="preserve">
+    <value>Revert ({0})</value>
+  </data>
+  <data name="app_General_Attachments" xml:space="preserve">
+    <value>Attachments</value>
+  </data>
 </root>
