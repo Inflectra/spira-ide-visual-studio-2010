@@ -532,7 +532,6 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 
 					break;
 			}
-
 		}
 	}
 }

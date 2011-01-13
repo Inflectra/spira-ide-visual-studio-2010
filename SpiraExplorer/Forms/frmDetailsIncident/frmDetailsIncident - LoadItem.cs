@@ -6,6 +6,8 @@ using System.Windows.Controls;
 using Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business;
 using Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business.SpiraTeam_Client;
 using Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Controls;
+using System.Windows.Documents;
+using Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business.HTMLandXAML;
 
 namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 {
@@ -32,7 +34,9 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 		private List<RemoteIncidentPriority> _IncPriority;
 		private List<RemoteIncidentType> _IncType;
 		private List<RemoteIncidentStatus> _IncStatus;
+		private List<RemoteDocument> _IncDocuments;
 		private List<RemoteWorkflowIncidentTransition> _IncWkfTransition;
+		private string _IncDocumentsUrl;
 
 		//Workflow fields..
 		private Dictionary<int, int> _IncWkfFields_Current;
@@ -77,13 +81,15 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 				this._client.Incident_RetrieveWorkflowCustomPropertiesCompleted += new EventHandler<Incident_RetrieveWorkflowCustomPropertiesCompletedEventArgs>(_client_Incident_RetrieveWorkflowCustomPropertiesCompleted);
 				this._client.Incident_RetrieveWorkflowFieldsCompleted += new EventHandler<Incident_RetrieveWorkflowFieldsCompletedEventArgs>(_client_Incident_RetrieveWorkflowFieldsCompleted);
 				this._client.Incident_RetrieveWorkflowTransitionsCompleted += new EventHandler<Incident_RetrieveWorkflowTransitionsCompletedEventArgs>(_client_Incident_RetrieveWorkflowTransitionsCompleted);
+				this._client.Document_RetrieveForArtifactCompleted += new EventHandler<Document_RetrieveForArtifactCompletedEventArgs>(_client_Document_RetrieveForArtifactCompleted);
 				this._client.Release_RetrieveCompleted += new EventHandler<Release_RetrieveCompletedEventArgs>(_client_Release_RetrieveCompleted);
 				this._client.Project_RetrieveUserMembershipCompleted += new EventHandler<Project_RetrieveUserMembershipCompletedEventArgs>(_client_Project_RetrieveUserMembershipCompleted);
+				this._client.System_GetArtifactUrlCompleted += new EventHandler<System_GetArtifactUrlCompletedEventArgs>(_client_System_GetArtifactUrlCompleted);
 				this._client.CustomProperty_RetrieveForArtifactTypeCompleted += new EventHandler<CustomProperty_RetrieveForArtifactTypeCompletedEventArgs>(_client_CustomProperty_RetrieveForArtifactTypeCompleted);
 
 				//Fire the connection off here.
 				this._clientNumRunning++;
-				this.barLoadingIncident.Maximum = 15;
+				this.barLoadingIncident.Maximum = 17;
 				this._client.Connection_Authenticate2Async(this._Project.UserName, this._Project.UserPass, StaticFuncs.getCultureResource.GetString("app_ReportName"));
 
 			}
@@ -92,7 +98,6 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 		}
 
 		#region Client Events
-
 		//**Initial Data Gathering
 		/// <summary>Hit once we've disconnected form the server, all work is done.</summary>
 		/// <param name="sender">ImportExporClient</param>
@@ -172,8 +177,10 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 					this._client.CustomProperty_RetrieveForArtifactTypeAsync(3, this._clientNum++);
 					// - Available Releases
 					this._client.Release_RetrieveAsync(true, this._clientNum++);
-					//Resolutions / Comments
+					// - Resolutions / Comments
 					this._client.Incident_RetrieveResolutionsAsync(this.ArtifactDetail.ArtifactId, this._clientNum++);
+					// - System URL
+					this._client.System_GetArtifactUrlAsync(-14, this._Project.ProjectID, -2, null, this._clientNum++);
 				}
 				else
 				{
@@ -407,10 +414,11 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 					this._Incident = e.Result;
 
 					//Get workflow steps and fields.
-					this._clientNumRunning += 3;
+					this._clientNumRunning += 4;
 					this._client.Incident_RetrieveWorkflowFieldsAsync(this._Incident.IncidentTypeId.Value, this._Incident.IncidentStatusId.Value, this._clientNum++);
 					this._client.Incident_RetrieveWorkflowTransitionsAsync(this._Incident.IncidentTypeId.Value, this._Incident.IncidentStatusId.Value, (this._Incident.OpenerId == this._Project.UserID), (this._Incident.OwnerId == this._Project.UserID), this._clientNum++);
 					this._client.Incident_RetrieveWorkflowCustomPropertiesAsync(this._Incident.IncidentTypeId.Value, this._Incident.IncidentStatusId.Value, this._clientNum++);
+					this._client.Document_RetrieveForArtifactAsync(3, this._Incident.IncidentId.Value, new List<RemoteFilter>(), new RemoteSort(), this._clientNum++);
 				}
 				else
 				{
@@ -604,6 +612,61 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			}
 
 			System.Diagnostics.Debug.WriteLine(CLASS + METHOD + " EXIT. Clients - Running: " + this._clientNumRunning.ToString() + ", Total: " + this._clientNum.ToString());
+		}
+
+		/// <summary>Hit when we're finished getting the attached documents for the artifact.</summary>
+		/// <param name="sender">ImportExportClient</param>
+		/// <param name="e">Document_RetrieveForArtifactCompletedEventArgs</param>
+		private void _client_Document_RetrieveForArtifactCompleted(object sender, Document_RetrieveForArtifactCompletedEventArgs e)
+		{
+			const string METHOD = "_client_Document_RetrieveForArtifactCompleted()";
+			System.Diagnostics.Debug.WriteLine(CLASS + METHOD + " ENTER. Clients - Running: " + this._clientNumRunning.ToString() + ", Total: " + this._clientNum.ToString());
+
+			this._clientNumRunning--;
+			this.barLoadingIncident.Value++;
+
+			if (!e.Cancelled)
+			{
+				if (e.Error == null)
+				{
+					//Get the results into our variable.
+					this._IncDocuments = e.Result;
+					//We won't load them into display until the other information is displayed.
+
+					this.load_IsReadyToGetMainData();
+				}
+				else
+				{
+					Logger.LogMessage(e.Error);
+				}
+			}
+			System.Diagnostics.Debug.WriteLine(CLASS + METHOD + " EXIT. Clients - Running: " + this._clientNumRunning.ToString() + ", Total: " + this._clientNum.ToString());
+		}
+
+		/// <summary>Hit when the client returns with our needed URL</summary>
+		/// <param name="sender">ImportExportClient</param>
+		/// <param name="e">System_GetArtifactUrlCompletedEventArgs</param>
+		private void _client_System_GetArtifactUrlCompleted(object sender, System_GetArtifactUrlCompletedEventArgs e)
+		{
+			const string METHOD = "_client_System_GetArtifactUrlCompleted()";
+			System.Diagnostics.Debug.WriteLine(CLASS + METHOD + " ENTER. Clients - Running: " + this._clientNumRunning.ToString() + ", Total: " + this._clientNum.ToString());
+
+			this._clientNumRunning--;
+			this.barLoadingIncident.Value++;
+
+			if (!e.Cancelled)
+			{
+				if (e.Error == null)
+				{
+					this._IncDocumentsUrl = e.Result;
+
+					this.load_IsReadyToGetMainData();
+				}
+				else
+				{
+					Logger.LogMessage(e.Error);
+				}
+			}
 		}
 
 		//** Workflow updates.
@@ -1172,7 +1235,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 					{
 						RemoteCustomProperty custProp = ((Control)custLinked).Tag as RemoteCustomProperty;
 
-						if (custProp != null)
+						if (custProp != null && CustomFields != null)
 						{
 							if (CustomFields.ContainsKey(custProp.CustomPropertyId))
 							{
@@ -1221,6 +1284,81 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 				this.cntrlDescription.HTMLText = incident.Description;
 				// - History
 				//TODO: History (need API update)
+				// - Attachments
+				//Remove existing rows.
+				//Add new rows.
+				if (this._IncDocuments != null)
+				{
+					foreach (RemoteDocument incidentAttachment in this._IncDocuments)
+					{
+						int numAdding = this.gridAttachments.RowDefinitions.Count;
+						//Create textblocks..
+						// - Link/Name
+						TextBlock txbFilename = new TextBlock();
+						Hyperlink linkFile = new Hyperlink();
+						linkFile.Inlines.Add(incidentAttachment.FilenameOrUrl);
+						//Try to get a URL out of it..
+						bool IsUrl = false;
+						Uri atchUri = null;
+						try
+						{
+							atchUri = new Uri(incidentAttachment.FilenameOrUrl);
+							IsUrl = true;
+						}
+						catch { }
+
+						if (!IsUrl)
+						{
+							atchUri = new Uri(this._IncDocumentsUrl.Replace("~", this._Project.ServerURL.ToString()).Replace("{art}", incidentAttachment.AttachmentId.ToString()));
+						}
+						linkFile.NavigateUri = atchUri;
+						linkFile.Click += new RoutedEventHandler(Hyperlink_Click);
+
+						//Add the link to the TextBlock.
+						txbFilename.Inlines.Add(linkFile);
+						//Create ToolTip.
+						txbFilename.ToolTip = new cntrlRichTextEditor() { IsReadOnly = true, IsToolbarVisible = false, HTMLText = incidentAttachment.Description, Width = 200 };
+						txbFilename.Style = (Style)this.FindResource("PaddedLabel");
+
+						// - Document Version
+						TextBlock txbVersion = new TextBlock();
+						txbVersion.Text = incidentAttachment.CurrentVersion;
+						txbVersion.Style = (Style)this.FindResource("PaddedLabel");
+
+						// - Author
+						TextBlock txbAuthor = new TextBlock();
+						txbAuthor.Text = incidentAttachment.AuthorName;
+						txbAuthor.Style = (Style)this.FindResource("PaddedLabel");
+
+						// - Date Created
+						TextBlock txbDateCreated = new TextBlock();
+						txbDateCreated.Text = incidentAttachment.UploadDate.ToShortDateString();
+						txbDateCreated.Style = (Style)this.FindResource("PaddedLabel");
+
+						// - Size
+						TextBlock txbSize = new TextBlock();
+						txbSize.Text = incidentAttachment.Size.ToString() + "kb";
+						txbSize.Style = (Style)this.FindResource("PaddedLabel");
+
+						//Create the row, and add the controls to it.
+						gridAttachments.RowDefinitions.Add(new RowDefinition() { Height = GridLength.Auto });
+						Grid.SetColumn(txbFilename, 0);
+						Grid.SetRow(txbFilename, numAdding);
+						gridAttachments.Children.Add(txbFilename);
+						Grid.SetColumn(txbVersion, 1);
+						Grid.SetRow(txbVersion, numAdding);
+						gridAttachments.Children.Add(txbVersion);
+						Grid.SetColumn(txbAuthor, 2);
+						Grid.SetRow(txbAuthor, numAdding);
+						gridAttachments.Children.Add(txbAuthor);
+						Grid.SetColumn(txbDateCreated, 3);
+						Grid.SetRow(txbDateCreated, numAdding);
+						gridAttachments.Children.Add(txbDateCreated);
+						Grid.SetColumn(txbSize, 4);
+						Grid.SetRow(txbSize, numAdding);
+						gridAttachments.Children.Add(txbSize);
+					}
+				}
 				// - Schedule
 				this.cntrlStartDate.SelectedDate = incident.StartDate;
 				this.cntrlEndDate.SelectedDate = incident.ClosedDate;
@@ -1318,6 +1456,19 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			catch (Exception ex)
 			{
 				//Connect.logEventMessage("wpfDetailsIncident::loadItem_displayInformation", ex, System.Diagnostics.EventLogEntryType.Error);
+			}
+		}
+
+		/// <summary>Hit when a HyperLink object is clicked.</summary>
+		/// <param name="sender">Hyperlink</param>
+		/// <param name="e">RoutedEventArgs</param>
+		private void Hyperlink_Click(object sender, RoutedEventArgs e)
+		{
+			e.Handled = true;
+
+			if (sender is Hyperlink)
+			{
+				System.Diagnostics.Process.Start(((Hyperlink)sender).NavigateUri.ToString());
 			}
 		}
 
