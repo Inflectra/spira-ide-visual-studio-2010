@@ -267,7 +267,8 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 		/// <summary>Possibly hit when the user double-clicks on an item in the treenode.</summary>
 		/// <param name="sender">Object</param>
 		/// <param name="e">MouseButtonEventArgs</param>
-		private void TreeNode_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
+		/// <remarks>Must be public so the TreeNodeArtifact can access the funtion.</remarks>
+		public void TreeNode_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
 		{
 			//If it's not a folder and an artifact, open a details screen.
 			//Try to get the data item.
@@ -291,6 +292,13 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 					}
 				}
 			}
+			else
+			{
+				if (sender is TreeViewArtifact)
+				{
+					((SpiraExplorerPackage)this.Pane.Package).OpenDetailsToolWindow((sender as TreeViewArtifact), (string)e.Source);
+				}
+			}
 		}
 
 		public ToolWindowPane Pane
@@ -298,5 +306,19 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			get;
 			set;
 		}
+
+		/// <summary>Hit when the context menu goes away.</summary>
+		/// <param name="sender">UIElement</param>
+		/// <param name="e">ContextMenuEventArgs</param>
+		private void trvProject_ContextMenuClosing(object sender, ContextMenuEventArgs e)
+		{
+			e.Handled = true;
+
+			//We need to refresh the treeview items if they right-clicked on something.
+			if (sender is TreeView)  //If the sender is a TreeView
+				if (e.OriginalSource is TreeViewItem) //And the original item is a TreeViewItem.
+					(sender as TreeView).Items.Refresh();
+		}
+
 	}
 }

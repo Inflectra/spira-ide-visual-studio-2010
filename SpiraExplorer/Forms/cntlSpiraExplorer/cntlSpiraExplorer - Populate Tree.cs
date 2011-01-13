@@ -235,6 +235,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 						//Make new node.
 						TreeViewArtifact newNode = new TreeViewArtifact();
 						newNode.ArtifactType = TreeViewArtifact.ArtifactTypeEnum.Incident;
+						newNode.TreeNode = this;
 						newNode.ArtifactTag = incident;
 						newNode.ArtifactName = incident.Name;
 						newNode.ArtifactIsFolder = false;
@@ -431,6 +432,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 							//Make new node.
 							TreeViewArtifact newNode = new TreeViewArtifact();
 							newNode.ArtifactType = TreeViewArtifact.ArtifactTypeEnum.Requirement;
+							//newNode.TreeNode = this;
 							newNode.ArtifactTag = requirement;
 							newNode.ArtifactName = requirement.Name;
 							newNode.ArtifactIsFolder = false;

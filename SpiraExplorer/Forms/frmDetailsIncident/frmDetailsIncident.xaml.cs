@@ -7,6 +7,7 @@ using Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business.SpiraTeam_Cli
 using Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Controls;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
+using System.Windows.Controls.Primitives;
 
 namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 {
@@ -38,7 +39,11 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			this.imgLoadingIncident.Source = StaticFuncs.getImage("imgInfoWPF", new Size(48, 48)).Source;
 			this.imgLoadingError.Source = StaticFuncs.getImage("imgErrorWPF", new Size(48, 48)).Source;
 			//Load strings needed..
-			this.mnuActions.Header = StaticFuncs.getCultureResource.GetString("app_General_Actions") + ":";
+			this.toolTxtSave.Text = StaticFuncs.getCultureResource.GetString("app_General_Save");
+			this.toolTxtRefresh.Text = StaticFuncs.getCultureResource.GetString("app_General_Refresh");
+			this.toolTxtLoadWeb.Text = StaticFuncs.getCultureResource.GetString("app_General_ViewBrowser");
+			this.toolTxtTimer.Text = StaticFuncs.getCultureResource.GetString("app_General_StartTimer");
+			this.mnuTxtActions.Text = StaticFuncs.getCultureResource.GetString("app_Incident_StatusActions") + ":";
 			this.lblLoadingIncident.Text = StaticFuncs.getCultureResource.GetString("app_Incident_Loading");
 			this.lblExpanderDetails.Text = StaticFuncs.getCultureResource.GetString("app_Incident_ExpanderDetails");
 			this.lblName.Text = StaticFuncs.getCultureResource.GetString("app_General_Name") + ":";
@@ -400,6 +405,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			}
 			set
 			{
+				//See if they've made any changes..
 				this._ArtifactDetails = value;
 				this._Project = value.ArtifactParentProject.ArtifactTag as SpiraProject;
 
@@ -407,7 +413,10 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 				if (this.ParentWindowPane != null)
 					this.ParentWindowPane.Caption = this.TabTitle;
 
-				//TODO: Load details information.
+				//Set isworking flag..
+				this.btnStartStopTimer.IsChecked = value.IsTimed;
+
+				//Load details.
 				this.load_LoadItem();
 			}
 		}
@@ -531,6 +540,125 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 					storyFadeOut.Begin();
 
 					break;
+			}
+		}
+
+		/// <summary>Hit when the Timer button's status is changed.</summary>
+		/// <param name="sender">btnStartStopTimer</param>
+		/// <param name="e">RoutedEventArgs</param>
+		private void btnStartStopTimer_CheckedChanged(object sender, RoutedEventArgs e)
+		{
+			e.Handled = true;
+
+			if (!this.btnStartStopTimer.IsChecked.HasValue)
+				this.btnStartStopTimer.IsChecked = false;
+
+			if (this.btnStartStopTimer.IsChecked.Value)
+			{
+				this.toolTxtTimer.Text = StaticFuncs.getCultureResource.GetString("app_General_StopTimer");
+				//Set the timer..
+				this._ArtifactDetails.IsTimed = true;
+			}
+			else
+			{
+				this.toolTxtTimer.Text = StaticFuncs.getCultureResource.GetString("app_General_StartTimer");
+
+				//Set the timer.
+				this._ArtifactDetails.IsTimed = false;
+
+				//Get the value and add it to the incident.
+				TimeSpan workedSpan = this._ArtifactDetails.WorkTime;
+
+				//Add it to the Incident.
+				int intActH = 0;
+				int intActM = 0;
+				if (!string.IsNullOrWhiteSpace(cntrlActEffortH.Text))
+				{
+					try
+					{
+						intActH = int.Parse(cntrlActEffortH.Text);
+					}
+					catch { }
+				}
+				if (!string.IsNullOrWhiteSpace(cntrlActEffortM.Text))
+				{
+					try
+					{
+						intActM = int.Parse(cntrlActEffortM.Text);
+					}
+					catch { }
+				}
+				intActH += (workedSpan.Days * 24) + workedSpan.Hours;
+				intActM += workedSpan.Minutes;
+				//Add it up again..
+				TimeSpan newWorked = new TimeSpan(intActH, intActM, 0);
+				//Copy new values to the fields.
+				this.cntrlActEffortH.Text = ((newWorked.Days * 24) + newWorked.Hours).ToString();
+				this.cntrlActEffortM.Text = newWorked.Minutes.ToString();
+			}
+		}
+
+		/// <summary>Hit when a masked text box's text is changed.</summary>
+		/// <param name="sender">MaskedTextBox</param>
+		/// <param name="e">TextChangedEventArgs</param>
+		private void cntrlMasked_TextChanged(object sender, TextChangedEventArgs e)
+		{
+			//Simply call the real one.
+			this._cntrl_TextChanged(sender, e);
+		}
+
+		/// <summary>Hit when the View in Web button is clicked.</summary>
+		/// <param name="sender">btnLoadWeb</param>
+		/// <param name="e">RoutedEventArgs</param>
+		private void btnLoadWeb_Click(object sender, RoutedEventArgs e)
+		{
+			e.Handled = true;
+			//Fire off the url.
+			try
+			{
+				System.Diagnostics.Process.Start(this._IncidentUrl);
+			}
+			catch (Exception ex)
+			{
+				Logger.LogMessage(ex, "Error launching URL: " + this._IncidentUrl);
+				MessageBox.Show(StaticFuncs.getCultureResource.GetString("app_General_ErrorLaunchingUrlMessage"), StaticFuncs.getCultureResource.GetString("app_General_Error"), MessageBoxButton.OK, MessageBoxImage.Error);
+			}
+		}
+
+		/// <summary>Hit when the user clicks the Refresh button.</summary>
+		/// <param name="sender">btRefresh</param>
+		/// <param name="e">RoutedEventArgs</param>
+		private void btnRefresh_Click(object sender, RoutedEventArgs e)
+		{
+			e.Handled = true;
+
+			MessageBoxResult isUserSure = MessageBoxResult.Yes;
+			if (this._isDescChanged || this._isFieldChanged || this._isResChanged)
+			{
+				isUserSure = MessageBox.Show(StaticFuncs.getCultureResource.GetString("app_General_LoseChangesMessage"), StaticFuncs.getCultureResource.GetString("app_General_AreYouSure"), MessageBoxButton.YesNo, MessageBoxImage.Exclamation, MessageBoxResult.No);
+			}
+
+			if (isUserSure == MessageBoxResult.Yes)
+			{
+				//User is sure, re-launch the loading.
+				this.load_LoadItem();
+			}
+		}
+
+		/// <summary>This will cause the timer to stop and the fields to be updated, as if the person clicked on the "Stop Timer" button.</summary>
+		public void RecordStopTimer()
+		{
+			//If the button IS checked, simply uncheck it.
+			if (this.btnStartStopTimer.IsChecked.Value)
+			{
+				this.btnStartStopTimer.IsChecked = false;
+
+				//TODO: May not be needed..
+				//this.btnStartStopTimer_CheckedChanged(this.btnStartStopTimer, new RoutedEventArgs(ToggleButton.CheckedEvent, this.btnStartStopTimer));
+			}
+			else
+			{
+				this.btnStartStopTimer_CheckedChanged(this.btnStartStopTimer, new RoutedEventArgs(ToggleButton.CheckedEvent, this.btnStartStopTimer));
 			}
 		}
 	}

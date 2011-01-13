@@ -472,8 +472,8 @@ http://server/SpiraTeam/</value>
   <data name="app_Incident_Type" xml:space="preserve">
     <value>Type</value>
   </data>
-  <data name="app_General_Actions" xml:space="preserve">
-    <value>_Actions</value>
+  <data name="app_Incident_StatusActions" xml:space="preserve">
+    <value>Change Status</value>
   </data>
   <data name="app_Incident_LoadingWorkflow" xml:space="preserve">
     <value>Loading Incident Workflow Step, please wait...</value>
@@ -490,5 +490,36 @@ Are you sure you want to change the status or type of the incident?</value>
   </data>
   <data name="app_General_Attachments" xml:space="preserve">
     <value>Attachments</value>
+  </data>
+  <data name="app_General_Refresh" xml:space="preserve">
+    <value>Refresh</value>
+  </data>
+  <data name="app_General_Save" xml:space="preserve">
+    <value>Save</value>
+  </data>
+  <data name="app_General_StartTimer" xml:space="preserve">
+    <value>Start Timer</value>
+  </data>
+  <data name="app_General_ViewBrowser" xml:space="preserve">
+    <value>View In Browser</value>
+  </data>
+  <data name="app_General_StopTimer" xml:space="preserve">
+    <value>Stop Timer</value>
+  </data>
+  <data name="app_General_Error" xml:space="preserve">
+    <value>Error</value>
+  </data>
+  <data name="app_General_ErrorLaunchingUrlMessage" xml:space="preserve">
+    <value>Error launching the URL in the default browser.</value>
+  </data>
+  <data name="app_General_LoseChangesMessage" xml:space="preserve">
+    <value>All fields will be reloaded, you will lose any changes you have made.
+Are you sure you want to continue?</value>
+  </data>
+  <data name="app_General_WindowOpenError" xml:space="preserve">
+    <value>Error Opening Window</value>
+  </data>
+  <data name="app_General_WindowOpenErrorMessage" xml:space="preserve">
+    <value>Error opening the toolwindow for the item selected. Try a different artifact, or try again later.</value>
   </data>
 </root>

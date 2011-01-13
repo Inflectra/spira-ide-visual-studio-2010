@@ -278,7 +278,14 @@
 			<ToolBarPanel HorizontalAlignment="Stretch" DockPanel.Dock="Top" Orientation="Horizontal" Background="{DynamicResource {x:Static vsfx:VsBrushes.CommandShelfBackgroundGradientKey}}">
 				<ToolBar Name="toolbarIncidentStatus" Loaded="_toolbar_Loaded" Background="{DynamicResource {x:Static vsfx:VsBrushes.CommandBarGradientKey}}" Width="{Binding Path=ActualWidth,RelativeSource={RelativeSource AncestorType={x:Type ToolBarPanel}}}" HorizontalAlignment="Stretch">
 					<Menu Background="Transparent" Foreground="{DynamicResource {x:Static vsfx:VsBrushes.CommandBarTextActiveKey}}" VerticalAlignment="Center">
-						<MenuItem Name="mnuActions" MenuItem.Click="mnuActions_Click" Header="[_actions]" Width="Auto" DisplayMemberPath="Name" Style="{StaticResource ResourceKey=MenuHoverStyle}" />
+						<MenuItem Name="mnuActions" MenuItem.Click="mnuActions_Click" Width="Auto" DisplayMemberPath="Name" Style="{StaticResource ResourceKey=MenuHoverStyle}">
+							<MenuItem.Header>
+								<StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+									<TextBlock Name="mnuTxtActions" Text="[_actions]" VerticalAlignment="Center" />
+									<Path Fill="{DynamicResource {x:Static vsfx:VsBrushes.ToolWindowTextKey}}" Data="M 0 0 L 6 6 L 12 0 Z" VerticalAlignment="Center" Margin="5" />
+								</StackPanel>
+							</MenuItem.Header>
+						</MenuItem>
 					</Menu>
 					<Separator ToolBar.OverflowMode="Never" />
 					<Button  Name="btnSave" IsEnabled="False"  ToolBar.OverflowMode="Never" IsEnabledChanged="toolButton_IsEnabledChanged" Click="btnSave_Click">
@@ -288,26 +295,26 @@
 						</StackPanel>
 					</Button>
 					<Separator ToolBar.OverflowMode="Never" />
-					<Button DockPanel.Dock="Left" Name="btnRefresh" ToolBar.OverflowMode="Never">
+					<Button DockPanel.Dock="Left" Name="btnRefresh" ToolBar.OverflowMode="Never" Click="btnRefresh_Click">
 						<StackPanel Orientation="Horizontal">
 							<Image Name="toolImgRefresh" Height="16" Width="16" Source="/SpiraExplorer;component/Resources/imgReload.png" />
 							<TextBlock Name="toolTxtRefresh" Margin="2,0,0,0" />
 						</StackPanel>
 					</Button>
 					<Separator ToolBar.OverflowMode="Never" />
-					<Button DockPanel.Dock="Left" Name="btnLoadWeb" ToolBar.OverflowMode="Never">
+					<Button DockPanel.Dock="Left" Name="btnLoadWeb" ToolBar.OverflowMode="Never" Click="btnLoadWeb_Click">
 						<StackPanel Orientation="Horizontal">
 							<Image Name="toolImgLoadWeb" Height="16" Width="16" Source="/SpiraExplorer;component/Resources/imgOpenWeb.png" />
 							<TextBlock Name="toolTxtLoadWeb" Margin="2,0,0,0" />
 						</StackPanel>
 					</Button>
 					<Separator ToolBar.OverflowMode="Never" />
-					<Button  Name="btnStartStopTimer" ToolBar.OverflowMode="Never">
+					<ToggleButton  Name="btnStartStopTimer" ToolBar.OverflowMode="Never" Checked="btnStartStopTimer_CheckedChanged" Unchecked="btnStartStopTimer_CheckedChanged">
 						<StackPanel Orientation="Horizontal">
 							<Image Name="toolImgTimer" Height="16" Width="16" Source="/SpiraExplorer;component/Resources/imgTimer.png" />
 							<TextBlock Name="toolTxtTimer" Margin="2,0,0,0" />
 						</StackPanel>
-					</Button>
+					</ToggleButton>
 				</ToolBar>
 			</ToolBarPanel>
 
@@ -461,22 +468,22 @@
 								<!-- ROW1: % Complete / Est. Effort -->
 								<TextBlock Name="lblPerComplete" Grid.Column="0" Grid.Row="1" Style="{StaticResource PaddedLabel}" />
 								<StackPanel Grid.Column="1" Grid.Row="1" Orientation="Horizontal">
-									<TextBox MaxLength="3" Name="cntrlPerComplete" Style="{StaticResource PaddedDropdown}" Width="30" MinWidth="0"  />
-									<TextBlock Style="{StaticResource PaddedLabel}" FontWeight="Bold">%</TextBlock>
+									<TextBox MaxLength="3" Name="cntrlPerComplete" Style="{StaticResource PaddedDropdown}" Width="30" MinWidth="0" TextChanged="_cntrl_TextChanged" />
+									<TextBlock Style="{StaticResource PaddedLabel}" FontWeight="Bold" Text="%" />
 								</StackPanel>
 								<TextBlock Name="lblEstEffort" Grid.Column="3" Grid.Row="1" Style="{StaticResource PaddedLabel}" />
 								<StackPanel Grid.Column="4" Grid.Row="1" Orientation="Horizontal">
-									<ui_cntrl:cntrlMaskedTextBox MaxLength="3" x:Name="cntrlEstEffortH" Style="{StaticResource PaddedDropdown}" Width="30" MinWidth="0" Mask="###" />
+									<ui_cntrl:cntrlMaskedTextBox MaxLength="3" x:Name="cntrlEstEffortH" Style="{StaticResource PaddedDropdown}" Width="30" MinWidth="0" Mask="###" TextChanged="cntrlMasked_TextChanged" />
 									<TextBlock Style="{StaticResource PaddedLabel}">hours,</TextBlock>
-									<ui_cntrl:cntrlMaskedTextBox MaxLength="2" x:Name="cntrlEstEffortM" Style="{StaticResource PaddedDropdown}" Width="30" MinWidth="0" Mask="##" />
+									<ui_cntrl:cntrlMaskedTextBox MaxLength="2" x:Name="cntrlEstEffortM" Style="{StaticResource PaddedDropdown}" Width="30" MinWidth="0" Mask="##" TextChanged="cntrlMasked_TextChanged" />
 									<TextBlock Style="{StaticResource PaddedLabel}">minutes</TextBlock>
 								</StackPanel>
 								<!-- ROW2: Actual Effort -->
 								<TextBlock Name="lblActEffort" Grid.Column="3" Grid.Row="2" Style="{StaticResource PaddedLabel}" />
 								<StackPanel Grid.Column="4" Grid.Row="2" Orientation="Horizontal">
-									<TextBox MaxLength="3" Name="cntrlActEffortH" Style="{StaticResource PaddedDropdown}" Width="30" MinWidth="0" />
+									<TextBox MaxLength="3" Name="cntrlActEffortH" Style="{StaticResource PaddedDropdown}" Width="30" MinWidth="0" TextChanged="cntrlMasked_TextChanged" />
 									<TextBlock Style="{StaticResource PaddedLabel}">hours,</TextBlock>
-									<TextBox MaxLength="2" Name="cntrlActEffortM" Style="{StaticResource PaddedDropdown}" Width="30" MinWidth="0" />
+									<TextBox MaxLength="2" Name="cntrlActEffortM" Style="{StaticResource PaddedDropdown}" Width="30" MinWidth="0" TextChanged="cntrlMasked_TextChanged" />
 									<TextBlock Style="{StaticResource PaddedLabel}">minutes</TextBlock>
 								</StackPanel>
 							</Grid>
@@ -526,17 +533,7 @@
 								<TextBlock Grid.Column="3" Grid.Row="0" FontWeight="Bold" Text="Date Created" Style="{StaticResource PaddedLabel}" HorizontalAlignment="Center" Padding="0,3,0,3" />
 								<TextBlock Grid.Column="4" Grid.Row="0" FontWeight="Bold" Text="Size" Style="{StaticResource PaddedLabel}" HorizontalAlignment="Center" Padding="0,3,0,3" />
 							</Grid>
-							<!--<DataGrid Name="gridAttachments" ItemsSource="{Binding}" AutoGenerateColumns="False" LoadingRow="gridAttachments_LoadingRow" >
-								<DataGrid.Columns>
-									<DataGridHyperlinkColumn Header="File Name" Binding="{Binding FilenameOrUrl}" />
-									<DataGridTextColumn Header="Author" Binding="{Binding AuthorName}" />
-									<DataGridTextColumn Header="Version" Binding="{Binding CurrentVersion}" />
-									<DataGridTextColumn Header="Date Created" Binding="{Binding UploadDate}" />
-									<DataGridTextColumn Header="Size" Binding="{Binding Size}" />
-								</DataGrid.Columns>
-							</DataGrid>-->
 						</Expander>
-						<!-- <Expander Header="History" /> -->
 					</ListBox>
 				</Grid>
 			</ScrollViewer>

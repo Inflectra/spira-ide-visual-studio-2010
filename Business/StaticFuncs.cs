@@ -111,7 +111,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business
 				BasicHttpBinding wsDualHttp = new BasicHttpBinding();
 				wsDualHttp.CloseTimeout = TimeSpan.FromMinutes(1);
 				wsDualHttp.OpenTimeout = TimeSpan.FromMinutes(1);
-				wsDualHttp.ReceiveTimeout = TimeSpan.FromMinutes(10);
+				wsDualHttp.ReceiveTimeout = TimeSpan.FromMinutes(1);
 				wsDualHttp.SendTimeout = TimeSpan.FromMinutes(1);
 				wsDualHttp.BypassProxyOnLocal = false;
 				wsDualHttp.HostNameComparisonMode = HostNameComparisonMode.StrongWildcard;

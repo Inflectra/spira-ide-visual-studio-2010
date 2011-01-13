@@ -4,6 +4,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business.Forms;
+using System.Windows.Input;
 
 namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business
 {
@@ -113,6 +114,13 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business
 			get;
 			set;
 		}
+
+		public object TreeNode
+		{
+			get;
+			set;
+		}
+
 		#endregion
 
 		#region Properties for Display
@@ -415,8 +423,8 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business
 				//The second image, if necessary.
 				if (this.IsTimed)
 				{
-					Image imgTimed = StaticFuncs.getImage("imgTimer", new System.Windows.Size(16, 16));
-					imgTimed.Margin = new Thickness(2, 0, 0, 0);
+					Image imgTimed = StaticFuncs.getImage("imgTaskTime", new System.Windows.Size(16, 16));
+					imgTimed.Margin = new Thickness(5, 0, 0, 0);
 					gridHeader.Children.Add(imgTimed);
 					Grid.SetRow(imgTimed, 0);
 					Grid.SetColumn(imgTimed, 1);
@@ -550,16 +558,24 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business
 		/// <param name="e">RoutedEventArgs</param>
 		private void mnuRefresh_Click(object sender, RoutedEventArgs e)
 		{
+			//Refresh the display..
 			e.Handled = true;
+
+			//TODO: Act like they pressed refresh button on this item.
 		}
 
-		/// <summary>Hit when the user wants to start work.</summary>
+		/// <summary>Hit when the user wants to start or stop work.</summary>
 		/// <param name="sender">MenuItem</param>
 		/// <param name="e">RoutedEventArgs</param>
 		private void mnuStartWork_Click(object sender, RoutedEventArgs e)
 		{
 			e.Handled = true;
 			this.IsTimed = !this._isTimed;
+
+			//TODO: Open the details window.
+			MouseButtonEventArgs evtArgs = new MouseButtonEventArgs(null, DateTime.Now.Millisecond, MouseButton.XButton1);
+			evtArgs.Source = ((this._isTimed) ? "start" : "stop");
+			((dynamic)this.TreeNode).TreeNode_MouseDoubleClick(this, evtArgs);
 		}
 
 		/// <summary>Hit when the user selects to launch the URL in the browser.</summary>
@@ -599,7 +615,11 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business
 		/// <param name="e">RoutedEventArgs</param>
 		private void mnuDetails_Click(object sender, RoutedEventArgs e)
 		{
+			//This is the same as double-clicking.
+			//TODO: Fire off a details window.
 			e.Handled = true;
+
+			((dynamic)this.TreeNode).TreeNode_MouseDoubleClick(this, null);
 		}
 
 		/// <summary>Hit when the user wants to copy the artifact ID to the clipboard.</summary>
@@ -646,7 +666,6 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business
 					{
 						//They're ending the timer, set the finish time.
 						this._endTime = DateTime.Now;
-						//TODO: Update the item on the server.
 					}
 				}
 				this._isTimed = value;
@@ -668,6 +687,35 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business
 			get
 			{
 				return this._endTime;
+			}
+		}
+
+		/// <summary>Readonly. The amount of time worked since the last timer start.</summary>
+		public TimeSpan WorkTime
+		{
+			get
+			{
+				TimeSpan retSpan = new TimeSpan(0);
+
+				if (this._startTime != null)
+				{
+					if (this._endTime != null)
+					{
+						if (this._startTime <= this._endTime)
+						{
+							retSpan = this._endTime - this._startTime;
+						}
+					}
+					else
+					{
+						if (this._startTime <= DateTime.Now)
+						{
+							retSpan = DateTime.Now - this._startTime;
+						}
+					}
+				}
+
+				return retSpan;
 			}
 		}
 		#endregion

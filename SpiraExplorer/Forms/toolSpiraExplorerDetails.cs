@@ -51,5 +51,11 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 				base.Content = value;
 			}
 		}
+
+		/// <summary>Hit when the window is attempted to be closed.</summary>
+		protected override void OnClose()
+		{
+			//TODO: Inform window we're closing.
+		}
 	}
 }
