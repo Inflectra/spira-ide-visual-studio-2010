@@ -522,4 +522,10 @@ Are you sure you want to continue?</value>
   <data name="app_General_WindowOpenErrorMessage" xml:space="preserve">
     <value>Error opening the toolwindow for the item selected. Try a different artifact, or try again later.</value>
   </data>
+  <data name="app_General_CopyToClipboard" xml:space="preserve">
+    <value>Copy To Clipboard</value>
+  </data>
+  <data name="app_General_ViewDetails" xml:space="preserve">
+    <value>View Details</value>
+  </data>
 </root>

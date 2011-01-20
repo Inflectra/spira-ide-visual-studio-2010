@@ -5,6 +5,7 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business.Forms;
 using System.Windows.Input;
+using Microsoft.VisualStudio.Shell;
 
 namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business
 {
@@ -13,6 +14,9 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business
 		private bool _isTimed;
 		private DateTime _startTime;
 		private DateTime _endTime;
+
+		public event EventHandler WorkTimerChanged;
+		public event EventHandler DetailsOpenRequested;
 
 		public TreeViewArtifact()
 		{
@@ -115,12 +119,6 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business
 			set;
 		}
 
-		public object TreeNode
-		{
-			get;
-			set;
-		}
-
 		#endregion
 
 		#region Properties for Display
@@ -181,6 +179,8 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business
 					return StaticFuncs.getImage("imgProject", new System.Windows.Size(16, 16)).Source;
 				else if (this.ArtifactIsError)
 					return StaticFuncs.getImage("imgError", new System.Windows.Size(16, 16)).Source;
+				else if (this.ArtifactIsNo)
+					return StaticFuncs.getImage("imgNo", new System.Windows.Size(16, 16)).Source;
 				else if (this.ArtifactIsFolder)
 					switch (this.ArtifactType)
 					{
@@ -463,27 +463,27 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business
 					//Create the menu items..
 					// - Open in VS.
 					MenuItem mnuDetails = new MenuItem();
-					mnuDetails.Header = "_Open";
+					mnuDetails.Header = StaticFuncs.getCultureResource.GetString("app_General_ViewDetails");
 					mnuDetails.FontWeight = FontWeights.Bold;
 					mnuDetails.Click += new RoutedEventHandler(mnuDetails_Click);
 					// - Open in Browser
 					MenuItem mnuOpenWeb = new MenuItem();
-					mnuOpenWeb.Header = "Open in _Browser";
+					mnuOpenWeb.Header = StaticFuncs.getCultureResource.GetString("app_General_ViewBrowser");
 					mnuOpenWeb.Click += new RoutedEventHandler(mnuOpenWeb_Click);
 					// - Start (or End) Work
 					MenuItem mnuStartWork = new MenuItem();
-					mnuStartWork.Header = ((this._isTimed) ? "End _Timer" : "Start _Timer");
+					mnuStartWork.Header = ((this._isTimed) ? StaticFuncs.getCultureResource.GetString("app_General_StopTimer") : StaticFuncs.getCultureResource.GetString("app_General_StartTimer"));
 					mnuStartWork.Click += new RoutedEventHandler(mnuStartWork_Click);
 					// - Copy ID to Clipboard
 					MenuItem mnuCopyHead = new MenuItem();
-					mnuCopyHead.Header = "_Copy ID to Clipboard";
+					mnuCopyHead.Header = StaticFuncs.getCultureResource.GetString("app_General_CopyToClipboard");
 					mnuCopyHead.Click += new RoutedEventHandler(mnuCopyHead_Click);
 
 					//Add to the context..
 					retMenu.Items.Add(mnuDetails);
 					retMenu.Items.Add(mnuOpenWeb);
 					retMenu.Items.Add(new Separator());
-					retMenu.Items.Add(mnuStartWork);
+					if (this.ArtifactType != ArtifactTypeEnum.Requirement) retMenu.Items.Add(mnuStartWork);
 					retMenu.Items.Add(mnuCopyHead);
 				}
 				else
@@ -537,6 +537,13 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business
 			set;
 		}
 
+		/// <summary>Whether or not this is an 'empty' error message.</summary>
+		public bool ArtifactIsNo
+		{
+			get;
+			set;
+		}
+
 		/// <summary>Whether or not the user opened this treenode up.</summary>
 		public bool IsExpanded
 		{
@@ -571,11 +578,6 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business
 		{
 			e.Handled = true;
 			this.IsTimed = !this._isTimed;
-
-			//TODO: Open the details window.
-			MouseButtonEventArgs evtArgs = new MouseButtonEventArgs(null, DateTime.Now.Millisecond, MouseButton.XButton1);
-			evtArgs.Source = ((this._isTimed) ? "start" : "stop");
-			((dynamic)this.TreeNode).TreeNode_MouseDoubleClick(this, evtArgs);
 		}
 
 		/// <summary>Hit when the user selects to launch the URL in the browser.</summary>
@@ -619,7 +621,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business
 			//TODO: Fire off a details window.
 			e.Handled = true;
 
-			((dynamic)this.TreeNode).TreeNode_MouseDoubleClick(this, null);
+			this.DetailsOpenRequested(this, new EventArgs());
 		}
 
 		/// <summary>Hit when the user wants to copy the artifact ID to the clipboard.</summary>
@@ -655,20 +657,25 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business
 			}
 			set
 			{
-				if (value != this._isTimed)
+				if (this.ArtifactType != ArtifactTypeEnum.Requirement) //Requirements can't be worked on.
 				{
-					if (value)
+					if (value != this._isTimed)
 					{
-						//They're starting the timer, set the starttime.
-						this._startTime = DateTime.Now;
+						if (value)
+						{
+							//They're starting the timer, set the starttime.
+							this._startTime = DateTime.Now;
+						}
+						else
+						{
+							//They're ending the timer, set the finish time.
+							this._endTime = DateTime.Now;
+						}
 					}
-					else
-					{
-						//They're ending the timer, set the finish time.
-						this._endTime = DateTime.Now;
-					}
+					this._isTimed = value;
+
+					this.WorkTimerChanged(this, new EventArgs());
 				}
-				this._isTimed = value;
 			}
 		}
 

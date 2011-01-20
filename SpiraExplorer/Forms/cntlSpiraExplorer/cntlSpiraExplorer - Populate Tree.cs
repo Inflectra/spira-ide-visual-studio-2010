@@ -23,7 +23,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			try
 			{
 				//Get our list of projects.
-				this._Projects = new List<TreeViewArtifact>();
+				this._Projects.Clear();
 				if (!string.IsNullOrEmpty(ProjList))
 				{
 					foreach (string strProj in ProjList.Split(Business.SpiraProject.CHAR_RECORD))
@@ -52,6 +52,8 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			}
 		}
 
+		/// <summary>Update items from the server.</summary>
+		/// <param name="itemToRefresh">The root item (and children) to update.</param>
 		private void refreshTreeNodeServerData(TreeViewArtifact itemToRefresh)
 		{
 			//Depending what is highlighted will specify what needs to be updated.
@@ -126,9 +128,6 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 				//  refreshTreeNodeServerData on each Project TreeNode.
 
 				//Clear the tree and refresh data.
-				this.trvProject.ItemsSource = null;
-				this.trvProject.Items.Clear();
-				this.trvProject.ItemsSource = this._Projects;
 				this.trvProject.Items.Refresh();
 				this.barLoading.Visibility = Visibility.Visible;
 				this.trvProject.Cursor = System.Windows.Input.Cursors.AppStarting;
@@ -235,12 +234,13 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 						//Make new node.
 						TreeViewArtifact newNode = new TreeViewArtifact();
 						newNode.ArtifactType = TreeViewArtifact.ArtifactTypeEnum.Incident;
-						newNode.TreeNode = this;
 						newNode.ArtifactTag = incident;
 						newNode.ArtifactName = incident.Name;
 						newNode.ArtifactIsFolder = false;
 						newNode.ArtifactId = incident.IncidentId.Value;
 						newNode.Parent = parentNode;
+						newNode.DetailsOpenRequested += new EventHandler(newNode_DetailsOpenRequested);
+						newNode.WorkTimerChanged += new EventHandler(newNode_WorkTimerChanged);
 
 						parentNode.Items.Add(newNode);
 					}
@@ -265,6 +265,240 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			parentNode.ArtifactTag = null;
 			this._numActiveClients--;
 			this.refreshTree();
+		}
+
+		/// <summary>Hit when the user updates the worktimer on an TreeViewArtifact.</summary>
+		/// <param name="sender">TreeViewArtifact</param>
+		/// <param name="e">EventArgs</param>
+		private void newNode_WorkTimerChanged(object sender, EventArgs e)
+		{
+			//First, update the treeview.
+			this.trvProject.Items.Refresh();
+
+			//If there is no window to update, then we need to save the item.
+			if (!((TreeViewArtifact)sender).IsTimed)
+			{
+				if (((SpiraExplorerPackage)this.Pane.Package).FindExistingToolWindow((TreeViewArtifact)sender, false) == null)
+				{
+					TreeViewArtifact artItem = sender as TreeViewArtifact;
+
+					//No window, update it ourselves. Create the client.
+					ImportExportClient clientWkTime = StaticFuncs.CreateClient(((SpiraProject)artItem.ArtifactParentProject.ArtifactTag).ServerURL.ToString());
+					//Set event handlers.
+					clientWkTime.Connection_Authenticate2Completed += new EventHandler<Connection_Authenticate2CompletedEventArgs>(clientWkTime_Connection_Authenticate2Completed);
+					clientWkTime.Connection_ConnectToProjectCompleted += new EventHandler<Connection_ConnectToProjectCompletedEventArgs>(clientWkTime_Connection_ConnectToProjectCompleted);
+					clientWkTime.Incident_RetrieveByIdCompleted += new EventHandler<Incident_RetrieveByIdCompletedEventArgs>(clientWkTime_Artifact_RetrieveByIdCompleted);
+					clientWkTime.Task_RetrieveByIdCompleted += new EventHandler<Task_RetrieveByIdCompletedEventArgs>(clientWkTime_Artifact_RetrieveByIdCompleted);
+					clientWkTime.Incident_UpdateCompleted += new EventHandler<System.ComponentModel.AsyncCompletedEventArgs>(clientWkTime_Artifact_UpdateCompleted);
+					clientWkTime.Task_UpdateCompleted += new EventHandler<System.ComponentModel.AsyncCompletedEventArgs>(clientWkTime_Artifact_UpdateCompleted);
+					clientWkTime.Connection_DisconnectCompleted += new EventHandler<System.ComponentModel.AsyncCompletedEventArgs>(clientWkTime_Connection_DisconnectCompleted);
+
+					//Fire off the connection.
+					this.barLoading.Visibility = System.Windows.Visibility.Visible;
+					this.barLoading.IsIndeterminate = false;
+					this.barLoading.Minimum = 0;
+					this.barLoading.Maximum = 5;
+					this.barLoading.Value = 0;
+					this._numActiveClients++;
+					clientWkTime.Connection_Authenticate2Async(
+						((SpiraProject)artItem.ArtifactParentProject.ArtifactTag).UserName,
+						((SpiraProject)artItem.ArtifactParentProject.ArtifactTag).UserPass,
+						StaticFuncs.getCultureResource.GetString("app_ReportName"),
+						sender);
+				}
+			}
+		}
+
+		/// <summary>Hit when the UpdateWorkTimeClient is finished updating a Requirement, Incident, or Task.</summary>
+		/// <param name="sender">ImportExportClient</param>
+		/// <param name="e">AsyncCompletedEventArgs</param>
+		private void clientWkTime_Artifact_UpdateCompleted(object sender, System.ComponentModel.AsyncCompletedEventArgs e)
+		{
+			ImportExportClient wktimeClient = sender as ImportExportClient;
+			TreeViewArtifact treeArt = (TreeViewArtifact)e.UserState;
+
+			this.barLoading.Value += 1;
+			this._numActiveClients--;
+
+			if (e.Error != null || e.Cancelled)
+			{
+				//Display error here.
+			}
+
+			this._numActiveClients++;
+			wktimeClient.Connection_DisconnectAsync(e.UserState);
+		}
+
+		/// <summary>Hit when the UpdateWorkTimeClient is finished disconnecting from the server.</summary>
+		/// <param name="sender">ImportExportClient</param>
+		/// <param name="e">AsyncCompletedEventArgs</param>
+		private void clientWkTime_Connection_DisconnectCompleted(object sender, System.ComponentModel.AsyncCompletedEventArgs e)
+		{
+			this._numActiveClients--;
+
+			this.barLoading.Visibility = System.Windows.Visibility.Collapsed;
+			this.barLoading.IsIndeterminate = true;
+		}
+
+		/// <summary>Hit when the UpdateWorkTimeClient is finished retrieving the artifact from the server.</summary>
+		/// <remarks>This is where the values are actually saved to the artifact.</remarks>
+		/// <param name="sender">ImportExportClient</param>
+		/// <param name="e">AsyncCompletedEventArgs</param>
+		private void clientWkTime_Artifact_RetrieveByIdCompleted(object sender, System.ComponentModel.AsyncCompletedEventArgs e)
+		{
+			ImportExportClient wktimeClient = sender as ImportExportClient;
+			TreeViewArtifact treeArt = (TreeViewArtifact)e.UserState;
+
+			this.barLoading.Value += 1;
+			this._numActiveClients--;
+
+			if (e.Error == null && !e.Cancelled)
+			{
+				//Get the type of eventargs..
+				string strEvent = e.GetType().ToString();
+				strEvent = strEvent.Substring(strEvent.LastIndexOf(".") + 1).ToLowerInvariant();
+				switch (strEvent)
+				{
+					#region Update Incident
+					case "incident_retrievebyidcompletedeventargs":
+						Incident_RetrieveByIdCompletedEventArgs evt1 = e as Incident_RetrieveByIdCompletedEventArgs;
+						//Get current value and add our worked time to it.
+						if (evt1 != null)
+						{
+							int numMinutes = (int)treeArt.WorkTime.TotalMinutes;
+							if (numMinutes > 0)
+							{
+								if (evt1.Result.ActualEffort.HasValue)
+								{
+									evt1.Result.ActualEffort = evt1.Result.ActualEffort.Value + numMinutes;
+								}
+								else
+								{
+									evt1.Result.ActualEffort = numMinutes;
+								}
+							}
+
+							//Okay, update the item.
+							this._numActiveClients++;
+							wktimeClient.Incident_UpdateAsync(evt1.Result, treeArt);
+						}
+						break;
+					#endregion
+
+					#region Update Task
+					case "Task_RetrieveByIdCompletedEventArgs":
+						Task_RetrieveByIdCompletedEventArgs evt2 = e as Task_RetrieveByIdCompletedEventArgs;
+						//Get current value and add our worked time to it.
+						if (evt2 != null)
+						{
+							int numMinutes = (int)treeArt.WorkTime.TotalMinutes;
+							if (numMinutes > 0)
+							{
+								if (evt2.Result.ActualEffort.HasValue)
+								{
+									evt2.Result.ActualEffort = evt2.Result.ActualEffort.Value + numMinutes;
+								}
+								else
+								{
+									evt2.Result.ActualEffort = numMinutes;
+								}
+							}
+
+							//Okay, update the item.
+							this._numActiveClients++;
+							wktimeClient.Task_UpdateAsync(evt2.Result, treeArt);
+						}
+						break;
+					#endregion
+
+					default:
+						//Error, cancel operation.
+						wktimeClient.Connection_DisconnectAsync(e.UserState);
+						break;
+				}
+			}
+			else
+			{
+				//Cancel connection.
+				this._numActiveClients++;
+				wktimeClient.Connection_DisconnectAsync(e.UserState);
+			}
+		}
+
+		/// <summary>Hit when the UpdateWorkTimeClient is finished connecting to the project.</summary>
+		/// <param name="sender">ImportExportClient</param>
+		/// <param name="e">AsyncCompletedEventArgs</param>
+		private void clientWkTime_Connection_ConnectToProjectCompleted(object sender, Connection_ConnectToProjectCompletedEventArgs e)
+		{
+			ImportExportClient wktimeClient = sender as ImportExportClient;
+			TreeViewArtifact treeArt = (TreeViewArtifact)e.UserState;
+
+			this.barLoading.Value += 1;
+			this._numActiveClients--;
+
+			if (e.Error == null && !e.Cancelled)
+			{
+				//Okay, we're good to go get our information.
+				this._numActiveClients++;
+				switch (treeArt.ArtifactType)
+				{
+					case TreeViewArtifact.ArtifactTypeEnum.Incident:
+						wktimeClient.Incident_RetrieveByIdAsync(treeArt.ArtifactId, e.UserState);
+						break;
+
+					case TreeViewArtifact.ArtifactTypeEnum.Requirement:
+						wktimeClient.Requirement_RetrieveByIdAsync(treeArt.ArtifactId, e.UserState);
+						break;
+
+					case TreeViewArtifact.ArtifactTypeEnum.Task:
+						wktimeClient.Task_RetrieveByIdAsync(treeArt.ArtifactId, e.UserState);
+						break;
+
+					default:
+						//Error, cancel operation.
+						wktimeClient.Connection_DisconnectAsync(e.UserState);
+						break;
+				}
+			}
+			else
+			{
+				//Cancel connection.
+				this._numActiveClients++;
+				wktimeClient.Connection_DisconnectAsync(e.UserState);
+			}
+		}
+
+		/// <summary>Hit when the UpdateWorkTimeClient is finished connecting to the server.</summary>
+		/// <param name="sender">ImportExportClient</param>
+		/// <param name="e">AsyncCompletedEventArgs</param>
+		private void clientWkTime_Connection_Authenticate2Completed(object sender, Connection_Authenticate2CompletedEventArgs e)
+		{
+			ImportExportClient wktimeClient = sender as ImportExportClient;
+			TreeViewArtifact treeArt = (TreeViewArtifact)e.UserState;
+
+			this.barLoading.Value += 1;
+			this._numActiveClients--;
+
+			if (e.Error == null && !e.Cancelled)
+			{
+				//Everything is okay so far, fire off connecting to the project.
+				this._numActiveClients++;
+				wktimeClient.Connection_ConnectToProjectAsync(((SpiraProject)treeArt.ArtifactParentProject.ArtifactTag).ProjectID, e.UserState);
+			}
+			else
+			{
+				//Cancel connection.
+				this._numActiveClients++;
+				wktimeClient.Connection_DisconnectAsync(e.UserState);
+			}
+		}
+
+		/// <summary>Hit when the user wants to open details by clicking on the context menu.</summary>
+		/// <param name="sender">TreeViewArtifact</param>
+		/// <param name="e">EventArgs</param>
+		private void newNode_DetailsOpenRequested(object sender, EventArgs e)
+		{
+			this.TreeNode_MouseDoubleClick(sender, null);
 		}
 
 		/// <summary>Hit when a client ran into an error while trying to connect to the server.</summary>
@@ -533,11 +767,11 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			try
 			{
 				this._solutionName = null;
-				this.trvProject.ItemsSource = null;
-				this.trvProject.Items.Clear();
-				this.trvProject.Items.Add(this._nodeNoSolution);
+				this._Projects.Clear();
+				this._Projects.Add(this._nodeNoSolution);
 				this.barLoading.Visibility = Visibility.Collapsed;
 				this.trvProject.Cursor = System.Windows.Input.Cursors.Arrow;
+				this.trvProject.Items.Refresh();
 				this.btnRefresh.IsEnabled = false;
 				this.btnShowClosed.IsEnabled = false;
 			}
@@ -552,11 +786,11 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 		{
 			try
 			{
-				this.trvProject.ItemsSource = null;
-				this.trvProject.Items.Clear();
-				this.trvProject.Items.Add(this._nodeNoProjects);
+				this._Projects.Clear();
+				this._Projects.Add(this._nodeNoProjects);
 				this.barLoading.Visibility = Visibility.Collapsed;
 				this.trvProject.Cursor = System.Windows.Input.Cursors.Arrow;
+				this.trvProject.Items.Refresh();
 				this.btnShowClosed.IsEnabled = false;
 				this.btnRefresh.IsEnabled = false;
 			}

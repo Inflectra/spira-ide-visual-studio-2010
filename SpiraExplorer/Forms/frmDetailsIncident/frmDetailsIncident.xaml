@@ -67,6 +67,20 @@
 			<Setter Property="TextBlock.TextTrimming" Value="None" />
 			<Setter Property="TextBlock.TextWrapping" Value="NoWrap" />
 		</Style>
+		<Style x:Key="PaddedLabelHighlight">
+			<Setter Property="Control.Margin" Value="3" />
+			<Setter Property="Control.HorizontalAlignment" Value="Stretch" />
+			<Setter Property="TextBlock.TextAlignment" Value="Right" />
+			<Setter Property="Control.VerticalAlignment" Value="Center" />
+			<Setter Property="Control.IsTabStop" Value="False" />
+			<Setter Property="TextBlock.TextTrimming" Value="None" />
+			<Setter Property="TextBlock.TextWrapping" Value="NoWrap" />
+			<Style.Triggers>
+				<Trigger Property="TextBlock.IsMouseOver" Value="true">
+					<Setter Property="TextBlock.Background" Value="{DynamicResource {x:Static vsfx:VsBrushes.CommandBarMenuBackgroundGradientKey}}" />
+				</Trigger>
+			</Style.Triggers>
+		</Style>
 		<Style x:Key="PaddedDropdown">
 			<Setter Property="Control.MinWidth" Value="150" />
 			<Setter Property="Control.Margin" Value="3" />
@@ -363,7 +377,11 @@
 							<!-- ROW0: Incident Name -->
 							<DockPanel Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="5" LastChildFill="True">
 								<TextBlock DockPanel.Dock="Left" Name="lblName" VerticalAlignment="Center" FontWeight="Bold" Style="{StaticResource PaddedLabel}" />
-								<TextBlock DockPanel.Dock="Right" Name="lblToken" Margin="4,0,0,0" />
+								<TextBlock DockPanel.Dock="Right" Name="lblToken" Margin="4,0,0,0" Cursor="Hand" MouseDown="lblToken_MouseDown" Style="{StaticResource PaddedLabelHighlight}" VerticalAlignment="Center">
+									<TextBlock.ToolTip>
+										<TextBlock Name="lblTxtToken" />
+									</TextBlock.ToolTip>
+								</TextBlock>
 								<TextBox Name="cntrlIncidentName" HorizontalAlignment="Stretch" Width="Auto" Margin="3,3,0,3" VerticalAlignment="Center" TextChanged="_cntrl_TextChanged" Style="{StaticResource ConcurrencyHighlight}" />
 							</DockPanel>
 							<!-- ROW1: Status, Type -->

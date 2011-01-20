@@ -35,7 +35,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010
 	{
 		private EnvDTE.Events _EnvironEvents;
 		SolutionEvents _SolEvents;
-		static Dictionary<TreeViewArtifact, int> _windowDetails;
+		public static Dictionary<TreeViewArtifact, int> _windowDetails;
 		static int _numWindowIds = -1;
 
 		/// <summary>Default constructor of the package. Inside this method you can place any initialization code that does not require any Visual Studio service because at this point the package object is created but not sited yet inside Visual Studio environment. The place to do all the other initialization is the Initialize method.</summary>
@@ -178,12 +178,71 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010
 		}
 		#endregion
 
-		public void OpenDetailsToolWindow(TreeViewArtifact Artifact, string action = "")
+		public void OpenDetailsToolWindow(TreeViewArtifact Artifact)
 		{
 			try
 			{
+				//Find the existing window..
+				toolSpiraExplorerDetails window = this.FindExistingToolWindow(Artifact, true);
+
+				if (window != null)
+				{
+					//Generate the details screen.
+					object detailContent = null;
+					switch (Artifact.ArtifactType)
+					{
+						case TreeViewArtifact.ArtifactTypeEnum.Incident:
+							frmDetailsIncident detIncident = new frmDetailsIncident(Artifact, window);
+							detailContent = detIncident;
+							break;
+
+						case TreeViewArtifact.ArtifactTypeEnum.Requirement:
+							//TODO: Create requirement detail screen.
+							break;
+
+						case TreeViewArtifact.ArtifactTypeEnum.Task:
+							//TODO: Create task detail screen.
+							break;
+					}
+
+					//Set toolwindow's content.
+					if (detailContent != null)
+					{
+						((cntrlDetailsForm)window.FormControl).Content = detailContent;
+
+						//Get the frame.
+						IVsWindowFrame windowFrame = (IVsWindowFrame)window.Frame;
+						windowFrame.SetProperty((int)__VSFPROPID.VSFPROPID_FrameMode, VSFRAMEMODE.VSFM_MdiChild);
+						Microsoft.VisualStudio.ErrorHandler.ThrowOnFailure(windowFrame.Show());
+					}
+				}
+				else
+				{
+					//Log an error.
+					Logger.LogMessage("Could not create window.", EventLogEntryType.Error);
+					MessageBox.Show(StaticFuncs.getCultureResource.GetString("app_General_WindowOpenErrorMessage"), StaticFuncs.getCultureResource.GetString("app_General_WindowOpenError"), MessageBoxButton.OK, MessageBoxImage.Error);
+				}
+			}
+			catch (Exception ex)
+			{
+				Logger.LogMessage(ex, "Tried to open details window.");
+				MessageBox.Show(StaticFuncs.getCultureResource.GetString("app_General_WindowOpenErrorMessage"), StaticFuncs.getCultureResource.GetString("app_General_WindowOpenError"), MessageBoxButton.OK, MessageBoxImage.Error);
+			}
+		}
+
+		/// <summary>Returns the details window if it exists, otherwise null.</summary>
+		/// <param name="Artifact">The TreeViewArtifact to get it's detailswindow.</param>
+		/// <returns>A toolSpiraExplorerDetails if found, null otherwise.</returns>
+		public toolSpiraExplorerDetails FindExistingToolWindow(TreeViewArtifact Artifact, bool create = false)
+		{
+			toolSpiraExplorerDetails retWindow = null;
+
+			try
+			{
 				if (SpiraExplorerPackage._windowDetails == null)
+				{
 					SpiraExplorerPackage._windowDetails = new Dictionary<TreeViewArtifact, int>();
+				}
 
 				//Get the window ID if it already exists.
 				int NextId = -1;
@@ -196,91 +255,19 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010
 					SpiraExplorerPackage._windowDetails.Add(Artifact, SpiraExplorerPackage._numWindowIds);
 				}
 
-				//Now generate the window..
-				toolSpiraExplorerDetails window = this.FindToolWindow(typeof(toolSpiraExplorerDetails), NextId, false) as toolSpiraExplorerDetails;
-				if (window == null)
-				{
-					window = this.FindToolWindow(typeof(toolSpiraExplorerDetails), NextId, true) as toolSpiraExplorerDetails;
+				//Now try to grab the window..
+				retWindow = this.FindToolWindow(typeof(toolSpiraExplorerDetails), NextId, false) as toolSpiraExplorerDetails;
 
-					if (window != null)
-					{
-						//Generate the details screen.
-						object detailContent = null;
-						switch (Artifact.ArtifactType)
-						{
-							case TreeViewArtifact.ArtifactTypeEnum.Incident:
-								frmDetailsIncident detIncident = new frmDetailsIncident(Artifact, window);
-								detailContent = detIncident;
-								break;
-
-							case TreeViewArtifact.ArtifactTypeEnum.Requirement:
-								//TODO: Create requirement detail screen.
-								break;
-
-							case TreeViewArtifact.ArtifactTypeEnum.Task:
-								//TODO: Create task detail screen.
-								break;
-						}
-
-						//Set toolwindow's content.
-						if (detailContent != null)
-						{
-							((cntrlDetailsForm)window.FormControl).Content = detailContent;
-
-							//Get the frame.
-							IVsWindowFrame windowFrame = (IVsWindowFrame)window.Frame;
-							windowFrame.SetProperty((int)__VSFPROPID.VSFPROPID_FrameMode, VSFRAMEMODE.VSFM_MdiChild);
-							Microsoft.VisualStudio.ErrorHandler.ThrowOnFailure(windowFrame.Show());
-
-							//Perform a command if we were given to.
-							if (!string.IsNullOrEmpty(action))
-							{
-								if (action == "start")
-								{
-									//TODO: start the timer here.
-									//((dynamic)detailContent).DoSomething();
-								}
-								else if (action == "stop")
-								{
-									//TODO: stop the timer here.
-									//((dynamic)detailContent).DoSomething();
-								}
-							}
-						}
-					}
-					else
-					{
-						//Log an error.
-						Logger.LogMessage("Could not create window.", EventLogEntryType.Error);
-						MessageBox.Show(StaticFuncs.getCultureResource.GetString("app_General_WindowOpenErrorMessage"), StaticFuncs.getCultureResource.GetString("app_General_WindowOpenError"), MessageBoxButton.OK, MessageBoxImage.Error);
-					}
-				}
-				else
-				{
-					//Bring the window to the front.
-					IVsWindowFrame windowFrame = (IVsWindowFrame)window.Frame;
-					windowFrame.Show();
-					//Perform a command if we were given to.
-					if (!string.IsNullOrEmpty(action))
-					{
-						if (action == "start")
-						{
-							//TODO: start the timer here.
-							//TODO: Get the content control.
-						}
-						else if (action == "stop")
-						{
-							//TODO: stop the timer here.
-							//TODO: Get the content control.
-						}
-					}
-				}
+				if (retWindow == null && create)
+					retWindow = this.FindToolWindow(typeof(toolSpiraExplorerDetails), NextId, true) as toolSpiraExplorerDetails;
 			}
 			catch (Exception ex)
 			{
-				Logger.LogMessage(ex, "Tried to open details window.");
-				MessageBox.Show(StaticFuncs.getCultureResource.GetString("app_General_WindowOpenErrorMessage"), StaticFuncs.getCultureResource.GetString("app_General_WindowOpenError"), MessageBoxButton.OK, MessageBoxImage.Error);
+				Logger.LogMessage(ex, "Error creating window.");
+				retWindow = null;
 			}
+
+			return retWindow;
 		}
 	}
 }

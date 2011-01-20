@@ -47,6 +47,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			this.lblLoadingIncident.Text = StaticFuncs.getCultureResource.GetString("app_Incident_Loading");
 			this.lblExpanderDetails.Text = StaticFuncs.getCultureResource.GetString("app_Incident_ExpanderDetails");
 			this.lblName.Text = StaticFuncs.getCultureResource.GetString("app_General_Name") + ":";
+			this.lblTxtToken.Text = StaticFuncs.getCultureResource.GetString("app_General_CopyToClipboard");
 			this.lblType.Text = StaticFuncs.getCultureResource.GetString("app_Incident_Type") + ":";
 			this.lblStatus.Text = StaticFuncs.getCultureResource.GetString("app_Incident_Status") + ":";
 			this.lblDetectedBy.Text = StaticFuncs.getCultureResource.GetString("app_Incident_DetectedBy") + ":";
@@ -348,80 +349,9 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			this.panelStatus.Visibility = System.Windows.Visibility.Collapsed;
 		}
 
-		#endregion
-
-		#region Properties
-		/// <summary>The parent windowframe of the control, for accessing window settings.</summary>
-		public ToolWindowPane ParentWindowPane
-		{
-			get;
-			set;
-		}
-
-		/// <summary>This specifies whether or not we are in the process of loading data for display.</summary>
-		private bool IsLoading
-		{
-			get
-			{
-				return this._isLoadingInformation;
-			}
-			set
-			{
-				if (this._isLoadingInformation != value)
-				{
-					if (value)
-					{
-						this.display_SetStatusWindow(Visibility.Visible);
-					}
-					else
-					{
-						this.barLoadingIncident.Value = 1;
-						this.display_SetStatusWindow(Visibility.Hidden);
-					}
-
-					this._isLoadingInformation = value;
-				}
-			}
-		}
-
-		/// <summary>Returns the string that it to be displayed in the docked tab.</summary>
-		public string TabTitle
-		{
-			get
-			{
-				if (this._ArtifactDetails != null)
-					return this._ArtifactDetails.ArtifactName + " " + this._ArtifactDetails.ArtifactIDDisplay;
-				else
-					return "";
-			}
-		}
-
-		/// <summary>The detail item for this display.</summary>
-		public TreeViewArtifact ArtifactDetail
-		{
-			get
-			{
-				return this._ArtifactDetails;
-			}
-			set
-			{
-				//See if they've made any changes..
-				this._ArtifactDetails = value;
-				this._Project = value.ArtifactParentProject.ArtifactTag as SpiraProject;
-
-				//Set tab title.
-				if (this.ParentWindowPane != null)
-					this.ParentWindowPane.Caption = this.TabTitle;
-
-				//Set isworking flag..
-				this.btnStartStopTimer.IsChecked = value.IsTimed;
-
-				//Load details.
-				this.load_LoadItem();
-			}
-		}
-		#endregion
-
+		/// <summary>Hit when the user clicks the Actions menu.</summary>
+		/// <param name="sender">MenuItem</param>
+		/// <param name="e">RoutedEventArgs</param>
 		private void mnuActions_Click(object sender, RoutedEventArgs e)
 		{
 			//Show the overlay.
@@ -502,47 +432,6 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			this._isWorkflowChanging = false;
 		}
 
-		/// <summary>Use to show or hide the Status Window.</summary>
-		/// <param name="visiblity">The visibility of the window.</param>
-		private void display_SetStatusWindow(Visibility visiblity)
-		{
-			//Fade in or out the status window...
-			switch (visiblity)
-			{
-				case System.Windows.Visibility.Visible:
-					//Set initial values..
-					this.panelStatus.Opacity = 0;
-					this.panelStatus.Visibility = System.Windows.Visibility.Visible;
-
-					Storyboard storyFadeIn = new Storyboard();
-					DoubleAnimation animFadeIn = new DoubleAnimation(0, 1, new TimeSpan(0, 0, 0, 0, 150));
-					Storyboard.SetTarget(animFadeIn, this.panelStatus);
-					Storyboard.SetTargetProperty(animFadeIn, new PropertyPath(Control.OpacityProperty));
-					storyFadeIn.Children.Add(animFadeIn);
-
-					//Start the animation.
-					storyFadeIn.Begin();
-
-					break;
-
-				case System.Windows.Visibility.Collapsed:
-				case System.Windows.Visibility.Hidden:
-				default:
-					//Fade it out.
-					Storyboard storyFadeOut = new Storyboard();
-					DoubleAnimation animFadeOut = new DoubleAnimation(1, 0, new TimeSpan(0, 0, 0, 0, 250));
-					Storyboard.SetTarget(animFadeOut, this.panelStatus);
-					Storyboard.SetTargetProperty(animFadeOut, new PropertyPath(Control.OpacityProperty));
-					animFadeOut.Completed += new EventHandler(animFadeOut_Completed);  //To handle actually hiding the layer.
-					storyFadeOut.Children.Add(animFadeOut);
-
-					//Start the animation.
-					storyFadeOut.Begin();
-
-					break;
-			}
-		}
-
 		/// <summary>Hit when the Timer button's status is changed.</summary>
 		/// <param name="sender">btnStartStopTimer</param>
 		/// <param name="e">RoutedEventArgs</param>
@@ -550,8 +439,8 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 		{
 			e.Handled = true;
 
-			if (!this.btnStartStopTimer.IsChecked.HasValue)
-				this.btnStartStopTimer.IsChecked = false;
+			//Make sure the value's not null. If it is, we're defaulting to unchecked.
+			if (!this.btnStartStopTimer.IsChecked.HasValue) this.btnStartStopTimer.IsChecked = false;
 
 			if (this.btnStartStopTimer.IsChecked.Value)
 			{
@@ -592,9 +481,11 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 				intActM += workedSpan.Minutes;
 				//Add it up again..
 				TimeSpan newWorked = new TimeSpan(intActH, intActM, 0);
-				//Copy new values to the fields.
-				this.cntrlActEffortH.Text = ((newWorked.Days * 24) + newWorked.Hours).ToString();
-				this.cntrlActEffortM.Text = newWorked.Minutes.ToString();
+				//Copy new values to the temporary storage fields and the display fields.
+				this._tempHoursWorked = ((newWorked.Days * 24) + newWorked.Hours);
+				this._tempMinutedWorked = newWorked.Minutes;
+				this.cntrlActEffortH.Text = this._tempHoursWorked.ToString();
+				this.cntrlActEffortM.Text = this._tempMinutedWorked.ToString();
 			}
 		}
 
@@ -645,20 +536,137 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			}
 		}
 
-		/// <summary>This will cause the timer to stop and the fields to be updated, as if the person clicked on the "Stop Timer" button.</summary>
-		public void RecordStopTimer()
+		/// <summary>Hit when the user want to copy the token ID to the clipboard.</summary>
+		/// <param name="sender">TextBlock</param>
+		/// <param name="e">MouseButtonEventArgs</param>
+		private void lblToken_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
 		{
-			//If the button IS checked, simply uncheck it.
-			if (this.btnStartStopTimer.IsChecked.Value)
-			{
-				this.btnStartStopTimer.IsChecked = false;
+			e.Handled = true;
 
-				//TODO: May not be needed..
-				//this.btnStartStopTimer_CheckedChanged(this.btnStartStopTimer, new RoutedEventArgs(ToggleButton.CheckedEvent, this.btnStartStopTimer));
-			}
-			else
+			Clipboard.SetText(this._ArtifactDetails.ArtifactIDDisplay);
+		}
+
+		#endregion
+
+		#region Properties
+		/// <summary>The parent windowframe of the control, for accessing window settings.</summary>
+		public ToolWindowPane ParentWindowPane
+		{
+			get;
+			set;
+		}
+
+		/// <summary>This specifies whether or not we are in the process of loading data for display.</summary>
+		private bool IsLoading
+		{
+			get
 			{
-				this.btnStartStopTimer_CheckedChanged(this.btnStartStopTimer, new RoutedEventArgs(ToggleButton.CheckedEvent, this.btnStartStopTimer));
+				return this._isLoadingInformation;
+			}
+			set
+			{
+				if (this._isLoadingInformation != value)
+				{
+					if (value)
+					{
+						this.display_SetStatusWindow(Visibility.Visible);
+					}
+					else
+					{
+						this.barLoadingIncident.Value = 1;
+						this.display_SetStatusWindow(Visibility.Hidden);
+					}
+
+					this._isLoadingInformation = value;
+				}
+			}
+		}
+
+		/// <summary>Returns the string that it to be displayed in the docked tab.</summary>
+		public string TabTitle
+		{
+			get
+			{
+				if (this._ArtifactDetails != null)
+					return this._ArtifactDetails.ArtifactName + " " + this._ArtifactDetails.ArtifactIDDisplay;
+				else
+					return "";
+			}
+		}
+
+		/// <summary>The detail item for this display.</summary>
+		public TreeViewArtifact ArtifactDetail
+		{
+			get
+			{
+				return this._ArtifactDetails;
+			}
+			set
+			{
+				//See if they've made any changes..
+				this._ArtifactDetails = value;
+				this._ArtifactDetails.WorkTimerChanged += new EventHandler(_ArtifactDetails_WorkTimerChanged);
+				this._Project = value.ArtifactParentProject.ArtifactTag as SpiraProject;
+
+				//Set tab title.
+				if (this.ParentWindowPane != null)
+					this.ParentWindowPane.Caption = this.TabTitle;
+
+				//Set isworking flag..
+				this.btnStartStopTimer.IsChecked = value.IsTimed;
+
+				//Load details.
+				this.load_LoadItem();
+			}
+		}
+
+		/// <summary>Hit when the worktimer is changed from another source.</summary>
+		/// <param name="sender">TreeViewArtifact</param>
+		/// <param name="e">EventArgs</param>
+		private void _ArtifactDetails_WorkTimerChanged(object sender, EventArgs e)
+		{
+			this.btnStartStopTimer.IsChecked = this._ArtifactDetails.IsTimed;
+		}
+		#endregion
+
+		/// <summary>Use to show or hide the Status Window.</summary>
+		/// <param name="visiblity">The visibility of the window.</param>
+		private void display_SetStatusWindow(Visibility visiblity)
+		{
+			//Fade in or out the status window...
+			switch (visiblity)
+			{
+				case System.Windows.Visibility.Visible:
+					//Set initial values..
+					this.panelStatus.Opacity = 0;
+					this.panelStatus.Visibility = System.Windows.Visibility.Visible;
+
+					Storyboard storyFadeIn = new Storyboard();
+					DoubleAnimation animFadeIn = new DoubleAnimation(0, 1, new TimeSpan(0, 0, 0, 0, 150));
+					Storyboard.SetTarget(animFadeIn, this.panelStatus);
+					Storyboard.SetTargetProperty(animFadeIn, new PropertyPath(Control.OpacityProperty));
+					storyFadeIn.Children.Add(animFadeIn);
+
+					//Start the animation.
+					storyFadeIn.Begin();
+
+					break;
+
+				case System.Windows.Visibility.Collapsed:
+				case System.Windows.Visibility.Hidden:
+				default:
+					//Fade it out.
+					Storyboard storyFadeOut = new Storyboard();
+					DoubleAnimation animFadeOut = new DoubleAnimation(1, 0, new TimeSpan(0, 0, 0, 0, 250));
+					Storyboard.SetTarget(animFadeOut, this.panelStatus);
+					Storyboard.SetTargetProperty(animFadeOut, new PropertyPath(Control.OpacityProperty));
+					animFadeOut.Completed += new EventHandler(animFadeOut_Completed);  //To handle actually hiding the layer.
+					storyFadeOut.Children.Add(animFadeOut);
+
+					//Start the animation.
+					storyFadeOut.Begin();
+
+					break;
 			}
 		}
 	}

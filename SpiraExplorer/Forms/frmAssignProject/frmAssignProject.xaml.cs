@@ -153,9 +153,9 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 				{
 					string projstr = Business.SpiraProject.GenerateToString(proj);
 					availProjects.Add(projstr);
-					selProjects += projstr;
+					selProjects += projstr + SpiraProject.CHAR_RECORD;
 				}
-				selProjects = selProjects.Trim(Business.SpiraProject.CHAR_RECORD);
+				selProjects = selProjects.Trim(SpiraProject.CHAR_RECORD);
 
 				//Save the selected projects to the settings.
 				if (Settings.Default.AssignedProjects.ContainsKey(this._solname))

@@ -5,6 +5,7 @@ using System.Windows.Media;
 using Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business;
 using Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Properties;
 using Microsoft.VisualStudio.Shell;
+using System.Collections.Generic;
 
 namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 {
@@ -13,8 +14,8 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 	{
 		#region Internal Vars
 		string _solutionName;
-		private TreeViewItem _nodeNoSolution;
-		private TreeViewItem _nodeNoProjects;
+		private TreeViewArtifact _nodeNoSolution;
+		private TreeViewArtifact _nodeNoProjects;
 		#endregion
 		#region Public Events
 		public event EventHandler<OpenItemEventArgs> OpenDetails;
@@ -44,6 +45,11 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 				this.btnRefresh.Content = btnRefreshImage;
 				// - Set bar color.
 				this.barLoading.Foreground = (Brush)new System.Windows.Media.BrushConverter().ConvertFrom(StaticFuncs.getCultureResource.GetString("app_Colors_StyledBarColor"));
+
+				//Set datasource.
+				this._Projects = new List<TreeViewArtifact>();
+				this.trvProject.Items.Clear();
+				this.trvProject.ItemsSource = this._Projects;
 
 				//Load nodes.
 				this.CreateStandardNodes();
@@ -124,6 +130,12 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			Settings.Default.ShowCompleted = this.btnShowClosed.IsChecked.Value;
 			Settings.Default.Save();
 
+			//Clear out all children..
+			foreach (TreeViewArtifact trvProject in this._Projects)
+			{
+				trvProject.Items.Clear();
+			}
+
 			//Refresh the item list.
 			this.refreshProjects();
 		}
@@ -158,7 +170,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 				{
 					//If a solution is loaded now, get the loaded solution.
 					if (Business.StaticFuncs.GetEnvironment.Solution.IsOpen)
-						this.loadSolution((string)Business.StaticFuncs.GetEnvironment.Solution.Properties.Item("Name").Value);
+						this.loadSolution((string)Business.StaticFuncs.GetEnvironment.Solution.Properties.Item("Name").Value, true);
 					else
 						this.loadSolution(null);
 				}
@@ -173,7 +185,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 
 		/// <summary>Tells the control that a new solution was loaded.</summary>
 		/// <param name="solName">The current Solution name.</param>
-		public void loadSolution(string solName)
+		public void loadSolution(string solName, bool force=false)
 		{
 			try
 			{
@@ -184,7 +196,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 				else
 				{
 					//Only get the projects if the solution name changed. (Avoid refreshing when solution name is unchanged.)
-					if (this._solutionName != solName)
+					if (this._solutionName != solName || force)
 					{
 						//Get projects associated with this solution.
 						SerializableDictionary<string, string> availProjects = Settings.Default.AssignedProjects;
@@ -205,30 +217,6 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 		}
 
 		#region Tree Node Methods
-		/// <summary>Creates a node display header.</summary>
-		/// <param name="imageKey">The image key to use. null skips image.</param>
-		/// <param name="Label">The text to use.</param>
-		/// <returns>A StackPanel that can be saved to the node's Header property.</returns>
-		private StackPanel createNodeHeader(string imageKey, string Label)
-		{
-			try
-			{
-				StackPanel stckPnl = new StackPanel() { Orientation = Orientation.Horizontal, Margin = new Thickness(0, 2, 2, 2) };
-				if (!string.IsNullOrEmpty(imageKey))
-				{
-					stckPnl.Children.Add(Business.StaticFuncs.getImage(imageKey, new Size(16, 16)));
-				}
-				stckPnl.Children.Add(new TextBlock() { Text = Label, VerticalAlignment = VerticalAlignment.Center, Margin = new Thickness(3, 0, 0, 0) });
-
-				return stckPnl;
-			}
-			catch (Exception ex)
-			{
-				Logger.LogMessage(ex);
-				return new StackPanel();
-			}
-		}
-
 		/// <summary>Creates the standard nodes. Run at class creation.</summary>
 		private void CreateStandardNodes()
 		{
@@ -236,19 +224,20 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			{
 				//Define our standard nodes here.
 				// - No Projects
-				this._nodeNoProjects = new TreeViewItem();
-				this._nodeNoProjects.Header = createNodeHeader("imgNo", "No projects selected for this solution.");
+				this._nodeNoProjects = new TreeViewArtifact();
+				this._nodeNoProjects.ArtifactName = "No projects selected for this solution.";
+				this._nodeNoProjects.ArtifactIsNo = true;
 
 				// - No Solution
-				this._nodeNoSolution = new TreeViewItem();
-				this._nodeNoSolution.Header = createNodeHeader("imgNo", "No solution loaded.");
+				this._nodeNoSolution = new TreeViewArtifact();
+				this._nodeNoSolution.ArtifactName = "No solution open.";
+				this._nodeNoProjects.ArtifactIsNo = true;
 			}
 			catch (Exception ex)
 			{
 				Logger.LogMessage(ex);
 			}
 		}
-
 		#endregion
 
 		#region Helper Classes
@@ -268,7 +257,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 		/// <param name="sender">Object</param>
 		/// <param name="e">MouseButtonEventArgs</param>
 		/// <remarks>Must be public so the TreeNodeArtifact can access the funtion.</remarks>
-		public void TreeNode_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
+		private void TreeNode_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
 		{
 			//If it's not a folder and an artifact, open a details screen.
 			//Try to get the data item.
@@ -296,7 +285,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			{
 				if (sender is TreeViewArtifact)
 				{
-					((SpiraExplorerPackage)this.Pane.Package).OpenDetailsToolWindow((sender as TreeViewArtifact), (string)e.Source);
+					((SpiraExplorerPackage)this.Pane.Package).OpenDetailsToolWindow((sender as TreeViewArtifact));
 				}
 			}
 		}
@@ -306,19 +295,5 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			get;
 			set;
 		}
-
-		/// <summary>Hit when the context menu goes away.</summary>
-		/// <param name="sender">UIElement</param>
-		/// <param name="e">ContextMenuEventArgs</param>
-		private void trvProject_ContextMenuClosing(object sender, ContextMenuEventArgs e)
-		{
-			e.Handled = true;
-
-			//We need to refresh the treeview items if they right-clicked on something.
-			if (sender is TreeView)  //If the sender is a TreeView
-				if (e.OriginalSource is TreeViewItem) //And the original item is a TreeViewItem.
-					(sender as TreeView).Items.Refresh();
-		}
-
 	}
 }

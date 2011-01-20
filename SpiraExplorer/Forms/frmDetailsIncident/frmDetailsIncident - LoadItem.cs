@@ -8,6 +8,7 @@ using Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business.SpiraTeam_Cli
 using Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Controls;
 using System.Windows.Documents;
 using Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business.HTMLandXAML;
+using Microsoft.VisualStudio.Shell.Interop;
 
 namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 {
@@ -38,6 +39,8 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 		private List<RemoteWorkflowIncidentTransition> _IncWkfTransition;
 		private string _IncDocumentsUrl;
 		private string _IncidentUrl;
+		private int? _tempHoursWorked;
+		private int? _tempMinutedWorked;
 
 		//Workflow fields..
 		private Dictionary<int, int> _IncWkfFields_Current;
@@ -1282,9 +1285,10 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 
 			try
 			{
-				//Load information:
-				// - Name
+				#region Base Fields
+				// - Name & ID
 				this.cntrlIncidentName.Text = incident.Name;
+				this.lblToken.Text = this._ArtifactDetails.ArtifactIDDisplay;
 
 				// - Users
 				this.loadItem_PopulateUser(this.cntrlDetectedBy, incident.OpenerId);
@@ -1306,11 +1310,13 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 				
 				// - Description
 				this.cntrlDescription.HTMLText = incident.Description;
-				
-				// - History
+				#endregion
+
+				#region History
 				//TODO: History (need API update)
-				
-				// - Attachments
+				#endregion
+
+				#region Attachments
 				//Remove existing rows.
 				try
 				{
@@ -1410,15 +1416,43 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 						gridAttachments.Children.Add(txbSize);
 					}
 				}
+				#endregion
+
+				#region Schedule
 				// - Schedule
 				this.cntrlStartDate.SelectedDate = incident.StartDate;
 				this.cntrlEndDate.SelectedDate = incident.ClosedDate;
 				this.cntrlPerComplete.Text = incident.CompletionPercent.ToString();
-				this.cntrlEstEffortH.Text = ((incident.EstimatedEffort.HasValue) ? Math.Floor(((double)incident.EstimatedEffort / (double)60)).ToString() : "");
-				this.cntrlEstEffortM.Text = ((incident.EstimatedEffort.HasValue) ? ((double)incident.EstimatedEffort % (double)60).ToString() : "");
-				this.cntrlActEffortH.Text = ((incident.ActualEffort.HasValue) ? Math.Floor(((double)incident.ActualEffort / (double)60)).ToString() : "");
-				this.cntrlActEffortM.Text = ((incident.ActualEffort.HasValue) ? ((double)incident.ActualEffort % (double)60).ToString() : "");
-				// - Custom Properties
+				this.cntrlEstEffortH.Text = ((incident.EstimatedEffort.HasValue) ? Math.Floor(((double)incident.EstimatedEffort / (double)60)).ToString() : "0");
+				this.cntrlEstEffortM.Text = ((incident.EstimatedEffort.HasValue) ? ((double)incident.EstimatedEffort % (double)60).ToString() : "0");
+				//Get actual effort..
+				int existingH = 0;
+				int existingM = 0;
+				bool updatedTime = false;
+				if (this._tempHoursWorked.HasValue)
+				{
+					existingH += this._tempHoursWorked.Value;
+					this._tempHoursWorked = null;
+					//Mark as being changed..
+					updatedTime = true;
+				}
+				if (this._tempMinutedWorked.HasValue)
+				{
+					existingM += this._tempMinutedWorked.Value;
+					this._tempMinutedWorked = null;
+					//Mark as being changed..
+					updatedTime = true;
+				}
+				if (incident.ActualEffort.HasValue)
+				{
+					existingH += (int)Math.Floor((double)incident.ActualEffort / 60D);
+					existingM += (int)(incident.ActualEffort % 60D);
+				}
+				this.cntrlActEffortH.Text = existingH.ToString();
+				this.cntrlActEffortM.Text = existingM.ToString();
+				#endregion
+
+				#region Custom Properties
 				// We search backwards.
 				foreach (UIElement cntCustom in this.gridCustomProperties.Children)
 				{
@@ -1494,15 +1528,24 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 						}
 					}
 				}
+				#endregion
 
 				//Clear the loading flag & dirty flags
 				this.IsLoading = false;
 				this._isDescChanged = false;
 				this._isResChanged = false;
-				this._isFieldChanged = false;
+				this._isFieldChanged = updatedTime;
 
 				//Set the tab title.
 				this.ParentWindowPane.Caption = this.TabTitle;
+				if (updatedTime)
+				{
+					((IVsWindowFrame)this.ParentWindowPane.Frame).SetProperty((int)__VSFPROPID2.VSFPROPID_OverrideDirtyState, true);
+					if (!this.ParentWindowPane.Caption.EndsWith("*"))
+						this.ParentWindowPane.Caption = this.ParentWindowPane.Caption + " *";
+				}
+
+
 			}
 			catch (Exception ex)
 			{
