@@ -42,15 +42,6 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 		private int? _tempHoursWorked;
 		private int? _tempMinutedWorked;
 
-		//Workflow fields..
-		private Dictionary<int, int> _IncWkfFields_Current;
-		private Dictionary<int, int> _IncWkfCustom_Current;
-		private Dictionary<int, int> _IncWkfFields_Updated;
-		private Dictionary<int, int> _IncWkfCustom_Updated;
-		private int? _IncCurrentType;
-		private int? _IncCurrentStatus;
-		private int? _IncSelectedStatus;
-		private int? _IncSelectedType;
 		#endregion
 
 		// Are we in read-only mode? Are we saving?
@@ -1209,7 +1200,6 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 				//Schedule fields.
 				this.cntrlStartDate.IsEnabled = (WorkFlowFields.ContainsKey(45));
 				this.cntrlEndDate.IsEnabled = (WorkFlowFields.ContainsKey(14));
-				//this.cntrlPerComplete.IsEnabled = (WorkFlowFields.ContainsKey(46)); //Not workflow configurable.
 				this.cntrlEstEffortH.IsEnabled = this.cntrlEstEffortM.IsEnabled = (WorkFlowFields.ContainsKey(47));
 				this.cntrlActEffortH.IsEnabled = this.cntrlActEffortM.IsEnabled = (WorkFlowFields.ContainsKey(48));
 
@@ -1553,17 +1543,5 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			}
 		}
 
-		/// <summary>Gets the specified Required status for the given field.</summary>
-		/// <param name="FieldID">The Field ID number that is contained in the list.</param>
-		/// <param name="WorkFlow">The list of fields to check against.</param>
-		/// <returns>True if the field is required, fals if not.</returns>
-		private bool workflow_IsFieldRequired(int FieldID, Dictionary<int, int> WorkFlow)
-		{
-			if (WorkFlow.ContainsKey(FieldID) && WorkFlow[FieldID] == 2)
-			{
-				return true;
-			}
-			return false;
-		}
 	}
 }

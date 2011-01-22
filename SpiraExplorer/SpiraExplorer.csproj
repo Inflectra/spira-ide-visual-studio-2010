@@ -139,6 +139,7 @@
     <Compile Include="Forms\frmAssignProject\frmAssignProject.xaml.cs">
       <DependentUpon>frmAssignProject.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Forms\frmDetailsIncident\frmDetailsIncident - Workflow.cs" />
     <Compile Include="Forms\frmDetailsIncident\frmDetailsIncident - Load.cs" />
     <Compile Include="Forms\frmDetailsIncident\frmDetailsIncident - Save.cs" />
     <Compile Include="Forms\frmDetailsIncident\frmDetailsIncident.xaml.cs">
