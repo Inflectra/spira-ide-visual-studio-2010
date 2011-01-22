@@ -23,15 +23,6 @@
 				</TextBlock>
 			</StackPanel>
 		</DataTemplate>
-		<DataTemplate DataType="{x:Type bus_client:RemoteUser}">
-			<StackPanel Orientation="Horizontal" >
-				<TextBlock Height="Auto" Width="Auto">
-					<Run Text="{Binding Path=LastName}" />
-					<Run Text=", " />
-					<Run Text="{Binding Path=FirstName}" />
-				</TextBlock>
-			</StackPanel>
-		</DataTemplate>
 		<!-- Brushes for Backgrounds -->
 		<LinearGradientBrush x:Key="WarningMessageBackgroundBrush" StartPoint="0,0" EndPoint="1,1">
 			<GradientStop Color="LightGoldenrodYellow" Offset=".65" />
@@ -81,7 +72,24 @@
 				</Trigger>
 			</Style.Triggers>
 		</Style>
-		<Style x:Key="PaddedDropdown">
+		<Style x:Key="RequiredStyle">
+			<Style.Triggers>
+				<Trigger Property="Control.Tag" Value="1">
+					<Setter Property="Control.Background" Value="{StaticResource WarningControlBackground}" />
+				</Trigger>
+				<Trigger Property="Control.Tag" Value="2">
+					<Setter Property="Control.Background" Value="{StaticResource ErrorControlBackground}" />
+				</Trigger>
+			</Style.Triggers>
+		</Style>
+		<Style x:Key="PaddedControlRequiredHighlight">
+			<Setter Property="Control.MinWidth" Value="150" />
+			<Setter Property="Control.Margin" Value="3" />
+			<Setter Property="Control.HorizontalAlignment" Value="Stretch" />
+			<Setter Property="Control.VerticalAlignment" Value="Stretch" />
+			<Setter Property="Control.Background" Value="{StaticResource ResourceKey=ErrorControlBackground}" />
+		</Style>
+		<Style x:Key="PaddedControl">
 			<Setter Property="Control.MinWidth" Value="150" />
 			<Setter Property="Control.Margin" Value="3" />
 			<Setter Property="Control.HorizontalAlignment" Value="Stretch" />
@@ -382,33 +390,33 @@
 										<TextBlock Name="lblTxtToken" />
 									</TextBlock.ToolTip>
 								</TextBlock>
-								<TextBox Name="cntrlIncidentName" HorizontalAlignment="Stretch" Width="Auto" Margin="3,3,0,3" VerticalAlignment="Center" TextChanged="_cntrl_TextChanged" Style="{StaticResource ConcurrencyHighlight}" />
+								<TextBox Name="cntrlIncidentName" Width="Auto" Margin="3,3,0,3" VerticalAlignment="Center" TextChanged="_cntrl_TextChanged" Style="{StaticResource PaddedControl}" />
 							</DockPanel>
 							<!-- ROW1: Status, Type -->
 							<TextBlock Name="lblType" Grid.Column="0" Grid.Row="1" Style="{StaticResource PaddedLabel}" />
-							<ComboBox Grid.Column="1" Grid.Row="1" Name="cntrlType" Style="{StaticResource PaddedDropdown}" DisplayMemberPath="Name" SelectionChanged="_cntrlType_Changed" />
+							<ComboBox Grid.Column="1" Grid.Row="1" Name="cntrlType" Style="{StaticResource PaddedControl}" DisplayMemberPath="Name" SelectionChanged="_cntrlType_Changed" />
 							<TextBlock Name="lblStatus" Grid.Column="3" Grid.Row="1" Style="{StaticResource PaddedLabel}" />
 							<TextBlock Name="cntrlIncidentStatus" Grid.Column="4" Grid.Row="1" HorizontalAlignment="Left" Style="{StaticResource PaddedLabel}">[Status]</TextBlock>
 							<!-- ROW2: Detected By, Owned By -->
 							<TextBlock Name="lblDetectedBy" Grid.Column="0" Grid.Row="2" Style="{StaticResource PaddedLabel}" />
-							<ComboBox Grid.Column="1" Grid.Row="2" Name="cntrlDetectedBy" Style="{StaticResource PaddedDropdown}" SelectionChanged="_cntrl_TextChanged" />
+							<ComboBox Grid.Column="1" Grid.Row="2" Name="cntrlDetectedBy" Style="{StaticResource PaddedControl}" SelectionChanged="_cntrl_TextChanged" DisplayMemberPath="FullName" />
 							<TextBlock  Name="lblOwnedBy" Grid.Column="3" Grid.Row="2" Style="{StaticResource PaddedLabel}" />
-							<ComboBox Grid.Column="4" Grid.Row="2" Name="cntrlOwnedBy" Style="{StaticResource PaddedDropdown}" SelectionChanged="_cntrl_TextChanged" />
+							<ComboBox Grid.Column="4" Grid.Row="2" Name="cntrlOwnedBy" Style="{StaticResource PaddedControl}" SelectionChanged="_cntrl_TextChanged" DisplayMemberPath="FullName" />
 							<!-- ROW3: Priority, Severity -->
 							<TextBlock  Name="lblPriority" Grid.Column="0" Grid.Row="3" Style="{StaticResource PaddedLabel}" />
-							<ComboBox Grid.Column="1" Grid.Row="3" Name="cntrlPriority" Style="{StaticResource PaddedDropdown}" DisplayMemberPath="Name" SelectionChanged="_cntrl_TextChanged" />
+							<ComboBox Grid.Column="1" Grid.Row="3" Name="cntrlPriority" Style="{StaticResource PaddedControl}" DisplayMemberPath="Name" SelectionChanged="_cntrl_TextChanged" />
 							<TextBlock  Name="lblSeverity" Grid.Column="3" Grid.Row="3" Style="{StaticResource PaddedLabel}" />
-							<ComboBox Grid.Column="4" Grid.Row="3" Name="cntrlSeverity" Style="{StaticResource PaddedDropdown}" DisplayMemberPath="Name" SelectionChanged="_cntrl_TextChanged" />
+							<ComboBox Grid.Column="4" Grid.Row="3" Name="cntrlSeverity" Style="{StaticResource PaddedControl}" DisplayMemberPath="Name" SelectionChanged="_cntrl_TextChanged" />
 							<!-- ROW4: DetectedIn, ResolvedIn -->
 							<TextBlock  Name="lblDetectedIn" Grid.Column="0" Grid.Row="4" Style="{StaticResource PaddedLabel}" />
-							<ComboBox Grid.Column="1" Grid.Row="4" Name="cntrlDetectedIn" Style="{StaticResource PaddedDropdown}" SelectionChanged="_cntrl_TextChanged" />
+							<ComboBox Grid.Column="1" Grid.Row="4" Name="cntrlDetectedIn" Style="{StaticResource PaddedControl}" SelectionChanged="_cntrl_TextChanged" />
 							<TextBlock Name="lblResolvedIn" Grid.Column="3" Grid.Row="4" Style="{StaticResource PaddedLabel}" />
-							<ComboBox Grid.Column="4" Grid.Row="4" Name="cntrlResolvedIn" Style="{StaticResource PaddedDropdown}" SelectionChanged="_cntrl_TextChanged" />
+							<ComboBox Grid.Column="4" Grid.Row="4" Name="cntrlResolvedIn" Style="{StaticResource PaddedControl}" SelectionChanged="_cntrl_TextChanged" />
 							<!-- ROW5: VerifiedIn -->
 							<TextBlock Name="lblVerifiedIn" Grid.Column="3" Grid.Row="5" Style="{StaticResource PaddedLabel}" />
-							<ComboBox Grid.Column="4" Grid.Row="5" Name="cntrlVerifiedIn" Style="{StaticResource PaddedDropdown}" SelectionChanged="_cntrl_TextChanged" />
+							<ComboBox Grid.Column="4" Grid.Row="5" Name="cntrlVerifiedIn" Style="{StaticResource PaddedControl}" SelectionChanged="_cntrl_TextChanged" />
 							<!-- ROW6: Description -->
-							<GroupBox Grid.Column="0" Grid.Row="6" Grid.ColumnSpan="5" Name="grpDescription" Style="{StaticResource ConcurrencyHighlight}">
+							<GroupBox Grid.Column="0" Grid.Row="6" Grid.ColumnSpan="5" Name="grpDescription" Style="{StaticResource RequiredStyle}">
 								<GroupBox.Header>
 									<TextBlock Name="lblDescription" FontWeight="Bold" />
 								</GroupBox.Header>
@@ -418,7 +426,7 @@
 							</GroupBox>
 						</Grid>
 					</Expander>
-					<ListBox Grid.Row="1" SelectionMode="Extended">
+					<ListBox Grid.Row="1" SelectionMode="Single">
 						<ListBox.Resources>
 							<Style TargetType="{x:Type Expander}">
 								<Setter Property="IsExpanded" Value="{Binding Path=IsSelected, RelativeSource={RelativeSource AncestorType={x:Type ListBoxItem}}}"/>
@@ -446,7 +454,7 @@
 								<TextBlock Name="lblExpanderResolution" VerticalAlignment="Center" />
 							</Expander.Header>
 							<StackPanel Orientation="Vertical" Background="{DynamicResource {x:Static vsfx:VsBrushes.DesignerBackgroundKey}}">
-								<Grid Name="grpResolution">
+								<Grid Name="grpResolution" Style="{StaticResource ResourceKey=RequiredStyle}">
 									<ui_cntrl:cntrlRichTextEditor x:Name="cntrlResolution" Height="100" Width="Auto" Padding="2" TextChanged="_cntrl_TextChanged" IsSpellcheckEnabled="True"  />
 								</Grid>
 								<StackPanel Name="cntrlDiscussion" Orientation="Vertical" />
@@ -480,28 +488,29 @@
 								</Grid.RowDefinitions>
 								<!-- ROW0: Start Date / End Date -->
 								<TextBlock Name="lblStartDate" Grid.Column="0" Grid.Row="0" Style="{StaticResource PaddedLabel}" />
-								<DatePicker Grid.Column="1" Grid.Row="0" Name="cntrlStartDate" IsTodayHighlighted="True" SelectedDateFormat="Short" Style="{StaticResource PaddedDropdown}" Height="Auto" />
+								<DatePicker Grid.Column="1" Grid.Row="0" Name="cntrlStartDate" IsTodayHighlighted="True" SelectedDateFormat="Short" Style="{StaticResource PaddedControl}" Height="Auto" />
 								<TextBlock Name="lblEndDate" Grid.Column="3" Grid.Row="0" Style="{StaticResource PaddedLabel}" />
-								<DatePicker Grid.Column="4" Grid.Row="0" Name="cntrlEndDate" IsTodayHighlighted="True" SelectedDateFormat="Short" Style="{StaticResource PaddedDropdown}" Height="Auto" />
+								<DatePicker Grid.Column="4" Grid.Row="0" Name="cntrlEndDate" IsTodayHighlighted="True" SelectedDateFormat="Short" Style="{StaticResource PaddedControl}" Height="Auto" />
 								<!-- ROW1: % Complete / Est. Effort -->
 								<TextBlock Name="lblPerComplete" Grid.Column="0" Grid.Row="1" Style="{StaticResource PaddedLabel}" />
 								<StackPanel Grid.Column="1" Grid.Row="1" Orientation="Horizontal">
-									<TextBox MaxLength="3" Name="cntrlPerComplete" Style="{StaticResource PaddedDropdown}" Width="30" MinWidth="0" TextChanged="_cntrl_TextChanged" />
-									<TextBlock Style="{StaticResource PaddedLabel}" FontWeight="Bold" Text="%" />
+									<TextBlock Style="{StaticResource ResourceKey=PaddedLabel}">
+										<Run Name="txtPerComplete" /><Run Text="%" />
+									</TextBlock> 
 								</StackPanel>
 								<TextBlock Name="lblEstEffort" Grid.Column="3" Grid.Row="1" Style="{StaticResource PaddedLabel}" />
 								<StackPanel Grid.Column="4" Grid.Row="1" Orientation="Horizontal">
-									<ui_cntrl:cntrlMaskedTextBox MaxLength="3" x:Name="cntrlEstEffortH" Style="{StaticResource PaddedDropdown}" Width="30" MinWidth="0" Mask="###" TextChanged="cntrlMasked_TextChanged" />
+									<ui_cntrl:cntrlMaskedTextBox MaxLength="3" x:Name="cntrlEstEffortH" Style="{StaticResource PaddedControl}" Width="30" MinWidth="0" Mask="###" TextChanged="cntrlMasked_TextChanged" />
 									<TextBlock Style="{StaticResource PaddedLabel}">hours,</TextBlock>
-									<ui_cntrl:cntrlMaskedTextBox MaxLength="2" x:Name="cntrlEstEffortM" Style="{StaticResource PaddedDropdown}" Width="30" MinWidth="0" Mask="##" TextChanged="cntrlMasked_TextChanged" />
+									<ui_cntrl:cntrlMaskedTextBox MaxLength="2" x:Name="cntrlEstEffortM" Style="{StaticResource PaddedControl}" Width="30" MinWidth="0" Mask="##" TextChanged="cntrlMasked_TextChanged" Background="{Binding ElementName=cntrlEstEffortH, Path=Background}" />
 									<TextBlock Style="{StaticResource PaddedLabel}">minutes</TextBlock>
 								</StackPanel>
 								<!-- ROW2: Actual Effort -->
 								<TextBlock Name="lblActEffort" Grid.Column="3" Grid.Row="2" Style="{StaticResource PaddedLabel}" />
 								<StackPanel Grid.Column="4" Grid.Row="2" Orientation="Horizontal">
-									<TextBox MaxLength="3" Name="cntrlActEffortH" Style="{StaticResource PaddedDropdown}" Width="30" MinWidth="0" TextChanged="cntrlMasked_TextChanged" />
+									<TextBox MaxLength="3" Name="cntrlActEffortH" Style="{StaticResource PaddedControl}" Width="30" MinWidth="0" TextChanged="cntrlMasked_TextChanged" />
 									<TextBlock Style="{StaticResource PaddedLabel}">hours,</TextBlock>
-									<TextBox MaxLength="2" Name="cntrlActEffortM" Style="{StaticResource PaddedDropdown}" Width="30" MinWidth="0" TextChanged="cntrlMasked_TextChanged" />
+									<TextBox MaxLength="2" Name="cntrlActEffortM" Style="{StaticResource PaddedControl}" Width="30" MinWidth="0" TextChanged="cntrlMasked_TextChanged" Background="{Binding ElementName=cntrlActEffortH, Path=Background}" />
 									<TextBlock Style="{StaticResource PaddedLabel}">minutes</TextBlock>
 								</StackPanel>
 							</Grid>

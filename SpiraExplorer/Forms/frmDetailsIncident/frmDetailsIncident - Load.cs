@@ -595,7 +595,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 
 							custControl = lsbControl;
 						}
-						custControl.Style = (Style)this.FindResource("PaddedDropdown");
+						custControl.Style = (Style)this.FindResource("PaddedControl");
 						custControl.Tag = e.Result[j];
 						custControl.HorizontalAlignment = System.Windows.HorizontalAlignment.Stretch;
 						custControl.VerticalAlignment = System.Windows.VerticalAlignment.Top;
@@ -948,7 +948,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			{
 				//Clear and add our 'none'.
 				box.Items.Clear();
-				box.SelectedIndex = box.Items.Add(new ComboBoxItem() { Content = StaticFuncs.getCultureResource.GetString("app_General_None") });
+				box.SelectedIndex = box.Items.Add(new RemoteProjectUser() { FullName = StaticFuncs.getCultureResource.GetString("app_General_None") });
 
 				if (!SelectedUserID.HasValue)
 					SelectedUserID = -1;
@@ -978,7 +978,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			{
 				//Clear and add our 'none'.
 				box.Items.Clear();
-				box.SelectedIndex = box.Items.Add(new ComboBoxItem() { Content = StaticFuncs.getCultureResource.GetString("app_General_None") });
+				box.SelectedIndex = box.Items.Add(new RemoteRelease() { Name = StaticFuncs.getCultureResource.GetString("app_General_None") });
 
 				if (!SelectedRelease.HasValue)
 					SelectedRelease = -1;
@@ -1007,12 +1007,12 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			{
 				//Clear and add our 'none'.
 				box.Items.Clear();
-				box.SelectedIndex = box.Items.Add(new Business.SpiraTeam_Client.RemoteIncidentSeverity() { Name = StaticFuncs.getCultureResource.GetString("app_General_None") });
+				box.SelectedIndex = box.Items.Add(new RemoteIncidentSeverity() { Name = StaticFuncs.getCultureResource.GetString("app_General_None") });
 
 				if (!SelectedItem.HasValue)
 					SelectedItem = -1;
 
-				foreach (Business.SpiraTeam_Client.RemoteIncidentSeverity Severity in this._IncSeverity)
+				foreach (RemoteIncidentSeverity Severity in this._IncSeverity)
 				{
 					int nunAdded = box.Items.Add(Severity);
 					if (Severity.SeverityId == SelectedItem)
@@ -1036,12 +1036,12 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			{
 				//Clear and add our 'none'.
 				box.Items.Clear();
-				box.SelectedIndex = box.Items.Add(new Business.SpiraTeam_Client.RemoteIncidentPriority() { Name = "-- None --" });
+				box.SelectedIndex = box.Items.Add(new RemoteIncidentPriority() { Name = StaticFuncs.getCultureResource.GetString("app_General_None") });
 
 				if (!SelectedItem.HasValue)
 					SelectedItem = -1;
 
-				foreach (Business.SpiraTeam_Client.RemoteIncidentPriority Priority in this._IncPriority)
+				foreach (RemoteIncidentPriority Priority in this._IncPriority)
 				{
 					int nunAdded = box.Items.Add(Priority);
 					if (Priority.PriorityId == SelectedItem)
@@ -1209,7 +1209,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 				//Schedule fields.
 				this.cntrlStartDate.IsEnabled = (WorkFlowFields.ContainsKey(45));
 				this.cntrlEndDate.IsEnabled = (WorkFlowFields.ContainsKey(14));
-				this.cntrlPerComplete.IsEnabled = (WorkFlowFields.ContainsKey(46)); //Not workflow configurable.
+				//this.cntrlPerComplete.IsEnabled = (WorkFlowFields.ContainsKey(46)); //Not workflow configurable.
 				this.cntrlEstEffortH.IsEnabled = this.cntrlEstEffortM.IsEnabled = (WorkFlowFields.ContainsKey(47));
 				this.cntrlActEffortH.IsEnabled = this.cntrlActEffortM.IsEnabled = (WorkFlowFields.ContainsKey(48));
 
@@ -1293,21 +1293,21 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 				// - Users
 				this.loadItem_PopulateUser(this.cntrlDetectedBy, incident.OpenerId);
 				this.loadItem_PopulateUser(this.cntrlOwnedBy, incident.OwnerId);
-				((ComboBoxItem)this.cntrlDetectedBy.Items[0]).IsEnabled = false;
-	
+				this.cntrlDetectedBy.Items.RemoveAt(0);
+
 				// - Releases
 				this.loadItem_PopulateReleaseControl(this.cntrlDetectedIn, incident.DetectedReleaseId);
 				this.loadItem_PopulateReleaseControl(this.cntrlResolvedIn, incident.ResolvedReleaseId);
 				this.loadItem_PopulateReleaseControl(this.cntrlVerifiedIn, incident.VerifiedReleaseId);
-				
+
 				// - Priority & Severity
 				this.loadItem_PopulatePriority(this.cntrlPriority, incident.PriorityId);
 				this.loadItem_PopulateSeverity(this.cntrlSeverity, incident.SeverityId);
-				
+
 				// - Type & Status
 				this.loadItem_PopulateType(this.cntrlType, incident.IncidentTypeId);
 				this.loadItem_PopulateStatus(this.mnuActions, incident.IncidentStatusId);
-				
+
 				// - Description
 				this.cntrlDescription.HTMLText = incident.Description;
 				#endregion
@@ -1422,7 +1422,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 				// - Schedule
 				this.cntrlStartDate.SelectedDate = incident.StartDate;
 				this.cntrlEndDate.SelectedDate = incident.ClosedDate;
-				this.cntrlPerComplete.Text = incident.CompletionPercent.ToString();
+				this.lblPerComplete.Text = incident.CompletionPercent.ToString();
 				this.cntrlEstEffortH.Text = ((incident.EstimatedEffort.HasValue) ? Math.Floor(((double)incident.EstimatedEffort / (double)60)).ToString() : "0");
 				this.cntrlEstEffortM.Text = ((incident.EstimatedEffort.HasValue) ? ((double)incident.EstimatedEffort % (double)60).ToString() : "0");
 				//Get actual effort..
@@ -1553,27 +1553,6 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			}
 		}
 
-		/// <summary>Hit when a HyperLink object is clicked.</summary>
-		/// <param name="sender">Hyperlink</param>
-		/// <param name="e">RoutedEventArgs</param>
-		private void Hyperlink_Click(object sender, RoutedEventArgs e)
-		{
-			e.Handled = true;
-
-			if (sender is Hyperlink)
-			{
-				try
-				{
-					System.Diagnostics.Process.Start(((Hyperlink)sender).NavigateUri.ToString());
-				}
-				catch (Exception ex)
-				{
-					Logger.LogMessage(ex, "Could not launch URL.");
-					MessageBox.Show(StaticFuncs.getCultureResource.GetString("app_General_ErrorLaunchingUrlMessage"), StaticFuncs.getCultureResource.GetString("app_General_Error"), MessageBoxButton.OK, MessageBoxImage.Error);
-				}
-			}
-		}
-
 		/// <summary>Gets the specified Required status for the given field.</summary>
 		/// <param name="FieldID">The Field ID number that is contained in the list.</param>
 		/// <param name="WorkFlow">The list of fields to check against.</param>
@@ -1585,52 +1564,6 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 				return true;
 			}
 			return false;
-		}
-
-		private bool workflow_CheckFieldValues(out string Fields)
-		{
-			Fields = "";
-
-			if (string.IsNullOrEmpty(this.cntrlIncidentName.Text.Trim()))
-				Fields += "Name;";
-			if (this.lblType.FontWeight == FontWeights.Bold && this.cntrlType.SelectedItem.GetType() != typeof(Business.SpiraTeam_Client.RemoteIncidentType))
-				Fields += "Type;";
-			//if (this.lblStatus.FontWeight == FontWeights.Bold && this.cntrlStatus.SelectedItem.GetType() != typeof(Business.SpiraTeam_Client.RemoteIncidentStatus))
-			//     Fields += "Status;";
-			if (this.lblDetectedBy.FontWeight == FontWeights.Bold && this.cntrlDetectedBy.SelectedItem.GetType() != typeof(Business.SpiraTeam_Client.RemoteUser))
-				Fields += "Detected By;";
-			if (this.lblOwnedBy.FontWeight == FontWeights.Bold && this.cntrlOwnedBy.SelectedItem.GetType() != typeof(Business.SpiraTeam_Client.RemoteUser))
-				Fields += "Owned By;";
-			if (this.lblPriority.FontWeight == FontWeights.Bold && !((Business.SpiraTeam_Client.RemoteIncidentPriority)this.cntrlPriority.SelectedItem).PriorityId.HasValue)
-				Fields += "Priority;";
-			if (this.lblSeverity.FontWeight == FontWeights.Bold && !((Business.SpiraTeam_Client.RemoteIncidentSeverity)this.cntrlSeverity.SelectedItem).SeverityId.HasValue)
-				Fields += "Severity;";
-			if (this.lblDetectedIn.FontWeight == FontWeights.Bold && this.cntrlDetectedIn.SelectedItem.GetType() != typeof(Business.SpiraTeam_Client.RemoteRelease))
-				Fields += "Detected In;";
-			if (this.lblResolvedIn.FontWeight == FontWeights.Bold && this.cntrlResolvedIn.SelectedItem.GetType() != typeof(Business.SpiraTeam_Client.RemoteRelease))
-				Fields += "Resolved In;";
-			if (this.lblVerifiedIn.FontWeight == FontWeights.Bold && this.cntrlVerifiedIn.SelectedItem.GetType() != typeof(Business.SpiraTeam_Client.RemoteRelease))
-				Fields += "Verified In;";
-			if (this.lblStartDate.FontWeight == FontWeights.Bold && !this.cntrlStartDate.SelectedDate.HasValue)
-				Fields += "Start Date;";
-			if (this.lblEndDate.FontWeight == FontWeights.Bold && !this.cntrlEndDate.SelectedDate.HasValue)
-				Fields += "End Date;";
-			if (this.lblEstEffort.FontWeight == FontWeights.Bold && string.IsNullOrEmpty(this.cntrlEstEffortH.Text.Trim()) && string.IsNullOrEmpty(this.cntrlEstEffortH.Text.Trim()))
-				Fields += "Estimated Effort;";
-			if (this.lblActEffort.FontWeight == FontWeights.Bold && string.IsNullOrEmpty(this.cntrlActEffortH.Text.Trim()) && string.IsNullOrEmpty(this.cntrlActEffortH.Text.Trim()))
-				Fields += "Estimated Effort;";
-			//if (this.cntrlResolution.Tag.GetType() == typeof(bool) && (bool)this.cntrlResolution.Tag && !this._isResChanged)
-			//     Fields += "Resolution;";
-
-			if (string.IsNullOrEmpty(Fields.Trim()))
-			{
-				return true;
-			}
-			else
-			{
-				Fields = Fields.Trim(';').Trim();
-				return false;
-			}
 		}
 	}
 }

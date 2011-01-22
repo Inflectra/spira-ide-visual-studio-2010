@@ -139,8 +139,8 @@
     <Compile Include="Forms\frmAssignProject\frmAssignProject.xaml.cs">
       <DependentUpon>frmAssignProject.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Forms\frmDetailsIncident\frmDetailsIncident - LoadItem.cs" />
-    <Compile Include="Forms\frmDetailsIncident\LoadItem_Concurrency.cs" />
+    <Compile Include="Forms\frmDetailsIncident\frmDetailsIncident - Load.cs" />
+    <Compile Include="Forms\frmDetailsIncident\frmDetailsIncident - Save.cs" />
     <Compile Include="Forms\frmDetailsIncident\frmDetailsIncident.xaml.cs">
       <DependentUpon>frmDetailsIncident.xaml</DependentUpon>
     </Compile>

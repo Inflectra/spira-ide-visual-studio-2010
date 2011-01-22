@@ -8,6 +8,7 @@ using Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Controls;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using System.Windows.Controls.Primitives;
+using System.Windows.Documents;
 
 namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 {
@@ -85,132 +86,6 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 		#endregion
 
 		#region Control Event Handlers
-
-		/// <summary>Hit when the user clicks to save the incident.</summary>
-		/// <param name="sender">The save button.</param>
-		/// <param name="e">Event Args</param>
-		private void btnSave_Click(object sender, RoutedEventArgs e)
-		{
-			e.Handled = true;
-
-			try
-			{
-				if (this._isFieldChanged)
-				{
-					string badFields = "";
-
-					if (this.workflow_CheckFieldValues(out badFields))
-					{
-						this.isInSaveMode = true;
-						//Update the form to show we're saving.
-
-						RemoteIncident newIncident = new RemoteIncident();
-
-						//Copy over our base fields..
-						newIncident.Name = this.cntrlIncidentName.Text;
-						newIncident.IncidentTypeId = ((RemoteIncidentType)this.cntrlType.SelectedItem).IncidentTypeId.Value;
-						//TODO: Convert to handling menu.
-						//if (this.cntrlStatus.SelectedItem is RemoteWorkflowIncidentTransition)
-						//     newIncident.IncidentStatusId = ((RemoteWorkflowIncidentTransition)this.cntrlStatus.SelectedItem).IncidentStatusId_Output;
-						//else if (this.cntrlStatus.SelectedItem is RemoteIncidentStatus)
-						//     newIncident.IncidentStatusId = ((RemoteIncidentStatus)this.cntrlStatus.SelectedItem).IncidentStatusId.Value;
-						newIncident.OpenerId = ((this.cntrlDetectedBy.SelectedItem.GetType() == typeof(RemoteUser)) ? ((RemoteUser)this.cntrlDetectedBy.SelectedItem).UserId.Value : -1);
-						newIncident.OwnerId = ((this.cntrlOwnedBy.SelectedItem.GetType() == typeof(RemoteUser)) ? ((RemoteUser)this.cntrlOwnedBy.SelectedItem).UserId.Value : new int?());
-						newIncident.PriorityId = ((this.cntrlPriority.SelectedItem.GetType() == typeof(RemoteIncidentPriority)) ? ((RemoteIncidentPriority)this.cntrlPriority.SelectedItem).PriorityId : new int?());
-						newIncident.SeverityId = ((this.cntrlSeverity.SelectedItem.GetType() == typeof(RemoteIncidentSeverity)) ? ((RemoteIncidentSeverity)this.cntrlSeverity.SelectedItem).SeverityId : new int?());
-						newIncident.DetectedReleaseId = ((this.cntrlDetectedIn.SelectedItem.GetType() == typeof(RemoteRelease)) ? ((RemoteRelease)this.cntrlDetectedIn.SelectedItem).ReleaseId : new int?());
-						newIncident.ResolvedReleaseId = ((this.cntrlResolvedIn.SelectedItem.GetType() == typeof(RemoteRelease)) ? ((RemoteRelease)this.cntrlResolvedIn.SelectedItem).ReleaseId : new int?());
-						newIncident.VerifiedReleaseId = ((this.cntrlVerifiedIn.SelectedItem.GetType() == typeof(RemoteRelease)) ? ((RemoteRelease)this.cntrlVerifiedIn.SelectedItem).ReleaseId : new int?());
-						if (this._isDescChanged)
-							newIncident.Description = this.cntrlDescription.HTMLText;
-						else
-							newIncident.Description = this._Incident.Description;
-						//Now custom properties.
-						//TODO: Custom Property fields. (Needs API update.)
-						newIncident.List01 = this._Incident.List01;
-						newIncident.List02 = this._Incident.List02;
-						newIncident.List03 = this._Incident.List03;
-						newIncident.List04 = this._Incident.List04;
-						newIncident.List05 = this._Incident.List05;
-						newIncident.List06 = this._Incident.List06;
-						newIncident.List07 = this._Incident.List07;
-						newIncident.List08 = this._Incident.List08;
-						newIncident.List09 = this._Incident.List09;
-						newIncident.List10 = this._Incident.List10;
-						newIncident.Text01 = this._Incident.Text01;
-						newIncident.Text02 = this._Incident.Text02;
-						newIncident.Text03 = this._Incident.Text03;
-						newIncident.Text04 = this._Incident.Text04;
-						newIncident.Text05 = this._Incident.Text05;
-						newIncident.Text06 = this._Incident.Text06;
-						newIncident.Text07 = this._Incident.Text07;
-						newIncident.Text08 = this._Incident.Text08;
-						newIncident.Text09 = this._Incident.Text09;
-						newIncident.Text10 = this._Incident.Text10;
-						//Schedule fields.
-						newIncident.StartDate = this.cntrlStartDate.SelectedDate;
-						newIncident.ClosedDate = this.cntrlEndDate.SelectedDate;
-						newIncident.CompletionPercent = ((string.IsNullOrEmpty(this.cntrlPerComplete.Text)) ? 0 : int.Parse(this.cntrlPerComplete.Text));
-						int? EstH = ((string.IsNullOrEmpty(this.cntrlEstEffortH.Text)) ? new int?() : int.Parse(this.cntrlEstEffortH.Text));
-						int? EstM = ((string.IsNullOrEmpty(this.cntrlEstEffortM.Text)) ? new int?() : int.Parse(this.cntrlEstEffortM.Text));
-						newIncident.EstimatedEffort = ((!EstH.HasValue && !EstM.HasValue) ? new int?() : (((!EstH.HasValue) ? 0 : EstH.Value * 60) + ((!EstM.HasValue) ? 0 : EstM.Value)));
-						int? ActH = ((string.IsNullOrEmpty(this.cntrlActEffortH.Text)) ? new int?() : int.Parse(this.cntrlActEffortH.Text));
-						int? ActM = ((string.IsNullOrEmpty(this.cntrlActEffortM.Text)) ? new int?() : int.Parse(this.cntrlActEffortM.Text));
-						newIncident.ActualEffort = ((!ActH.HasValue && !ActM.HasValue) ? new int?() : (((!ActH.HasValue) ? 0 : ActH.Value * 60) + ((!ActM.HasValue) ? 0 : ActM.Value)));
-						//Now the set fields.
-						newIncident.IncidentId = this._Incident.IncidentId;
-						newIncident.LastUpdateDate = this._Incident.LastUpdateDate;
-						newIncident.CreationDate = this._Incident.CreationDate;
-						newIncident.ProjectId = this._Incident.ProjectId;
-
-						//Add a resolution.
-						RemoteIncidentResolution newRes = new RemoteIncidentResolution();
-						if (this._isResChanged)
-						{
-							newRes.CreationDate = DateTime.Now;
-							newRes.CreatorId = this._Project.UserID;
-							newRes.IncidentId = newIncident.IncidentId.Value;
-							newRes.Resolution = this.cntrlResolution.HTMLText;
-						}
-						//this._NumRunning++;
-						//this._Client.Incident_UpdateAsync(newIncident, this._NumAsync++);
-						//if (this._isResChanged)
-						//{
-						//     this._NumRunning++;
-						//     this._Client.Incident_AddResolutionsAsync(new RemoteIncidentResolution[] { newRes }, this._NumAsync++);
-						//}
-					}
-					else
-					{
-						string errMsg = "";
-						if (badFields.Split(';').Length > 3)
-							errMsg = "You must fill out all required fields before saving.";
-						else
-						{
-							errMsg = "The ";
-							foreach (string fieldName in badFields.Split(';'))
-							{
-								errMsg += fieldName + ", ";
-							}
-							errMsg = errMsg.Trim(' ').Trim(',');
-							errMsg += " field" + ((badFields.Split(';').Length > 1) ? "s" : "");
-							errMsg += " " + ((badFields.Split(';').Length > 1) ? "are" : "is");
-							errMsg += " required before saving.";
-						}
-						//this.msgErrMessage.Text = errMsg;
-						//this.panelError.Visibility = Visibility.Visible;
-						//this.panelWarning.Visibility = Visibility.Collapsed;
-						//this.panelInfo.Visibility = Visibility.Collapsed;
-						//this.panelNone.Visibility = Visibility.Collapsed;
-					}
-
-				}
-			}
-			catch (Exception ex)
-			{
-				//Connect.logEventMessage("wpfDetailsIncident::_cntrlSave_Click", ex, System.Diagnostics.EventLogEntryType.Error);
-			}
-		}
 
 		/// <summary>Hit when the Type or Status dropdown is changed. Have to reload workflow and update fields.</summary>
 		/// <param name="sender">cntrlType / cntrlStatus</param>
@@ -308,6 +183,32 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 						else if (((cntrlRichTextEditor)sender).Name == "cntrlResolution")
 						{
 							this._isResChanged = true;
+						}
+					}
+
+					//Unset required error backgrounds.
+					Control contField = sender as Control;
+					if (contField != null)
+					{
+						if (contField.Tag is string)  //Normal Field
+						{
+							contField.Tag = null;
+						}
+						else if (contField.Tag is RemoteCustomProperty)  //Custom Property
+						{
+							contField.Style = (Style)this.FindResource("PaddedControl");
+						}
+
+						if (contField is cntrlRichTextEditor) //Description & Resolution
+						{
+							if (((cntrlRichTextEditor)sender).Name == "cntrlDescription")
+							{
+								this.grpDescription.Tag = null;
+							}
+							else if (((cntrlRichTextEditor)sender).Name == "cntrlResolution")
+							{
+								this.grpResolution.Tag = null;
+							}
 						}
 					}
 				}
@@ -544,6 +445,27 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			e.Handled = true;
 
 			Clipboard.SetText(this._ArtifactDetails.ArtifactIDDisplay);
+		}
+
+		/// <summary>Hit when a HyperLink object is clicked.</summary>
+		/// <param name="sender">Hyperlink</param>
+		/// <param name="e">RoutedEventArgs</param>
+		private void Hyperlink_Click(object sender, RoutedEventArgs e)
+		{
+			e.Handled = true;
+
+			if (sender is Hyperlink)
+			{
+				try
+				{
+					System.Diagnostics.Process.Start(((Hyperlink)sender).NavigateUri.ToString());
+				}
+				catch (Exception ex)
+				{
+					Logger.LogMessage(ex, "Could not launch URL.");
+					MessageBox.Show(StaticFuncs.getCultureResource.GetString("app_General_ErrorLaunchingUrlMessage"), StaticFuncs.getCultureResource.GetString("app_General_Error"), MessageBoxButton.OK, MessageBoxImage.Error);
+				}
+			}
 		}
 
 		#endregion

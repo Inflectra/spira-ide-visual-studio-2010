@@ -185,7 +185,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 
 		/// <summary>Tells the control that a new solution was loaded.</summary>
 		/// <param name="solName">The current Solution name.</param>
-		public void loadSolution(string solName, bool force=false)
+		public void loadSolution(string solName, bool force = false)
 		{
 			try
 			{
