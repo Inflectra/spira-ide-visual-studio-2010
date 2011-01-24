@@ -189,6 +189,9 @@
   <data name="imgInfoWPF" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\img_Info.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="imgSaveWPF" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\img_Save.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
   <data name="imgLogo" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\imgLogo.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
@@ -527,5 +530,14 @@ Are you sure you want to continue?</value>
   </data>
   <data name="app_General_ViewDetails" xml:space="preserve">
     <value>View Details</value>
+  </data>
+  <data name="app_General_RequiredFields" xml:space="preserve">
+    <value>Cannot Save</value>
+  </data>
+  <data name="app_General_RequiredFieldsMessage" xml:space="preserve">
+    <value>One or more required fields are not entered. Cannot save until all required fields are filled in.</value>
+  </data>
+  <data name="app_Incident_Saving" xml:space="preserve">
+    <value>Saving Incident, please wait...</value>
   </data>
 </root>

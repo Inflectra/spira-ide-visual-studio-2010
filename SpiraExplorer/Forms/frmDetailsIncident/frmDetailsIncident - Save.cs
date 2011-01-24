@@ -16,7 +16,8 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 	public partial class frmDetailsIncident : UserControl
 	{
 		//Are we currently saving our data?
-		private bool isInSaveMode = false;
+		private bool _isSavingInformation = false;
+		private int _clientNumSaving;
 
 		/// <summary>Hit when the user wants to save the incident.</summary>
 		/// <param name="sender">The save button.</param>
@@ -25,76 +26,269 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 		{
 			e.Handled = true;
 
-			RemoteIncident test = this.save_GetFromFields();
-
 			try
 			{
+				this.barSavingIncident.Value = -5;
+				this.barSavingIncident.Maximum = 0;
+				this.barSavingIncident.Minimum = -5;
+
 				if (this._isFieldChanged)
 				{
 					//Set working flag.
-					this.isInSaveMode = true;
+					this.IsSaving = true;
 
 					//Get the new values from the form..
 					RemoteIncident newIncident = this.save_GetFromFields();
 
-					if (newIncident != null && this.save_CheckFieldValues())
+					if (newIncident != null && this.workflow_CheckRequiredFields())
 					{
+						//Create a client, and save incident and resolution..
+						ImportExportClient clientSave = StaticFuncs.CreateClient(((SpiraProject)this._ArtifactDetails.ArtifactParentProject.ArtifactTag).ServerURL.ToString());
+						clientSave.Connection_Authenticate2Completed += new EventHandler<Connection_Authenticate2CompletedEventArgs>(clientSave_Connection_Authenticate2Completed);
+						clientSave.Connection_ConnectToProjectCompleted += new EventHandler<Connection_ConnectToProjectCompletedEventArgs>(clientSave_Connection_ConnectToProjectCompleted);
+						clientSave.Incident_UpdateCompleted += new EventHandler<System.ComponentModel.AsyncCompletedEventArgs>(clientSave_Incident_UpdateCompleted);
+						clientSave.Incident_AddResolutionsCompleted += new EventHandler<Incident_AddResolutionsCompletedEventArgs>(clientSave_Incident_AddResolutionsCompleted);
+						clientSave.Connection_DisconnectCompleted += new EventHandler<System.ComponentModel.AsyncCompletedEventArgs>(clientSave_Connection_DisconnectCompleted);
+
+						//Fire off the connection.
+						this._clientNumSaving = 1;
+						clientSave.Connection_Authenticate2Async(((SpiraProject)this._ArtifactDetails.ArtifactParentProject.ArtifactTag).UserName, ((SpiraProject)this._ArtifactDetails.ArtifactParentProject.ArtifactTag).UserPass, StaticFuncs.getCultureResource.GetString("app_ReportName"), this._clientNum++);
 					}
-
-					//if (this.workflow_CheckFieldValues(out badFields))
-					//{
-
-					//    //Update the form to show we're saving.
-
-					//    RemoteIncident newIncident = new RemoteIncident();
-
-					//    //Add a resolution.
-					//    RemoteIncidentResolution newRes = new RemoteIncidentResolution();
-					//    if (this._isResChanged)
-					//    {
-					//        newRes.CreationDate = DateTime.Now;
-					//        newRes.CreatorId = this._Project.UserID;
-					//        newRes.IncidentId = newIncident.IncidentId.Value;
-					//        newRes.Resolution = this.cntrlResolution.HTMLText;
-					//    }
-					//    //this._NumRunning++;
-					//    //this._Client.Incident_UpdateAsync(newIncident, this._NumAsync++);
-					//    //if (this._isResChanged)
-					//    //{
-					//    //     this._NumRunning++;
-					//    //     this._Client.Incident_AddResolutionsAsync(new RemoteIncidentResolution[] { newRes }, this._NumAsync++);
-					//    //}
-					//}
-					//else
-					//{
-					//    string errMsg = "";
-					//    if (badFields.Split(';').Length > 3)
-					//        errMsg = "You must fill out all required fields before saving.";
-					//    else
-					//    {
-					//        errMsg = "The ";
-					//        foreach (string fieldName in badFields.Split(';'))
-					//        {
-					//            errMsg += fieldName + ", ";
-					//        }
-					//        errMsg = errMsg.Trim(' ').Trim(',');
-					//        errMsg += " field" + ((badFields.Split(';').Length > 1) ? "s" : "");
-					//        errMsg += " " + ((badFields.Split(';').Length > 1) ? "are" : "is");
-					//        errMsg += " required before saving.";
-					//    }
-					//    //this.msgErrMessage.Text = errMsg;
-					//    //this.panelError.Visibility = Visibility.Visible;
-					//    //this.panelWarning.Visibility = Visibility.Collapsed;
-					//    //this.panelInfo.Visibility = Visibility.Collapsed;
-					//    //this.panelNone.Visibility = Visibility.Collapsed;
-					//}
-
+					else
+					{
+						//Display message saying that some required fields aren't filled out.
+						MessageBox.Show(StaticFuncs.getCultureResource.GetString("app_General_RequiredFieldsMessage"), StaticFuncs.getCultureResource.GetString("app_General_RequiredFields"), MessageBoxButton.OK, MessageBoxImage.Error);
+					}
 				}
 			}
 			catch (Exception ex)
 			{
 				//Connect.logEventMessage("wpfDetailsIncident::_cntrlSave_Click", ex, System.Diagnostics.EventLogEntryType.Error);
 			}
+
+			if (this._clientNumSaving == 0)
+			{
+				this.IsSaving = false;
+			}
+		}
+
+		#region Client Events
+		/// <summary>Hit when we're finished connecting.</summary>
+		/// <param name="sender">ImportExportClient</param>
+		/// <param name="e">AsyncCompletedEventArgs</param>
+		private void clientSave_Connection_DisconnectCompleted(object sender, System.ComponentModel.AsyncCompletedEventArgs e)
+		{
+			const string METHOD = "clientSave_Connection_DisconnectCompleted()";
+			Logger.LogTrace(CLASS + METHOD + " Enter: " + this._clientNumSaving.ToString() + " running.");
+
+			this._clientNumSaving--;
+			this.barSavingIncident.Value++;
+
+			//See if it's okay to reload.
+			this.save_CheckIfOkayToLoad();
+		}
+
+		/// <summary>Hit when we're finished adding a resolution.</summary>
+		/// <param name="sender">ImportExportClient</param>
+		/// <param name="e">Incident_AddResolutionsCompletedEventArgs</param>
+		private void clientSave_Incident_AddResolutionsCompleted(object sender, Incident_AddResolutionsCompletedEventArgs e)
+		{
+			const string METHOD = "clientSave_Incident_AddResolutionsCompleted()";
+			Logger.LogTrace(CLASS + METHOD + " Enter: " + this._clientNumSaving.ToString() + " running.");
+
+			ImportExportClient client = (sender as ImportExportClient);
+			this._clientNumSaving--;
+			this.barSavingIncident.Value++;
+
+			if (!e.Cancelled)
+			{
+				if (e.Error != null)
+				{
+					//Display error.
+				}
+
+				//Regardless of what happens, we're disconnecting here.
+				this._clientNumSaving++;
+				client.Connection_DisconnectAsync(this._clientNum++);
+			}
+
+			//See if it's okay to reload.
+			this.save_CheckIfOkayToLoad();
+
+			Logger.LogTrace(CLASS + METHOD + " Exit: " + this._clientNumSaving.ToString() + " left.");
+		}
+
+		/// <summary>Hit when we're finished updating the main information.</summary>
+		/// <param name="sender">ImportExportClient</param>
+		/// <param name="e">AsyncCompletedEventArgs</param>
+		private void clientSave_Incident_UpdateCompleted(object sender, System.ComponentModel.AsyncCompletedEventArgs e)
+		{
+			const string METHOD = "clientSave_Incident_UpdateCompleted()";
+			Logger.LogTrace(CLASS + METHOD + " Enter: " + this._clientNumSaving.ToString() + " running.");
+
+			ImportExportClient client = (sender as ImportExportClient);
+			this._clientNumSaving--;
+			this.barSavingIncident.Value++;
+
+			if (!e.Cancelled)
+			{
+				if (e.Error == null)
+				{
+					//See if we need to add a resolution.
+					if (this._isResChanged)
+					{
+						//We need to save a resolution.
+						RemoteIncidentResolution newRes = new RemoteIncidentResolution();
+						newRes.CreationDate=DateTime.Now;
+						newRes.CreatorId = ((SpiraProject)this._ArtifactDetails.ArtifactParentProject.ArtifactTag).UserID;
+						newRes.IncidentId = this._ArtifactDetails.ArtifactId;
+						newRes.Resolution = this.cntrlResolution.HTMLText;
+
+						this._clientNumSaving++;
+						client.Incident_AddResolutionsAsync(new List<RemoteIncidentResolution>() { newRes }, this._clientNum++);
+					}
+					else
+					{
+						//We're finished.
+						this.barSavingIncident.Value++;
+						this._clientNumSaving++;
+						client.Connection_DisconnectAsync(this._clientNum++);
+					}
+				}
+				else
+				{
+					//TODO: Show Error.
+					//Cancel calls.
+					this._clientNumSaving++;
+					client.Connection_DisconnectAsync(this._clientNum++);
+				}
+			}
+
+			//See if it's okay to reload.
+			this.save_CheckIfOkayToLoad();
+
+			Logger.LogTrace(CLASS + METHOD + " Exit: " + this._clientNumSaving.ToString() + " left.");
+		}
+
+		/// <summary>Hit when we're finished connecting to the project.</summary>
+		/// <param name="sender">ImportExportClient</param>
+		/// <param name="e">Connection_ConnectToProjectCompletedEventArgs</param>
+		private void clientSave_Connection_ConnectToProjectCompleted(object sender, Connection_ConnectToProjectCompletedEventArgs e)
+		{
+			const string METHOD = "clientSave_Connection_ConnectToProjectCompleted()";
+			Logger.LogTrace(CLASS + METHOD + " Enter: " + this._clientNumSaving.ToString() + " running.");
+
+			ImportExportClient client = (sender as ImportExportClient);
+			this._clientNumSaving--;
+			this.barSavingIncident.Value++;
+
+			if (!e.Cancelled)
+			{
+				if (e.Error == null)
+				{
+					if (e.Result)
+					{
+						//Get the new RemoteIncident
+						RemoteIncident newIncident = this.save_GetFromFields();
+
+						if (newIncident != null)
+						{
+							//Fire off our update calls.
+							this._clientNumSaving++;
+							client.Incident_UpdateAsync(newIncident, this._clientNum++);
+						}
+						else
+						{
+							//TODO: Show Error.
+							//Cancel calls.
+							this._clientNumSaving++;
+							client.Connection_DisconnectAsync(this._clientNum++);
+						}
+					}
+					else
+					{
+						//TODO: Show Error.
+						//Cancel calls.
+						this._clientNumSaving++;
+						client.Connection_DisconnectAsync(this._clientNum++);
+					}
+				}
+				else
+				{
+					//TODO: Show Error.
+					//Cancel calls.
+					this._clientNumSaving++;
+					client.Connection_DisconnectAsync(this._clientNum++);
+				}
+			}
+
+			//See if it's okay to reload.
+			this.save_CheckIfOkayToLoad();
+
+			Logger.LogTrace(CLASS + METHOD + " Exit: " + this._clientNumSaving.ToString() + " left.");
+		}
+
+		/// <summary>Hit when we're authenticated to the server.</summary>
+		/// <param name="sender">ImportExportClient</param>
+		/// <param name="e">Connection_Authenticate2CompletedEventArgs</param>
+		private void clientSave_Connection_Authenticate2Completed(object sender, Connection_Authenticate2CompletedEventArgs e)
+		{
+			const string METHOD = "clientSave_Connection_Authenticate2Completed()";
+			Logger.LogTrace(CLASS + METHOD + " Enter: " + this._clientNumSaving.ToString() + " running.");
+
+			ImportExportClient client = (sender as ImportExportClient);
+			this._clientNumSaving--;
+			this.barSavingIncident.Value++;
+
+			if (!e.Cancelled)
+			{
+				if (e.Error == null)
+				{
+					if (e.Result)
+					{
+						//Connect to the progect ID.
+						this._clientNumSaving++;
+						client.Connection_ConnectToProjectAsync(((SpiraProject)this._ArtifactDetails.ArtifactParentProject.ArtifactTag).ProjectID, this._clientNum++);
+					}
+					else
+					{
+						//TODO: Show Error.
+						//Cancel calls.
+						this._clientNumSaving++;
+						client.Connection_DisconnectAsync(this._clientNum++);
+					}
+				}
+				else
+				{
+					//TODO: Show Error.
+					//Cancel calls.
+					this._clientNumSaving++;
+					client.Connection_DisconnectAsync(this._clientNum++);
+				}
+			}
+
+			//See if it's okay to reload.
+			this.save_CheckIfOkayToLoad();
+
+			Logger.LogTrace(CLASS + METHOD + " Exit: " + this._clientNumSaving.ToString() + " left.");
+		}
+		#endregion
+
+		/// <summary>Checks if it's okay to refresh the data details.</summary>
+		private void save_CheckIfOkayToLoad()
+		{
+			const string METHOD = "save_CheckIfOkayToLoad()";
+			Logger.LogTrace(CLASS + METHOD + " Enter: " + this._clientNumSaving.ToString() + " running.");
+
+			//If we're down to 0, we have to reload our information.
+			if (this._clientNumSaving == 0)
+			{
+				this.IsSaving = false;
+				this.lblLoadingIncident.Text = StaticFuncs.getCultureResource.GetString("app_Incident_Loading");
+				this.load_LoadItem();
+			}
+
+			Logger.LogTrace(CLASS + METHOD + " Exit");
 		}
 
 		/// <summary>Copies over our values from the form into an Incident object.</summary>
@@ -112,6 +306,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 				retIncident.IncidentId = this._Incident.IncidentId;
 				retIncident.ProjectId = this._Incident.ProjectId;
 				retIncident.CreationDate = this._Incident.CreationDate;
+				retIncident.LastUpdateDate = this._Incident.LastUpdateDate;
 
 				//*Standard fields..
 				retIncident.Name = this.cntrlIncidentName.Text.Trim();
@@ -233,6 +428,5 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			//Return
 			return retIncident;
 		}
-
 	}
 }

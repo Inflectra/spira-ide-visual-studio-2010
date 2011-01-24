@@ -94,14 +94,6 @@
 			<Setter Property="Control.Margin" Value="3" />
 			<Setter Property="Control.HorizontalAlignment" Value="Stretch" />
 			<Setter Property="Control.VerticalAlignment" Value="Stretch" />
-			<Style.Triggers>
-				<Trigger Property="Control.Tag" Value="1">
-					<Setter Property="Control.Background" Value="{StaticResource WarningControlBackground}" />
-				</Trigger>
-				<Trigger Property="Control.Tag" Value="2">
-					<Setter Property="Control.Background" Value="{StaticResource ErrorControlBackground}" />
-				</Trigger>
-			</Style.Triggers>
 		</Style>
 		<Style x:Key="ConcurrencyHighlight">
 			<Style.Triggers>
@@ -285,8 +277,22 @@
 			</Border>
 		</Grid>
 
+		<!-- Saving Grid -->
+		<Grid Name="panelSaving" Grid.Column="0" Grid.Row="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Panel.ZIndex="10" Cursor="Wait" Visibility="Collapsed">
+			<Border Opacity=".75" Background="{DynamicResource {x:Static vsfx:VsBrushes.EnvironmentBackgroundGradientKey}}" Panel.ZIndex="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
+			<Border Background="{DynamicResource {x:Static vsfx:VsBrushes.EnvironmentBackgroundGradientKey}}" Panel.ZIndex="0" HorizontalAlignment="Center" VerticalAlignment="Center" CornerRadius="10" BorderBrush="{DynamicResource {x:Static vsfx:VsBrushes.AutoHideTabBorderKey}}" BorderThickness="3">
+				<StackPanel Orientation="Horizontal">
+					<Image Name="imgSavingIncident" HorizontalAlignment="Center" VerticalAlignment="Center" Height="48" Width="48" Margin="5" />
+					<StackPanel Orientation="Vertical" VerticalAlignment="Center" Margin="10">
+						<TextBlock Name="lblSavingIncident" Foreground="{DynamicResource {x:Static vsfx:VsBrushes.ToolWindowTabTextKey}}" FontWeight="Bold"  HorizontalAlignment="Center" Margin="0,0,0,3"  />
+						<ProgressBar Name="barSavingIncident" HorizontalAlignment="Stretch" Height="10" Margin="5,0,5,0" Maximum="1" Minimum="0" />
+					</StackPanel>
+				</StackPanel>
+			</Border>
+		</Grid>
+
 		<!-- Error Grid -->
-		<Grid Name="panelError" Grid.Column="0" Grid.Row="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Panel.ZIndex="10" Visibility="Collapsed">
+		<Grid Name="panelError" Grid.Column="0" Grid.Row="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Panel.ZIndex="15" Visibility="Collapsed">
 			<Border Opacity=".75" Background="{DynamicResource {x:Static vsfx:VsBrushes.EnvironmentBackgroundGradientKey}}" Panel.ZIndex="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
 			<Border Background="{DynamicResource {x:Static vsfx:VsBrushes.EnvironmentBackgroundGradientKey}}" Panel.ZIndex="0" HorizontalAlignment="Center" VerticalAlignment="Center" CornerRadius="10" BorderBrush="{DynamicResource {x:Static vsfx:VsBrushes.AutoHideTabBorderKey}}" BorderThickness="3">
 				<StackPanel Orientation="Horizontal">
@@ -394,7 +400,7 @@
 							</DockPanel>
 							<!-- ROW1: Status, Type -->
 							<TextBlock Name="lblType" Grid.Column="0" Grid.Row="1" Style="{StaticResource PaddedLabel}" />
-							<ComboBox Grid.Column="1" Grid.Row="1" Name="cntrlType" Style="{StaticResource PaddedControl}" DisplayMemberPath="Name" SelectionChanged="_cntrlType_Changed" />
+							<ComboBox Grid.Column="1" Grid.Row="1" Name="cntrlType" Style="{StaticResource ResourceKey=PaddedControl}" DisplayMemberPath="Name" SelectionChanged="_cntrlType_Changed" />
 							<TextBlock Name="lblStatus" Grid.Column="3" Grid.Row="1" Style="{StaticResource PaddedLabel}" />
 							<TextBlock Name="cntrlIncidentStatus" Grid.Column="4" Grid.Row="1" HorizontalAlignment="Left" Style="{StaticResource PaddedLabel}">[Status]</TextBlock>
 							<!-- ROW2: Detected By, Owned By -->

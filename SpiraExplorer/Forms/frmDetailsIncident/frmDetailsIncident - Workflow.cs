@@ -46,8 +46,8 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 
 			//TODO: Get the Projected and Remaining effort fields.
 			//Load up each control..
-			retDict.Add(1, new WorkflowField(1, "Priority", this.cntrlPriority, false, false, this.lblPriority));
-			retDict.Add(2, new WorkflowField(2, "Severity", this.cntrlSeverity, false, false, this.lblSeverity));
+			retDict.Add(1, new WorkflowField(1, "Severity", this.cntrlSeverity, false, false, this.lblSeverity));
+			retDict.Add(2, new WorkflowField(2, "Priority", this.cntrlPriority, false, false, this.lblPriority));
 			retDict.Add(3, new WorkflowField(3, "Status", null, true, false, this.lblStatus));
 			retDict.Add(4, new WorkflowField(4, "Type", this.cntrlType, false, false, this.lblType));
 			retDict.Add(5, new WorkflowField(5, "Opener", this.cntrlDetectedBy, false, false, this.lblDetectedBy));
@@ -72,7 +72,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			//Return it.
 			return retDict;
 		}
-		
+
 		/// <summary>Creates a useable dictionary of Field ID and Status from the given list of Workflow Fields.</summary>
 		/// <param name="workflowFields">A list of Workflow Fields</param>
 		/// <returns>A dictionary of FieldId and current Status.</returns>
@@ -166,6 +166,186 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			{
 				//Connect.logEventMessage("wpfDetailsIncident::workflow_SetEnabledFields", ex, System.Diagnostics.EventLogEntryType.Error);
 			}
+		}
+
+		/// <summary>Simple function to clear all required fields of their Required Hishlight.</summary>
+		private void workflow_ClearAllRequiredHighlights()
+		{
+			if (this._WorkflowCustom == null) this._WorkflowCustom = new Dictionary<int, WorkflowField>();
+			if (this._WorkflowFields == null) this._WorkflowFields = new Dictionary<int, WorkflowField>();
+
+			//Custom fields.
+			foreach (KeyValuePair<int, WorkflowField> kvpField in this._WorkflowCustom)
+				if (kvpField.Value.FieldControl != null)
+					kvpField.Value.FieldControl.Style = (Style)this.FindResource("PaddedControl");
+
+			//Standard fields.
+			foreach (KeyValuePair<int, WorkflowField> kvpField in this._WorkflowFields)
+				if (kvpField.Value.FieldControl != null)
+					kvpField.Value.FieldControl.Style = (Style)this.FindResource("PaddedControl");
+
+		}
+
+		/// <summary>Checks all required fields for a value.</summary>
+		/// <returns>True if all is good. False if fields marked as required are left unset.</returns>
+		private bool workflow_CheckRequiredFields()
+		{
+			bool retValue = true;
+
+			//First, get the set of required fields we want to check against.
+			bool useUpdate = (this._IncSelectedStatus.HasValue || this._IncSelectedType.HasValue);
+			Dictionary<int, WorkflowField.WorkflowStatusEnum> workflowField = ((useUpdate) ? this._WorkflowFields_Updated : this._WorkflowFields_Current);
+			Dictionary<int, WorkflowField.WorkflowStatusEnum> workflowCustom = ((useUpdate) ? this._WorkflowCustom_Updated : this._WorkflowCustom_Current);
+
+			#region Loop through Standard Fields
+			//Loop through each field..
+			foreach (KeyValuePair<int, WorkflowField> kvpField in this._WorkflowFields)
+			{
+				//We only care about required fields.
+				if (workflowField[kvpField.Key] == WorkflowField.WorkflowStatusEnum.Requird && !kvpField.Value.IsHidden && !kvpField.Value.IsFixed)
+				{
+					//Find the field and act upon it. Based on type on control and datatype inside it.
+					switch (kvpField.Key)
+					{
+						case 1: // Severity
+							if (!((RemoteIncidentSeverity)((ComboBox)kvpField.Value.FieldControl).SelectedItem).SeverityId.HasValue)
+							{
+								kvpField.Value.FieldControl.Style = (Style)this.FindResource("PaddedControlRequiredHighlight");
+								retValue = false;
+							}
+							break;
+
+						case 2: // Priority
+							if (!((RemoteIncidentPriority)((ComboBox)kvpField.Value.FieldControl).SelectedItem).PriorityId.HasValue)
+							{
+								kvpField.Value.FieldControl.Style = (Style)this.FindResource("PaddedControlRequiredHighlight");
+								retValue = false;
+							}
+							break;
+
+						case 4: // Type
+							if (!((RemoteIncidentType)((ComboBox)kvpField.Value.FieldControl).SelectedItem).IncidentTypeId.HasValue)
+							{
+								kvpField.Value.FieldControl.Style = (Style)this.FindResource("PaddedControlRequiredHighlight");
+								retValue = false;
+							}
+							break;
+
+						case 5: // Detector
+						case 6: // Owner
+							if (!((RemoteUser)((ComboBox)kvpField.Value.FieldControl).SelectedItem).UserId.HasValue)
+							{
+								kvpField.Value.FieldControl.Style = (Style)this.FindResource("PaddedControlRequiredHighlight");
+								retValue = false;
+							}
+							break;
+
+						case 7: // Detected Release
+						case 8: // Resolved Release
+						case 9: // Verified Release
+							if (!((RemoteRelease)((ComboBox)kvpField.Value.FieldControl).SelectedItem).ReleaseId.HasValue)
+							{
+								kvpField.Value.FieldControl.Style = (Style)this.FindResource("PaddedControlRequiredHighlight");
+								retValue = false;
+							}
+							break;
+
+						case 10: // Name
+							if (string.IsNullOrWhiteSpace(((TextBox)kvpField.Value.FieldControl).Text))
+							{
+								kvpField.Value.FieldControl.Style = (Style)this.FindResource("PaddedControlRequiredHighlight");
+								retValue = false;
+							}
+							break;
+
+						case 11: // Description 
+						case 12: // Resolution
+							if (string.IsNullOrWhiteSpace(((cntrlRichTextEditor)kvpField.Value.FieldControl).HTMLText))
+							{
+								kvpField.Value.FieldControl.Style = (Style)this.FindResource("PaddedControlRequiredHighlight");
+								retValue = false;
+							}
+							break;
+
+						case 14: // Closed Date
+						case 45: // Start Date
+							if (!((DatePicker)kvpField.Value.FieldControl).SelectedDate.HasValue)
+							{
+								kvpField.Value.FieldControl.Style = (Style)this.FindResource("PaddedControlRequiredHighlight");
+								retValue = false;
+							}
+							break;
+
+						case 47: // Estimated Effort
+							if (string.IsNullOrWhiteSpace(this.cntrlEstEffortH.Text.Trim()) && string.IsNullOrWhiteSpace(this.cntrlEstEffortM.Text.Trim()))
+							{
+								this.cntrlEstEffortH.Style = (Style)this.FindResource("PaddedControlRequiredHighlight");
+								this.cntrlEstEffortM.Style = (Style)this.FindResource("PaddedControlRequiredHighlight");
+								retValue = false;
+							}
+							break;
+
+						case 48: // Actual Effort
+							if (string.IsNullOrWhiteSpace(this.cntrlActEffortH.Text.Trim()) && string.IsNullOrWhiteSpace(this.cntrlActEffortM.Text.Trim()))
+							{
+								this.cntrlActEffortH.Style = (Style)this.FindResource("PaddedControlRequiredHighlight");
+								this.cntrlActEffortM.Style = (Style)this.FindResource("PaddedControlRequiredHighlight");
+								retValue = false;
+							}
+							break;
+
+						case 126: // Projected Effort
+							//TODO: Get Projected Date controls.
+							break;
+
+						case 127: // Projected Effort
+							//TODO: Get Projected Date controls.
+							break;
+
+						case 3: // Status
+						case 13: // Creation Date
+						case 15: // Last Modified Date
+						case 46: // Completion %
+						case 94: // Incident ID
+							break;
+					}
+				}
+			}
+			#endregion
+
+			#region Loop through Custom Fields
+			foreach (KeyValuePair<int, WorkflowField> kvpField in this._WorkflowCustom)
+			{
+				//We only care about required fields.
+				if (workflowCustom[kvpField.Key] == WorkflowField.WorkflowStatusEnum.Requird && !kvpField.Value.IsHidden && !kvpField.Value.IsFixed)
+				{
+					//Depends on which control type it is..
+					string cntrlType = kvpField.Value.FieldControl.GetType().ToString().ToLowerInvariant();
+					cntrlType = cntrlType.Substring(cntrlType.LastIndexOf(".") + 1);
+
+					switch (cntrlType)
+					{
+						case "textbox":
+							if (string.IsNullOrWhiteSpace(((TextBox)kvpField.Value.FieldControl).Text))
+							{
+								kvpField.Value.FieldControl.Style = (Style)this.FindResource("PaddedControlRequiredHighlight");
+								retValue = false;
+							}
+							break;
+
+						case "combobox":
+							if (((ComboBox)kvpField.Value.FieldControl).SelectedItem == null)
+							{
+								kvpField.Value.FieldControl.Style = (Style)this.FindResource("PaddedControlRequiredHighlight");
+								retValue = false;
+							}
+							break;
+					}
+				}
+			}
+			#endregion
+
+			return retValue;
 		}
 
 		/// <summary>Class that holds workflow fields and their UI Controls and statuses.</summary>

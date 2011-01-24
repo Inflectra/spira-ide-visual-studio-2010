@@ -38,6 +38,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 
 			//Load images needed..
 			this.imgLoadingIncident.Source = StaticFuncs.getImage("imgInfoWPF", new Size(48, 48)).Source;
+			this.imgSavingIncident.Source = StaticFuncs.getImage("imgSaveWPF", new Size(48, 48)).Source;
 			this.imgLoadingError.Source = StaticFuncs.getImage("imgErrorWPF", new Size(48, 48)).Source;
 			//Load strings needed..
 			this.toolTxtSave.Text = StaticFuncs.getCultureResource.GetString("app_General_Save");
@@ -46,6 +47,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			this.toolTxtTimer.Text = StaticFuncs.getCultureResource.GetString("app_General_StartTimer");
 			this.mnuTxtActions.Text = StaticFuncs.getCultureResource.GetString("app_Incident_StatusActions") + ":";
 			this.lblLoadingIncident.Text = StaticFuncs.getCultureResource.GetString("app_Incident_Loading");
+			this.lblSavingIncident.Text = StaticFuncs.getCultureResource.GetString("app_Incident_Saving");
 			this.lblExpanderDetails.Text = StaticFuncs.getCultureResource.GetString("app_Incident_ExpanderDetails");
 			this.lblName.Text = StaticFuncs.getCultureResource.GetString("app_General_Name") + ":";
 			this.lblTxtToken.Text = StaticFuncs.getCultureResource.GetString("app_General_CopyToClipboard");
@@ -104,7 +106,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 					this.lblLoadingIncident.Text = StaticFuncs.getCultureResource.GetString("app_Incident_LoadingWorkflow");
 					this.barLoadingIncident.Value = 0;
 					this.barLoadingIncident.Maximum = 4;
-					this.display_SetStatusWindow(Visibility.Visible);
+					this.display_SetOverlayWindow(this.panelStatus, Visibility.Visible);
 
 					//See if they want to or need to confirm..
 					MessageBoxResult areTheySure = MessageBoxResult.Yes;
@@ -138,6 +140,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 
 							//Reset data and then reset combobox.
 							this.loadItem_DisplayInformation(this._Incident);
+							this.workflow_ClearAllRequiredHighlights();
 							this.loadItem_PopulateType(this.cntrlType, this._IncSelectedType);
 
 							//Update workflow fields..
@@ -148,7 +151,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 					{
 						//Reset drop-down..
 						this.loadItem_PopulateType(this.cntrlType, this._Incident.IncidentTypeId.Value);
-						this.display_SetStatusWindow(Visibility.Collapsed);
+						this.display_SetOverlayWindow(this.panelStatus, Visibility.Collapsed);
 					}
 					this._isWorkflowChanging = false;
 				}
@@ -250,7 +253,29 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 		/// <param name="e">EventArgs</param>
 		private void animFadeOut_Completed(object sender, EventArgs e)
 		{
-			this.panelStatus.Visibility = System.Windows.Visibility.Collapsed;
+			try
+			{
+				if (this.panelStatus.Opacity < 0.1 && this.panelStatus.Visibility != System.Windows.Visibility.Collapsed)
+				{
+					this.panelStatus.Visibility = System.Windows.Visibility.Collapsed;
+				}
+				else if (this.panelError.Opacity < 0.1 && this.panelError.Visibility != System.Windows.Visibility.Collapsed)
+				{
+					this.panelError.Visibility = System.Windows.Visibility.Collapsed;
+				}
+				else if (this.panelSaving.Opacity < 0.1 && this.panelSaving.Visibility != System.Windows.Visibility.Collapsed)
+				{
+					this.panelSaving.Visibility = System.Windows.Visibility.Collapsed;
+				}
+			}
+			catch (Exception ex)
+			{
+				//Error occurred, clear them all.
+				//TODO: Log error.
+				this.panelStatus.Visibility = System.Windows.Visibility.Collapsed;
+				this.panelError.Visibility = System.Windows.Visibility.Collapsed;
+				this.panelSaving.Visibility = System.Windows.Visibility.Collapsed;
+			}
 		}
 
 		/// <summary>Hit when the user clicks the Actions menu.</summary>
@@ -262,7 +287,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			this.lblLoadingIncident.Text = StaticFuncs.getCultureResource.GetString("app_Incident_LoadingWorkflow");
 			this.barLoadingIncident.Value = 0;
 			this.barLoadingIncident.Maximum = 4;
-			this.display_SetStatusWindow(Visibility.Visible);
+			this.display_SetOverlayWindow(this.panelStatus, Visibility.Visible);
 			this._isWorkflowChanging = true;
 
 			//See if they want to or need to confirm..
@@ -283,6 +308,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 						this._IncSelectedStatus = wkfTrans.IncidentStatusId_Output;
 
 						//Reset fields..
+						this.workflow_ClearAllRequiredHighlights();
 						this.loadItem_DisplayInformation(this._Incident);
 
 						//Update the field..
@@ -331,7 +357,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			}
 			else
 			{
-				this.display_SetStatusWindow(Visibility.Collapsed);
+				this.display_SetOverlayWindow(this.panelStatus, Visibility.Collapsed);
 			}
 			this._isWorkflowChanging = false;
 		}
@@ -435,7 +461,8 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 
 			if (isUserSure == MessageBoxResult.Yes)
 			{
-				//User is sure, re-launch the loading.
+				//User is sure, change the label, and launch the refresh.
+				this.lblLoadingIncident.Text = StaticFuncs.getCultureResource.GetString("app_Incident_Loading");
 				this.load_LoadItem();
 			}
 		}
@@ -494,15 +521,41 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 				{
 					if (value)
 					{
-						this.display_SetStatusWindow(Visibility.Visible);
+						this.display_SetOverlayWindow(this.panelStatus, Visibility.Visible);
 					}
 					else
 					{
 						this.barLoadingIncident.Value = 1;
-						this.display_SetStatusWindow(Visibility.Hidden);
+						this.display_SetOverlayWindow(this.panelStatus, Visibility.Hidden);
 					}
 
 					this._isLoadingInformation = value;
+				}
+			}
+		}
+
+		/// <summary>This specifies whether or not we are in the process of saving data.</summary>
+		private bool IsSaving
+		{
+			get
+			{
+				return this._isSavingInformation;
+			}
+			set
+			{
+				if (this._isSavingInformation != value)
+				{
+					if (value)
+					{
+						this.display_SetOverlayWindow(this.panelSaving, Visibility.Visible);
+					}
+					else
+					{
+						this.barLoadingIncident.Value = 1;
+						this.display_SetOverlayWindow(this.panelSaving, Visibility.Hidden);
+					}
+
+					this._isSavingInformation = value;
 				}
 			}
 		}
@@ -556,19 +609,19 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 
 		/// <summary>Use to show or hide the Status Window.</summary>
 		/// <param name="visiblity">The visibility of the window.</param>
-		private void display_SetStatusWindow(Visibility visiblity)
+		private void display_SetOverlayWindow(Grid Panel, Visibility visiblity)
 		{
 			//Fade in or out the status window...
 			switch (visiblity)
 			{
 				case System.Windows.Visibility.Visible:
 					//Set initial values..
-					this.panelStatus.Opacity = 0;
-					this.panelStatus.Visibility = System.Windows.Visibility.Visible;
+					Panel.Opacity = 0;
+					Panel.Visibility = System.Windows.Visibility.Visible;
 
 					Storyboard storyFadeIn = new Storyboard();
 					DoubleAnimation animFadeIn = new DoubleAnimation(0, 1, new TimeSpan(0, 0, 0, 0, 150));
-					Storyboard.SetTarget(animFadeIn, this.panelStatus);
+					Storyboard.SetTarget(animFadeIn, Panel);
 					Storyboard.SetTargetProperty(animFadeIn, new PropertyPath(Control.OpacityProperty));
 					storyFadeIn.Children.Add(animFadeIn);
 
@@ -583,9 +636,10 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 					//Fade it out.
 					Storyboard storyFadeOut = new Storyboard();
 					DoubleAnimation animFadeOut = new DoubleAnimation(1, 0, new TimeSpan(0, 0, 0, 0, 250));
-					Storyboard.SetTarget(animFadeOut, this.panelStatus);
+					Storyboard.SetTarget(animFadeOut, Panel);
 					Storyboard.SetTargetProperty(animFadeOut, new PropertyPath(Control.OpacityProperty));
-					animFadeOut.Completed += new EventHandler(animFadeOut_Completed);  //To handle actually hiding the layer.
+					animFadeOut.Completed += new EventHandler(animFadeOut_Completed); //To actually hide the layer.
+					Panel.Tag = animFadeOut;
 					storyFadeOut.Children.Add(animFadeOut);
 
 					//Start the animation.

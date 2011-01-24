@@ -56,6 +56,8 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 				this._IncDocumentsUrl = null;
 				this._IncidentUrl = null;
 
+				//Reset any highlights.
+				this.workflow_ClearAllRequiredHighlights();
 
 				//Create a client.
 				this._client = null;
@@ -788,7 +790,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 
 						//Hide the status if needed.
 						if (this._clientNumRunning == 0)
-							this.display_SetStatusWindow(Visibility.Hidden);
+							this.display_SetOverlayWindow(this.panelStatus, Visibility.Hidden);
 					}
 					else
 					{
@@ -823,7 +825,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 
 						//Hide the status if needed.
 						if (this._clientNumRunning == 0)
-							this.display_SetStatusWindow(Visibility.Hidden);
+							this.display_SetOverlayWindow(this.panelStatus, Visibility.Hidden);
 					}
 					else
 					{
