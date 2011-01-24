@@ -15,6 +15,9 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 	/// <summary>Holds the saving functions for frmDetailsIncident</summary>
 	public partial class frmDetailsIncident : UserControl
 	{
+		//Are we currently saving our data?
+		private bool isInSaveMode = false;
+
 		/// <summary>Hit when the user wants to save the incident.</summary>
 		/// <param name="sender">The save button.</param>
 		/// <param name="e">RoutedEventArgs</param>

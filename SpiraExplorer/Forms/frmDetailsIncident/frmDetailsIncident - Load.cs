@@ -36,17 +36,12 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 		private List<RemoteIncidentType> _IncType;
 		private List<RemoteIncidentStatus> _IncStatus;
 		private List<RemoteDocument> _IncDocuments;
-		private List<RemoteWorkflowIncidentTransition> _IncWkfTransition;
 		private string _IncDocumentsUrl;
 		private string _IncidentUrl;
 		private int? _tempHoursWorked;
 		private int? _tempMinutedWorked;
 
 		#endregion
-
-		// Are we in read-only mode? Are we saving?
-		private bool isInSaveMode = false;
-		private bool isInConcMode = false;
 
 		/// <summary>Loads the item currently assigned to the ArtifactDetail property.</summary>
 		/// <returns>Boolean on whether of not load was started successfully.</returns>
@@ -96,7 +91,6 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 		}
 
 		#region Client Events
-		//**Initial Data Gathering
 		/// <summary>Hit once we've disconnected form the server, all work is done.</summary>
 		/// <param name="sender">ImportExporClient</param>
 		/// <param name="e">AsyncCompletedEventArgs</param>
@@ -445,7 +439,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			{
 				if (e.Error == null)
 				{
-					this._IncWkfTransition = e.Result;
+					this._WorkflowTransitions = e.Result;
 
 					//See if we're ready to get the actual data.
 					this.load_IsReadyToDisplayData();
@@ -475,7 +469,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			{
 				if (e.Error == null)
 				{
-					this._IncWkfFields_Current = this.load_ScanWorkFlowFields(e.Result);
+					this._WorkflowFields_Current = this.workflow_LoadFieldStatus(e.Result);
 
 					//See if we're ready to get the actual data.
 					this.load_IsReadyToDisplayData();
@@ -505,7 +499,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			{
 				if (e.Error == null)
 				{
-					this._IncWkfCustom_Current = this.load_ScanWorkFlowCustomFields(e.Result);
+					this._WorkflowCustom_Current = this.workflow_LoadFieldStatus(e.Result);
 
 					//See if we're ready to get the actual data.
 					this.load_IsReadyToDisplayData();
@@ -535,6 +529,9 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			{
 				if (e.Error == null)
 				{
+					//Clear our WorkflowCustom field..
+					this._WorkflowCustom = new Dictionary<int, WorkflowField>();
+
 					//Here create the grid to hold the data.
 					this.gridCustomProperties.Children.Clear();
 					this.gridCustomProperties.RowDefinitions.Clear();
@@ -596,13 +593,15 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 						//Add it to the grid.
 						this.gridCustomProperties.Children.Add(custControl);
 
-						//Create link between label and control. (For setting enabled/required)
-						lblCustProp.Tag = custControl;
+						//** Create our record for the field.
+						WorkflowField wkfCustom = new WorkflowField(e.Result[j].CustomPropertyId, e.Result[j].Alias, custControl, false, false, lblCustProp);
+						this._WorkflowCustom.Add(wkfCustom.FieldID, wkfCustom);
+
 						//Flip the IsOnFirst..
 						IsOnFirst = !IsOnFirst;
 					}
 
-					//HACK: See if we're ready to get the actual data.
+					//See if we're ready to get the actual data.
 					this.load_IsReadyToGetMainData();
 				}
 				else
@@ -782,10 +781,10 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 				{
 					if (e.Error == null)
 					{
-						this._IncWkfFields_Updated = this.load_ScanWorkFlowFields(e.Result);
+						this._WorkflowFields_Current = this.workflow_LoadFieldStatus(e.Result);
 
 						//Update main workflow fields.
-						this.workflow_SetEnabledFields(this._IncWkfFields_Updated);
+						this.workflow_SetEnabledFields(this._WorkflowFields, this._WorkflowFields_Current);
 
 						//Hide the status if needed.
 						if (this._clientNumRunning == 0)
@@ -817,10 +816,10 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 				{
 					if (e.Error == null)
 					{
-						this._IncWkfCustom_Updated = this.load_ScanWorkFlowCustomFields(e.Result);
+						this._WorkflowCustom_Updated = this.workflow_LoadFieldStatus(e.Result);
 
 						//Update custom workflow fields.
-						this.workflow_SetEnabledCustomFields(this._IncWkfCustom_Updated);
+						this.workflow_SetEnabledFields(this._WorkflowCustom, this._WorkflowCustom_Updated);
 
 						//Hide the status if needed.
 						if (this._clientNumRunning == 0)
@@ -864,68 +863,8 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 				this.loadItem_DisplayInformation(this._Incident);
 
 				//Set Workflow Data. (To disable Fields)
-				this.workflow_SetEnabledFields(this._IncWkfFields_Current);
-				this.workflow_SetEnabledCustomFields(this._IncWkfCustom_Current);
-			}
-		}
-
-		/// <summary>Scans the result from a RetrieveWorkflowField call and add the fields into a useable dictionary.</summary>
-		/// <param name="workFields">List of RemoteWorkflowIncidentFields</param>
-		/// <returns>Dictionary of Field and Status</returns>
-		private Dictionary<int, int> load_ScanWorkFlowFields(List<RemoteWorkflowIncidentFields> workFields)
-		{
-			try
-			{
-				Dictionary<int, int> retList = new Dictionary<int, int>();
-				foreach (RemoteWorkflowIncidentFields Field in workFields)
-				{
-					if (retList.ContainsKey(Field.FieldId))
-					{
-						if (Field.FieldStateId > retList[Field.FieldId])
-							retList[Field.FieldId] = Field.FieldStateId;
-					}
-					else
-					{
-						retList.Add(Field.FieldId, Field.FieldStateId);
-					}
-				}
-
-				return retList;
-			}
-			catch (Exception ex)
-			{
-				Logger.LogMessage(ex);
-				return new Dictionary<int, int>();
-			}
-		}
-
-		/// <summary>Scans the result from a RetrieveWorkflowCustomField call and add the fields into a useable dictionary.</summary>
-		/// <param name="workFields">List of RemoteWorkflowIncidentFields</param>
-		/// <returns>Dictionary of Field and Status</returns>
-		private Dictionary<int, int> load_ScanWorkFlowCustomFields(List<RemoteWorkflowIncidentCustomProperties> workCustomFields)
-		{
-			try
-			{
-				Dictionary<int, int> retList = new Dictionary<int, int>();
-				foreach (RemoteWorkflowIncidentCustomProperties Field in workCustomFields)
-				{
-					if (retList.ContainsKey(Field.CustomPropertyId))
-					{
-						if (Field.FieldStateId > retList[Field.CustomPropertyId])
-							retList[Field.CustomPropertyId] = Field.FieldStateId;
-					}
-					else
-					{
-						retList.Add(Field.CustomPropertyId, Field.FieldStateId);
-					}
-				}
-
-				return retList;
-			}
-			catch (Exception ex)
-			{
-				Logger.LogMessage(ex);
-				return new Dictionary<int, int>();
+				this.workflow_SetEnabledFields(this._WorkflowFields, this._WorkflowFields_Current);
+				this.workflow_SetEnabledFields(this._WorkflowCustom, this._WorkflowCustom_Current);
 			}
 		}
 
@@ -1094,7 +1033,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 					else
 					{
 						//Loop through available transitions. If this status is available, add it.
-						foreach (Business.SpiraTeam_Client.RemoteWorkflowIncidentTransition Transition in this._IncWkfTransition)
+						foreach (Business.SpiraTeam_Client.RemoteWorkflowIncidentTransition Transition in this._WorkflowTransitions)
 						{
 							if (Transition.IncidentStatusId_Output == Status.IncidentStatusId)
 							{
@@ -1170,102 +1109,6 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 
 
 
-
-		#region Field Workflow Status
-
-		/// <summary>Set the enabled and required fields for the current stage in the workflow.</summary>
-		/// <param name="WorkFlowFields">The Dictionary of Workflow Fields</param>
-		private void workflow_SetEnabledFields(Dictionary<int, int> WorkFlowFields)
-		{
-			try
-			{
-				if (WorkFlowFields == null)
-					WorkFlowFields = new Dictionary<int, int>();
-
-				// ** Set enabled/disabled fields.
-				//Standard fields.
-				this.cntrlIncidentName.IsEnabled = (WorkFlowFields.ContainsKey(10));
-				this.cntrlType.IsEnabled = (WorkFlowFields.ContainsKey(4));
-				this.cntrlDetectedBy.IsEnabled = (WorkFlowFields.ContainsKey(5));
-				this.cntrlOwnedBy.IsEnabled = (WorkFlowFields.ContainsKey(6));
-				this.cntrlPriority.IsEnabled = (WorkFlowFields.ContainsKey(2));
-				this.cntrlSeverity.IsEnabled = (WorkFlowFields.ContainsKey(1));
-				this.cntrlDetectedIn.IsEnabled = (WorkFlowFields.ContainsKey(7));
-				this.cntrlResolvedIn.IsEnabled = (WorkFlowFields.ContainsKey(8));
-				this.cntrlVerifiedIn.IsEnabled = (WorkFlowFields.ContainsKey(9));
-				this.cntrlDescription.IsToolbarVisible = (WorkFlowFields.ContainsKey(11));
-				this.cntrlDescription.IsEnabled = (WorkFlowFields.ContainsKey(11));
-				this.cntrlResolution.Visibility = ((WorkFlowFields.ContainsKey(12)) ? Visibility.Visible : Visibility.Collapsed);
-
-				//Schedule fields.
-				this.cntrlStartDate.IsEnabled = (WorkFlowFields.ContainsKey(45));
-				this.cntrlEndDate.IsEnabled = (WorkFlowFields.ContainsKey(14));
-				this.cntrlEstEffortH.IsEnabled = this.cntrlEstEffortM.IsEnabled = (WorkFlowFields.ContainsKey(47));
-				this.cntrlActEffortH.IsEnabled = this.cntrlActEffortM.IsEnabled = (WorkFlowFields.ContainsKey(48));
-
-				// ** Set required fields.
-				this.lblType.FontWeight = ((this.workflow_IsFieldRequired(4, WorkFlowFields)) ? FontWeights.Bold : FontWeights.Normal);
-				this.lblDetectedBy.FontWeight = ((this.workflow_IsFieldRequired(5, WorkFlowFields)) ? FontWeights.Bold : FontWeights.Normal);
-				this.lblOwnedBy.FontWeight = ((this.workflow_IsFieldRequired(6, WorkFlowFields)) ? FontWeights.Bold : FontWeights.Normal);
-				this.lblPriority.FontWeight = ((this.workflow_IsFieldRequired(2, WorkFlowFields)) ? FontWeights.Bold : FontWeights.Normal);
-				this.lblSeverity.FontWeight = ((this.workflow_IsFieldRequired(1, WorkFlowFields)) ? FontWeights.Bold : FontWeights.Normal);
-				this.lblDetectedIn.FontWeight = ((this.workflow_IsFieldRequired(7, WorkFlowFields)) ? FontWeights.Bold : FontWeights.Normal);
-				this.lblResolvedIn.FontWeight = ((this.workflow_IsFieldRequired(8, WorkFlowFields)) ? FontWeights.Bold : FontWeights.Normal);
-				this.lblVerifiedIn.FontWeight = ((this.workflow_IsFieldRequired(9, WorkFlowFields)) ? FontWeights.Bold : FontWeights.Normal);
-				this.cntrlDescription.Tag = (this.workflow_IsFieldRequired(11, WorkFlowFields));
-				//this.cntrlResolution.Tag = (this.workflow_IsFieldRequired(12, WorkFlowFields));
-				// lblDescription
-				// lblResolution
-				//Schedule fields.
-				this.lblStartDate.FontWeight = ((this.workflow_IsFieldRequired(45, WorkFlowFields)) ? FontWeights.Bold : FontWeights.Normal);
-				this.lblEndDate.FontWeight = ((this.workflow_IsFieldRequired(14, WorkFlowFields)) ? FontWeights.Bold : FontWeights.Normal);
-				this.lblEstEffort.FontWeight = ((this.workflow_IsFieldRequired(47, WorkFlowFields)) ? FontWeights.Bold : FontWeights.Normal);
-				this.lblActEffort.FontWeight = ((this.workflow_IsFieldRequired(48, WorkFlowFields)) ? FontWeights.Bold : FontWeights.Normal);
-
-			}
-			catch (Exception ex)
-			{
-				//Connect.logEventMessage("wpfDetailsIncident::workflow_SetEnabledFields", ex, System.Diagnostics.EventLogEntryType.Error);
-			}
-		}
-
-		/// <summary>Set the enabled and required custom fields for the current stage in the workflow.</summary>
-		/// <param name="WorkFlowFields">The Dictionary of Workflow Custom Fields</param>
-		private void workflow_SetEnabledCustomFields(Dictionary<int, int> CustomFields)
-		{
-			//We need to scan through the custom fields and find any matches. If no match, set it disabled.
-			foreach (UIElement customUI in this.gridCustomProperties.Children)
-			{
-				if (customUI is TextBlock) //Get each label.
-				{
-					//Get the linked control & attached RemoteProperty.
-					Control custLinked = ((TextBlock)customUI).Tag as Control;
-
-					if (custLinked != null)
-					{
-						RemoteCustomProperty custProp = ((Control)custLinked).Tag as RemoteCustomProperty;
-
-						if (custProp != null && CustomFields != null)
-						{
-							if (CustomFields.ContainsKey(custProp.CustomPropertyId))
-							{
-								//Set IsEnbled
-								custLinked.IsEnabled = true;
-								//Set label:
-								((TextBlock)customUI).FontWeight = (this.workflow_IsFieldRequired(custProp.CustomPropertyId, CustomFields) ? FontWeights.Bold : FontWeights.Normal);
-							}
-							else
-							{
-								//Set IsEnabled
-								custLinked.IsEnabled = false;
-								((TextBlock)customUI).FontWeight = FontWeights.Normal;
-							}
-						}
-					}
-				}
-			}
-		}
-		#endregion
 
 		/// <summary>Load the specified incident into the data fields.</summary>
 		/// <param name="incident">The incident details to load into fields.</param>
