@@ -348,6 +348,183 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			return retValue;
 		}
 
+		/// <summary>Called when the user changes the workflow step, pulls enabled/required fields.</summary>
+		private void workflow_ChangeWorkflowStep()
+		{
+			//This is a potentially different workflow, so create the client to go out and get fields.
+			ImportExportClient wkfClient = StaticFuncs.CreateClient(this._Project.ServerURL.ToString());
+			wkfClient.Connection_Authenticate2Completed += new EventHandler<Connection_Authenticate2CompletedEventArgs>(wkfClient_Connection_Authenticate2Completed);
+			wkfClient.Connection_ConnectToProjectCompleted += new EventHandler<Connection_ConnectToProjectCompletedEventArgs>(wkfClient_Connection_ConnectToProjectCompleted);
+			wkfClient.Incident_RetrieveWorkflowFieldsCompleted += new EventHandler<Incident_RetrieveWorkflowFieldsCompletedEventArgs>(wkfClient_Incident_RetrieveWorkflowFieldsCompleted);
+			wkfClient.Incident_RetrieveWorkflowCustomPropertiesCompleted += new EventHandler<Incident_RetrieveWorkflowCustomPropertiesCompletedEventArgs>(wkfClient_Incident_RetrieveWorkflowCustomPropertiesCompleted);
+
+			//Connect.
+			this._clientNumRunning = 1;
+			wkfClient.Connection_Authenticate2Async(this._Project.UserName, this._Project.UserPass, StaticFuncs.getCultureResource.GetString("app_ReportName"));
+		}
+
+		#region Workflow Client
+		/// <summary>Hit when we've successfully connected to the server.</summary>
+		/// <param name="sender">ImportExporClient</param>
+		/// <param name="e">Connection_Authenticate2CompletedEventArgs</param>
+		private void wkfClient_Connection_Authenticate2Completed(object sender, Connection_Authenticate2CompletedEventArgs e)
+		{
+			const string METHOD = "wkfClient_Connection_Authenticate2Completed()";
+			System.Diagnostics.Debug.WriteLine(CLASS + METHOD + " ENTER.");
+
+			this._clientNumRunning--;
+			this.barLoadingIncident.Value++;
+
+			if (sender is ImportExportClient)
+			{
+				ImportExportClient client = sender as ImportExportClient;
+
+				if (!e.Cancelled)
+				{
+					if (e.Error == null && e.Result)
+					{
+						//Connect to our project.
+						this._clientNumRunning++;
+						client.Connection_ConnectToProjectAsync(((SpiraProject)this._ArtifactDetails.ArtifactParentProject.ArtifactTag).ProjectID, this._clientNum++);
+					}
+					else
+					{
+						if (e.Error != null)
+						{
+							Logger.LogMessage(e.Error);
+						}
+						else
+						{
+							Logger.LogMessage("Could not log in.", System.Diagnostics.EventLogEntryType.Error);
+						}
+					}
+				}
+			}
+
+			System.Diagnostics.Debug.WriteLine(CLASS + METHOD + " EXIT. Clients - Running: " + this._clientNumRunning.ToString() + ", Total: " + this._clientNum.ToString());
+		}
+
+		/// <summary>Hit when we've completed connecting to the project. </summary>
+		/// <param name="sender">ImportExporClient</param>
+		/// <param name="e">Connection_ConnectToProjectCompletedEventArgs</param>
+		private void wkfClient_Connection_ConnectToProjectCompleted(object sender, Connection_ConnectToProjectCompletedEventArgs e)
+		{
+			const string METHOD = "wkfClient_Connection_ConnectToProjectCompleted()";
+			System.Diagnostics.Debug.WriteLine(CLASS + METHOD + " ENTER.");
+
+			this._clientNumRunning--;
+			this.barLoadingIncident.Value++;
+
+			if (sender is ImportExportClient)
+			{
+				ImportExportClient client = sender as ImportExportClient;
+
+				if (!e.Cancelled)
+				{
+					if (e.Error == null && e.Result)
+					{
+						//Get the current status/type..
+						int intStatus = ((this._IncSelectedStatus.HasValue) ? this._IncSelectedStatus.Value : this._IncCurrentStatus.Value);
+						int intType = ((this._IncSelectedType.HasValue) ? this._IncSelectedType.Value : this._IncCurrentType.Value);
+						//Get the current workflow fields here.
+						this._clientNumRunning += 2;
+						client.Incident_RetrieveWorkflowCustomPropertiesAsync(intType, intStatus, this._clientNum++);
+						client.Incident_RetrieveWorkflowFieldsAsync(intType, intStatus, this._clientNum++);
+					}
+					else
+					{
+						if (e.Error != null)
+						{
+							Logger.LogMessage(e.Error);
+						}
+						else
+						{
+							Logger.LogMessage("Could not log in.", System.Diagnostics.EventLogEntryType.Error);
+						}
+					}
+				}
+			}
+
+			System.Diagnostics.Debug.WriteLine(CLASS + METHOD + " EXIT. Clients - Running: " + this._clientNumRunning.ToString() + ", Total: " + this._clientNum.ToString());
+		}
+
+		/// <summary>Hit when the client is finished pulling all the workflow fields and their status.</summary>
+		/// <param name="sender">ImportExportClient</param>
+		/// <param name="e">Incident_RetrieveWorkflowFieldsCompletedEventArgs</param>
+		private void wkfClient_Incident_RetrieveWorkflowFieldsCompleted(object sender, Incident_RetrieveWorkflowFieldsCompletedEventArgs e)
+		{
+			const string METHOD = "wkfClient_Incident_RetrieveWorkflowFieldsCompleted()";
+			System.Diagnostics.Debug.WriteLine(CLASS + METHOD + " ENTER.");
+
+			this._clientNumRunning--;
+			this.barLoadingIncident.Value++;
+
+			if (sender is ImportExportClient)
+			{
+				if (!e.Cancelled)
+				{
+					if (e.Error == null)
+					{
+						this._WorkflowFields_Updated = this.workflow_LoadFieldStatus(e.Result);
+
+						//Update main workflow fields.
+						this.workflow_SetEnabledFields(this._WorkflowFields, this._WorkflowFields_Updated);
+
+						//Hide the status if needed.
+						if (this._clientNumRunning == 0)
+						{
+							this.display_SetOverlayWindow(this.panelStatus, Visibility.Hidden);
+							this._isWorkflowChanging = false;
+						}
+					}
+					else
+					{
+						Logger.LogMessage(e.Error);
+					}
+				}
+			}
+			System.Diagnostics.Debug.WriteLine(CLASS + METHOD + " EXIT. Clients - Running: " + this._clientNumRunning.ToString() + ", Total: " + this._clientNum.ToString());
+		}
+
+		/// <summary>Hit when the client is finished getting custom workflow property fields.</summary>
+		/// <param name="sender">ImportExportClient</param>
+		/// <param name="e">Incident_RetrieveWorkflowCustomPropertiesCompletedEventArgs</param>
+		private void wkfClient_Incident_RetrieveWorkflowCustomPropertiesCompleted(object sender, Incident_RetrieveWorkflowCustomPropertiesCompletedEventArgs e)
+		{
+			const string METHOD = "wkfClient_Incident_RetrieveWorkflowCustomPropertiesCompleted()";
+			System.Diagnostics.Debug.WriteLine(CLASS + METHOD + " ENTER.");
+
+			this._clientNumRunning--;
+			this.barLoadingIncident.Value++;
+
+			if (sender is ImportExportClient)
+			{
+				if (!e.Cancelled)
+				{
+					if (e.Error == null)
+					{
+						this._WorkflowCustom_Updated = this.workflow_LoadFieldStatus(e.Result);
+
+						//Update custom workflow fields.
+						this.workflow_SetEnabledFields(this._WorkflowCustom, this._WorkflowCustom_Updated);
+
+						//Hide the status if needed.
+						if (this._clientNumRunning == 0)
+						{
+							this.display_SetOverlayWindow(this.panelStatus, Visibility.Hidden);
+							this._isWorkflowChanging = false;
+						}
+					}
+					else
+					{
+						Logger.LogMessage(e.Error);
+					}
+				}
+			}
+			System.Diagnostics.Debug.WriteLine(CLASS + METHOD + " EXIT. Clients - Running: " + this._clientNumRunning.ToString() + ", Total: " + this._clientNum.ToString());
+		}
+		#endregion
+
 		/// <summary>Class that holds workflow fields and their UI Controls and statuses.</summary>
 		private class WorkflowField
 		{

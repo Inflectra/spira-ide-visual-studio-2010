@@ -540,4 +540,7 @@ Are you sure you want to continue?</value>
   <data name="app_Incident_Saving" xml:space="preserve">
     <value>Saving Incident, please wait...</value>
   </data>
+  <data name="app_Incident_Refreshing" xml:space="preserve">
+    <value>Refreshing Incident Details, please wait...</value>
+  </data>
 </root>

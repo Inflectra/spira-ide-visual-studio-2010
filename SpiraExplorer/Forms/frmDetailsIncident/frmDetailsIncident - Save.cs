@@ -32,7 +32,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 				this.barSavingIncident.Maximum = 0;
 				this.barSavingIncident.Minimum = -5;
 
-				if (this._isFieldChanged)
+				if (this._isFieldChanged || this._isWkfChanged || this._isResChanged || this._isDescChanged)
 				{
 					//Set working flag.
 					this.IsSaving = true;
@@ -139,7 +139,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 					{
 						//We need to save a resolution.
 						RemoteIncidentResolution newRes = new RemoteIncidentResolution();
-						newRes.CreationDate=DateTime.Now;
+						newRes.CreationDate = DateTime.Now;
 						newRes.CreatorId = ((SpiraProject)this._ArtifactDetails.ArtifactParentProject.ArtifactTag).UserID;
 						newRes.IncidentId = this._ArtifactDetails.ArtifactId;
 						newRes.Resolution = this.cntrlResolution.HTMLText;
@@ -284,7 +284,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			if (this._clientNumSaving == 0)
 			{
 				this.IsSaving = false;
-				this.lblLoadingIncident.Text = StaticFuncs.getCultureResource.GetString("app_Incident_Loading");
+				this.lblLoadingIncident.Text = StaticFuncs.getCultureResource.GetString("app_Incident_Refreshing");
 				this.load_LoadItem();
 			}
 
@@ -311,7 +311,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 				//*Standard fields..
 				retIncident.Name = this.cntrlIncidentName.Text.Trim();
 				retIncident.IncidentTypeId = ((RemoteIncidentType)this.cntrlType.SelectedItem).IncidentTypeId;
-				retIncident.IncidentStatusId = this._IncCurrentStatus.Value;
+				retIncident.IncidentStatusId = ((this._IncSelectedStatus.HasValue) ? this._IncSelectedStatus.Value : this._IncCurrentStatus.Value);
 				retIncident.OpenerId = ((RemoteUser)this.cntrlDetectedBy.SelectedItem).UserId;
 				retIncident.OwnerId = ((RemoteUser)this.cntrlOwnedBy.SelectedItem).UserId;
 				retIncident.PriorityId = ((RemoteIncidentPriority)this.cntrlPriority.SelectedItem).PriorityId;

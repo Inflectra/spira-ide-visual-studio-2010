@@ -23,6 +23,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 		private bool _isDescChanged;
 		private bool _isResChanged;
 		private bool _isFieldChanged;
+		private bool _isWkfChanged;
 		#endregion
 		#region Private Mode Vars
 		private bool _isLoadingInformation;
@@ -110,7 +111,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 
 					//See if they want to or need to confirm..
 					MessageBoxResult areTheySure = MessageBoxResult.Yes;
-					if (this._isFieldChanged || this._isDescChanged || this._isResChanged)
+					if (this._isFieldChanged || this._isDescChanged || this._isResChanged || this._isWkfChanged)
 						areTheySure = MessageBox.Show(StaticFuncs.getCultureResource.GetString("app_General_WorkflowResetFieldsMessage"), StaticFuncs.getCultureResource.GetString("app_General_AreYouSure"), MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.No);
 
 					if (areTheySure == MessageBoxResult.Yes)
@@ -118,19 +119,14 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 						//Update window title to indicate there's a change.
 						if (((RemoteIncidentType)this.cntrlType.SelectedItem).IncidentTypeId.Value != this._Incident.IncidentTypeId.Value)
 						{
-							((IVsWindowFrame)this.ParentWindowPane.Frame).SetProperty((int)__VSFPROPID2.VSFPROPID_OverrideDirtyState, true);
-							if (!this.ParentWindowPane.Caption.EndsWith("*"))
-							{
-								this.ParentWindowPane.Caption = this.ParentWindowPane.Caption + " *";
-							}
+							this.display_SetWindowChanged(true);
+							this._isWkfChanged = true;
 						}
 						else
 						{
-							((IVsWindowFrame)this.ParentWindowPane.Frame).SetProperty((int)__VSFPROPID2.VSFPROPID_OverrideDirtyState, false);
-							if (this.ParentWindowPane.Caption.EndsWith("*"))
-							{
-								this.ParentWindowPane.Caption = this.ParentWindowPane.Caption.Trim(new char[] { ' ', '*' });
-							}
+							bool isChanged = (this._isDescChanged || this._isResChanged || this._isFieldChanged);
+							this.display_SetWindowChanged(isChanged);
+							this._isWkfChanged = isChanged;
 						}
 
 						//Set the selected item..
@@ -169,16 +165,10 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 		{
 			try
 			{
-				if (!this.IsLoading)
+				if (!this.IsLoading && !this._isWorkflowChanging)
 				{
-					((IVsWindowFrame)this.ParentWindowPane.Frame).SetProperty((int)__VSFPROPID2.VSFPROPID_OverrideDirtyState, true);
-					if (!this.ParentWindowPane.Caption.EndsWith("*"))
-					{
-						this.ParentWindowPane.Caption = this.ParentWindowPane.Caption + " *";
-					}
-
+					this.display_SetWindowChanged(true);
 					this._isFieldChanged = true;
-					this.btnSave.IsEnabled = true;
 
 					if (sender is cntrlRichTextEditor)
 					{
@@ -292,7 +282,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 
 			//See if they want to or need to confirm..
 			MessageBoxResult areTheySure = MessageBoxResult.Yes;
-			if (this._isFieldChanged || this._isDescChanged || this._isResChanged)
+			if (this._isFieldChanged || this._isDescChanged || this._isResChanged) //We don't check if the workflow changed here.
 				areTheySure = MessageBox.Show(StaticFuncs.getCultureResource.GetString("app_General_WorkflowResetFieldsMessage"), StaticFuncs.getCultureResource.GetString("app_General_AreYouSure"), MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.No);
 
 			if (areTheySure == MessageBoxResult.Yes)
@@ -327,11 +317,8 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 
 
 						//Set changed flag.
-						((IVsWindowFrame)this.ParentWindowPane.Frame).SetProperty((int)__VSFPROPID2.VSFPROPID_OverrideDirtyState, true);
-						if (!this.ParentWindowPane.Caption.EndsWith("*"))
-						{
-							this.ParentWindowPane.Caption = this.ParentWindowPane.Caption + " *";
-						}
+						this.display_SetWindowChanged(true);
+						this._isWkfChanged = true;
 					}
 					else
 					{
@@ -346,12 +333,10 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 						this.workflow_ChangeWorkflowStep();
 
 						//Revert changed flag.
-						((IVsWindowFrame)this.ParentWindowPane.Frame).SetProperty((int)__VSFPROPID2.VSFPROPID_OverrideDirtyState, false);
-						if (this.ParentWindowPane.Caption.EndsWith("*"))
-						{
-							this.ParentWindowPane.Caption = this.ParentWindowPane.Caption.Trim(new char[] { ' ', '*' });
-						}
+						this.display_SetWindowChanged(false);
 
+						//No longer in workflow.
+						this._isWorkflowChanging = false;
 					}
 				}
 			}
@@ -359,7 +344,6 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			{
 				this.display_SetOverlayWindow(this.panelStatus, Visibility.Collapsed);
 			}
-			this._isWorkflowChanging = false;
 		}
 
 		/// <summary>Hit when the Timer button's status is changed.</summary>
@@ -454,7 +438,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			e.Handled = true;
 
 			MessageBoxResult isUserSure = MessageBoxResult.Yes;
-			if (this._isDescChanged || this._isFieldChanged || this._isResChanged)
+			if (this._isDescChanged || this._isFieldChanged || this._isResChanged || this._isWkfChanged)
 			{
 				isUserSure = MessageBox.Show(StaticFuncs.getCultureResource.GetString("app_General_LoseChangesMessage"), StaticFuncs.getCultureResource.GetString("app_General_AreYouSure"), MessageBoxButton.YesNo, MessageBoxImage.Exclamation, MessageBoxResult.No);
 			}
@@ -462,7 +446,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			if (isUserSure == MessageBoxResult.Yes)
 			{
 				//User is sure, change the label, and launch the refresh.
-				this.lblLoadingIncident.Text = StaticFuncs.getCultureResource.GetString("app_Incident_Loading");
+				this.lblLoadingIncident.Text = StaticFuncs.getCultureResource.GetString("app_Incident_Refreshing");
 				this.load_LoadItem();
 			}
 		}
@@ -646,6 +630,33 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 					storyFadeOut.Begin();
 
 					break;
+			}
+		}
+
+		/// <summary>Sets whether the window has changed or not.</summary>
+		/// <param name="IsChanged">True for if fields are changed, false if not.</param>
+		private void display_SetWindowChanged(bool IsChanged = true)
+		{
+			try
+			{
+				if (IsChanged)
+				{
+					((IVsWindowFrame)this.ParentWindowPane.Frame).SetProperty((int)__VSFPROPID2.VSFPROPID_OverrideDirtyState, true);
+					if (!this.ParentWindowPane.Caption.EndsWith("*"))
+						this.ParentWindowPane.Caption = this.ParentWindowPane.Caption + " *";
+					this.btnSave.IsEnabled = true;
+				}
+				else
+				{
+					((IVsWindowFrame)this.ParentWindowPane.Frame).SetProperty((int)__VSFPROPID2.VSFPROPID_OverrideDirtyState, false);
+					if (this.ParentWindowPane.Caption.EndsWith("*"))
+						this.ParentWindowPane.Caption = this.ParentWindowPane.Caption.Trim(new char[] { ' ', '*' });
+					this.btnSave.IsEnabled = false;
+				}
+			}
+			catch (Exception ex)
+			{
+				Logger.LogMessage(ex, "Setting WindowChanged status.");
 			}
 		}
 	}
