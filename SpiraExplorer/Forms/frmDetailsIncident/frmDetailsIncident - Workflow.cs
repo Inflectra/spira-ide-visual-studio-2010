@@ -260,7 +260,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 
 						case 11: // Description 
 						case 12: // Resolution
-							if (string.IsNullOrWhiteSpace(((cntrlRichTextEditor)kvpField.Value.FieldControl).HTMLText))
+							if (string.IsNullOrWhiteSpace(StaticFuncs.StripTagsCharArray(((cntrlRichTextEditor)kvpField.Value.FieldControl).HTMLText)))
 							{
 								kvpField.Value.FieldControl.Style = (Style)this.FindResource("PaddedControlRequiredHighlight");
 								retValue = false;
@@ -363,7 +363,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			wkfClient.Connection_Authenticate2Async(this._Project.UserName, this._Project.UserPass, StaticFuncs.getCultureResource.GetString("app_ReportName"));
 		}
 
-		#region Workflow Client
+		#region Workflow Client Events
 		/// <summary>Hit when we've successfully connected to the server.</summary>
 		/// <param name="sender">ImportExporClient</param>
 		/// <param name="e">Connection_Authenticate2CompletedEventArgs</param>

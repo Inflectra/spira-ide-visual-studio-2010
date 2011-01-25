@@ -458,7 +458,7 @@ http://server/SpiraTeam/</value>
     <value>Details / Description</value>
   </data>
   <data name="app_Incident_ExpanderResolution" xml:space="preserve">
-    <value>Resolutions / Comments</value>
+    <value>Comments</value>
   </data>
   <data name="app_Incident_ExpanderSchedule" xml:space="preserve">
     <value>Schedule</value>
@@ -542,5 +542,8 @@ Are you sure you want to continue?</value>
   </data>
   <data name="app_Incident_Refreshing" xml:space="preserve">
     <value>Refreshing Incident Details, please wait...</value>
+  </data>
+  <data name="app_General_AddNewComment" xml:space="preserve">
+    <value>Add New Comment</value>
   </data>
 </root>

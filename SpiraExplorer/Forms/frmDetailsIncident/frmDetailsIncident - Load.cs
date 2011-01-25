@@ -50,6 +50,14 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			bool retValue = false;
 			if (this.ArtifactDetail != null)
 			{
+				//Clear the loading flag & dirty flags
+				this.IsLoading = false;
+				this._isDescChanged = false;
+				this._isResChanged = false;
+				this._isFieldChanged = false;
+				this._isWkfChanged = false;
+				this.btnSave.IsEnabled = false;
+
 				//Set flag, reset vars..
 				this.IsLoading = true;
 				this.barLoadingIncident.Value = 0;
@@ -712,6 +720,9 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 				//Set Workflow Data. (To disable Fields)
 				this.workflow_SetEnabledFields(this._WorkflowFields, this._WorkflowFields_Current);
 				this.workflow_SetEnabledFields(this._WorkflowCustom, this._WorkflowCustom_Current);
+
+				//Turn off loading screen..
+				this.IsLoading = false;
 			}
 		}
 
@@ -949,6 +960,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 				// - Name & ID
 				this.cntrlIncidentName.Text = incident.Name;
 				this.lblToken.Text = this._ArtifactDetails.ArtifactIDDisplay;
+				this.cntrlResolution.HTMLText = "";
 
 				// - Users
 				this.loadItem_PopulateUser(this.cntrlDetectedBy, incident.OpenerId);
@@ -1190,17 +1202,9 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 				}
 				#endregion
 
-				//Clear the loading flag & dirty flags
-				this.IsLoading = false;
-				this._isDescChanged = false;
-				this._isResChanged = false;
-				this._isFieldChanged = updatedTime;
-				//this._isWkfChanged = false;
-				this.btnSave.IsEnabled = false;
-
 				//Set the tab title.
 				this.ParentWindowPane.Caption = this.TabTitle;
-				this.display_SetWindowChanged(updatedTime || this._isWkfChanged);
+				this.display_SetWindowChanged(updatedTime || this._isWkfChanged || this._isDescChanged || this._isResChanged || this._isFieldChanged);
 			}
 			catch (Exception ex)
 			{

@@ -71,6 +71,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			this.lblActEffort.Text = StaticFuncs.getCultureResource.GetString("app_General_ActEffort") + ":";
 			this.lblExpanderCustom.Text = StaticFuncs.getCultureResource.GetString("app_Incident_ExpanderCustom");
 			this.lblExpanderAttachments.Text = StaticFuncs.getCultureResource.GetString("app_General_Attachments");
+			this.lblAddNewResolution.Text = StaticFuncs.getCultureResource.GetString("app_General_AddNewComment") + ":";
 
 			//Load set vars..
 			this._WorkflowFields = this.workflow_GenerateStandardFields();
@@ -111,7 +112,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 
 					//See if they want to or need to confirm..
 					MessageBoxResult areTheySure = MessageBoxResult.Yes;
-					if (this._isFieldChanged || this._isDescChanged || this._isResChanged || this._isWkfChanged)
+					if (this._isFieldChanged || this._isDescChanged || this._isResChanged)  //Not checking workflow changed.
 						areTheySure = MessageBox.Show(StaticFuncs.getCultureResource.GetString("app_General_WorkflowResetFieldsMessage"), StaticFuncs.getCultureResource.GetString("app_General_AreYouSure"), MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.No);
 
 					if (areTheySure == MessageBoxResult.Yes)
@@ -124,7 +125,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 						}
 						else
 						{
-							bool isChanged = (this._isDescChanged || this._isResChanged || this._isFieldChanged);
+							bool isChanged = (this._isDescChanged || this._isResChanged || this._isFieldChanged); //Not checking workflow changed.
 							this.display_SetWindowChanged(isChanged);
 							this._isWkfChanged = isChanged;
 						}

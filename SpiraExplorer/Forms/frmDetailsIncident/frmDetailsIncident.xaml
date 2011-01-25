@@ -427,7 +427,7 @@
 									<TextBlock Name="lblDescription" FontWeight="Bold" />
 								</GroupBox.Header>
 								<GroupBox.Content>
-									<ui_cntrl:cntrlRichTextEditor x:Name="cntrlDescription" Height="200" Width="Auto" TextChanged="_cntrl_TextChanged" IsSpellcheckEnabled="True" />
+									<ui_cntrl:cntrlRichTextEditor x:Name="cntrlDescription" Height="200" Width="Auto" TextChanged="_cntrl_TextChanged" Padding="2" IsSpellcheckEnabled="True" />
 								</GroupBox.Content>
 							</GroupBox>
 						</Grid>
@@ -460,9 +460,14 @@
 								<TextBlock Name="lblExpanderResolution" VerticalAlignment="Center" />
 							</Expander.Header>
 							<StackPanel Orientation="Vertical" Background="{DynamicResource {x:Static vsfx:VsBrushes.DesignerBackgroundKey}}">
-								<Grid Name="grpResolution" Style="{StaticResource ResourceKey=RequiredStyle}">
-									<ui_cntrl:cntrlRichTextEditor x:Name="cntrlResolution" Height="100" Width="Auto" Padding="2" TextChanged="_cntrl_TextChanged" IsSpellcheckEnabled="True"  />
-								</Grid>
+								<GroupBox Name="grpResolution" Style="{StaticResource ResourceKey=RequiredStyle}">
+									<GroupBox.Header>
+										<TextBlock Name="lblAddNewResolution" FontWeight="Bold" />
+									</GroupBox.Header>
+									<GroupBox.Content>
+										<ui_cntrl:cntrlRichTextEditor x:Name="cntrlResolution" Height="100" Width="Auto" Padding="2" TextChanged="_cntrl_TextChanged" IsSpellcheckEnabled="True"  />
+									</GroupBox.Content>
+								</GroupBox>
 								<StackPanel Name="cntrlDiscussion" Orientation="Vertical" />
 							</StackPanel>
 						</Expander>
