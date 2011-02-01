@@ -26,7 +26,6 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 		//The Project and the Incident
 		private SpiraProject _Project = null;
 		private RemoteIncident _Incident;
-		private RemoteIncident _IncidentConcurrency;
 
 		//Other project-specific items.
 		private List<RemoteProjectUser> _ProjUsers;
@@ -1091,12 +1090,12 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 				#endregion
 
 				#region Schedule
-				// - Schedule
 				this.cntrlStartDate.SelectedDate = incident.StartDate;
 				this.cntrlEndDate.SelectedDate = incident.ClosedDate;
-				this.lblPerComplete.Text = incident.CompletionPercent.ToString();
-				this.cntrlEstEffortH.Text = ((incident.EstimatedEffort.HasValue) ? Math.Floor(((double)incident.EstimatedEffort / (double)60)).ToString() : "0");
-				this.cntrlEstEffortM.Text = ((incident.EstimatedEffort.HasValue) ? ((double)incident.EstimatedEffort % (double)60).ToString() : "0");
+				this.barPercentComplete.Value = incident.CompletionPercent;
+				//Get estimated effort..
+				this.cntrlEstEffortH.Text = ((incident.EstimatedEffort.HasValue) ? Math.Floor(((double)incident.EstimatedEffort / (double)60)).ToString() : null);
+				this.cntrlEstEffortM.Text = ((incident.EstimatedEffort.HasValue) ? ((double)incident.EstimatedEffort % (double)60).ToString() : null);
 				//Get actual effort..
 				int existingH = 0;
 				int existingM = 0;
@@ -1120,8 +1119,14 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 					existingH += (int)Math.Floor((double)incident.ActualEffort / 60D);
 					existingM += (int)(incident.ActualEffort % 60D);
 				}
-				this.cntrlActEffortH.Text = existingH.ToString();
-				this.cntrlActEffortM.Text = existingM.ToString();
+				this.cntrlActEffortH.Text = ((existingH == 0 && existingM == 0 && !incident.ActualEffort.HasValue) ? null : existingH.ToString());
+				this.cntrlActEffortM.Text = ((existingH == 0 && existingM == 0 && !incident.ActualEffort.HasValue) ? null : existingM.ToString());
+				//Get projected effort..
+				this.cntrlProjEffortH.Text = ((incident.ProjectedEffort.HasValue) ? Math.Floor(((double)incident.ProjectedEffort / (double)60)).ToString() : null);
+				this.cntrlProjEffortM.Text = ((incident.ProjectedEffort.HasValue) ? ((double)incident.ProjectedEffort % (double)60).ToString() : null);
+				//Get remaining effort..
+				this.cntrlRemEffortH.Text = ((incident.RemainingEffort.HasValue) ? Math.Floor(((double)incident.RemainingEffort / (double)60)).ToString() : null);
+				this.cntrlRemEffortM.Text = ((incident.RemainingEffort.HasValue) ? ((double)incident.RemainingEffort % (double)60).ToString() : null);
 				#endregion
 
 				#region Custom Properties

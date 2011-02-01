@@ -546,4 +546,34 @@ Are you sure you want to continue?</value>
   <data name="app_General_AddNewComment" xml:space="preserve">
     <value>Add New Comment</value>
   </data>
+  <data name="app_Incident_AddCommentErrorMessage" xml:space="preserve">
+    <value>The incident was updated, but there was an error adding your comment.</value>
+  </data>
+  <data name="app_Incident_UpdateError" xml:space="preserve">
+    <value>Update Incident Error</value>
+  </data>
+  <data name="app_General_No" xml:space="preserve">
+    <value>_No</value>
+  </data>
+  <data name="app_General_Yes" xml:space="preserve">
+    <value>_Yes</value>
+  </data>
+  <data name="app_Incident_AskMergeConcurrency" xml:space="preserve">
+    <value>The incident you are trying to save has been modified by someone else but can be merged with the other changes. Do you want to merge your changed fields with the current version of the incident, or do you wish to reload the incident, losing all changes?</value>
+  </data>
+  <data name="app_Incident_Merge" xml:space="preserve">
+    <value>_Merge</value>
+  </data>
+  <data name="app_Incident_NoMergeConcurrency" xml:space="preserve">
+    <value>The incident you are trying to save has been modified by someone else and cannot be saved without data loss. Please refresh your Incident and make your changes again.</value>
+  </data>
+  <data name="app_General_Hours" xml:space="preserve">
+    <value>hours</value>
+  </data>
+  <data name="app_General_Minutes" xml:space="preserve">
+    <value>minutes</value>
+  </data>
+  <data name="app_Incident_RemEffort" xml:space="preserve">
+    <value>Remaining Effort</value>
+  </data>
 </root>

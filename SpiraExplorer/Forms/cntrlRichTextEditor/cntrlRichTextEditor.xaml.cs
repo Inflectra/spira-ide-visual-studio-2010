@@ -106,7 +106,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Controls
 		/// <param name="e">SelectionChangedEventArgs</param>
 		private void _toolSize_SelectionChanged(object sender, SelectionChangedEventArgs e)
 		{
-			if (!this.updSelectionProcessing)
+			if (!this.updSelectionProcessing && this.IsLoaded)
 			{
 				try
 				{

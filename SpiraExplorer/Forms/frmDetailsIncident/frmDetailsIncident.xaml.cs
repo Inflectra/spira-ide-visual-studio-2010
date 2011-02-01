@@ -68,10 +68,25 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			this.lblStartDate.Text = StaticFuncs.getCultureResource.GetString("app_General_StartDate") + ":";
 			this.lblEndDate.Text = StaticFuncs.getCultureResource.GetString("app_General_EndDate") + ":";
 			this.lblEstEffort.Text = StaticFuncs.getCultureResource.GetString("app_Incident_EstEffort") + ":";
+			this.lblHours4.Text = StaticFuncs.getCultureResource.GetString("app_General_Hours");
+			this.lblMins4.Text = StaticFuncs.getCultureResource.GetString("app_General_Minutes");
+			this.lblProjEffort.Text = StaticFuncs.getCultureResource.GetString("app_General_ProjEffort") + ":";
+			this.lblHours1.Text = StaticFuncs.getCultureResource.GetString("app_General_Hours");
+			this.lblMins1.Text = StaticFuncs.getCultureResource.GetString("app_General_Minutes");
 			this.lblActEffort.Text = StaticFuncs.getCultureResource.GetString("app_General_ActEffort") + ":";
+			this.lblHours2.Text = StaticFuncs.getCultureResource.GetString("app_General_Hours");
+			this.lblMins2.Text = StaticFuncs.getCultureResource.GetString("app_General_Minutes");
+			this.lblRemEffort.Text = StaticFuncs.getCultureResource.GetString("app_Incident_RemEffort") + ":";
+			this.lblHours3.Text = StaticFuncs.getCultureResource.GetString("app_General_Hours");
+			this.lblMins3.Text = StaticFuncs.getCultureResource.GetString("app_General_Minutes");
 			this.lblExpanderCustom.Text = StaticFuncs.getCultureResource.GetString("app_Incident_ExpanderCustom");
 			this.lblExpanderAttachments.Text = StaticFuncs.getCultureResource.GetString("app_General_Attachments");
 			this.lblAddNewResolution.Text = StaticFuncs.getCultureResource.GetString("app_General_AddNewComment") + ":";
+			this.btnConcurrencyMergeNo.Content = StaticFuncs.getCultureResource.GetString("app_General_Refresh");
+			this.btnConcurrencyMergeYes.Content = StaticFuncs.getCultureResource.GetString("app_Incident_Merge");
+			this.lblMergeConcurrency.Text = StaticFuncs.getCultureResource.GetString("app_Incident_AskMergeConcurrency");
+			this.btnConcurrencyRefresh.Content = StaticFuncs.getCultureResource.GetString("app_General_Refresh");
+			this.lblNoMergeConcurrency.Text = StaticFuncs.getCultureResource.GetString("app_Incident_NoMergeConcurrency");
 
 			//Load set vars..
 			this._WorkflowFields = this.workflow_GenerateStandardFields();
@@ -642,17 +657,23 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			{
 				if (IsChanged)
 				{
-					((IVsWindowFrame)this.ParentWindowPane.Frame).SetProperty((int)__VSFPROPID2.VSFPROPID_OverrideDirtyState, true);
-					if (!this.ParentWindowPane.Caption.EndsWith("*"))
-						this.ParentWindowPane.Caption = this.ParentWindowPane.Caption + " *";
-					this.btnSave.IsEnabled = true;
+					if (this.ParentWindowPane != null)
+					{
+						if (this.ParentWindowPane.Frame != null) ((IVsWindowFrame)this.ParentWindowPane.Frame).SetProperty((int)__VSFPROPID2.VSFPROPID_OverrideDirtyState, true);
+						if (!this.ParentWindowPane.Caption.EndsWith("*"))
+							this.ParentWindowPane.Caption = this.ParentWindowPane.Caption + " *";
+						if (this.btnSave != null) this.btnSave.IsEnabled = true;
+					}
 				}
 				else
 				{
-					((IVsWindowFrame)this.ParentWindowPane.Frame).SetProperty((int)__VSFPROPID2.VSFPROPID_OverrideDirtyState, false);
-					if (this.ParentWindowPane.Caption.EndsWith("*"))
-						this.ParentWindowPane.Caption = this.ParentWindowPane.Caption.Trim(new char[] { ' ', '*' });
-					this.btnSave.IsEnabled = false;
+					if (this.ParentWindowPane != null)
+					{
+						if (this.ParentWindowPane.Frame != null) ((IVsWindowFrame)this.ParentWindowPane.Frame).SetProperty((int)__VSFPROPID2.VSFPROPID_OverrideDirtyState, false);
+						if (this.ParentWindowPane.Caption.EndsWith("*"))
+							this.ParentWindowPane.Caption = this.ParentWindowPane.Caption.Trim(new char[] { ' ', '*' });
+						if (this.btnSave != null) this.btnSave.IsEnabled = false;
+					}
 				}
 			}
 			catch (Exception ex)

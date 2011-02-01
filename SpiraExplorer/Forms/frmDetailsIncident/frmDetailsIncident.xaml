@@ -294,11 +294,76 @@
 		<!-- Error Grid -->
 		<Grid Name="panelError" Grid.Column="0" Grid.Row="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Panel.ZIndex="15" Visibility="Collapsed">
 			<Border Opacity=".75" Background="{DynamicResource {x:Static vsfx:VsBrushes.EnvironmentBackgroundGradientKey}}" Panel.ZIndex="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
-			<Border Background="{DynamicResource {x:Static vsfx:VsBrushes.EnvironmentBackgroundGradientKey}}" Panel.ZIndex="0" HorizontalAlignment="Center" VerticalAlignment="Center" CornerRadius="10" BorderBrush="{DynamicResource {x:Static vsfx:VsBrushes.AutoHideTabBorderKey}}" BorderThickness="3">
-				<StackPanel Orientation="Horizontal">
-					<Image Name="imgLoadingError" HorizontalAlignment="Center" VerticalAlignment="Center" Height="48" Width="48" Margin="5" />
-					<TextBlock Name="lblLoadingError" Foreground="{DynamicResource {x:Static vsfx:VsBrushes.ToolWindowTabTextKey}}" FontWeight="Bold"  HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10" />
-				</StackPanel>
+			<Border Background="{DynamicResource {x:Static vsfx:VsBrushes.EnvironmentBackgroundGradientKey}}" Panel.ZIndex="0" HorizontalAlignment="Center" VerticalAlignment="Center" CornerRadius="10" BorderBrush="{DynamicResource {x:Static vsfx:VsBrushes.AutoHideTabBorderKey}}" BorderThickness="3" Margin="100 0">
+				<Grid>
+					<Grid.ColumnDefinitions>
+						<ColumnDefinition Width="Auto" />
+						<ColumnDefinition Width="*" />
+					</Grid.ColumnDefinitions>
+					<Grid.RowDefinitions>
+						<RowDefinition Height="Auto" />
+						<RowDefinition Height="Auto" />
+					</Grid.RowDefinitions>
+					<!-- The Image on the left.-->
+					<Image Name="imgLoadingError" Grid.Column="0" Grid.Row="0" HorizontalAlignment="Center" VerticalAlignment="Top" Height="48" Width="48" Margin="5" />
+					<!-- A simple Loading Error grid, offering to Refresh. -->
+					<Grid Grid.Row="0" Grid.Column="1" Name="gridLoadingError" Visibility="Collapsed">
+						<Grid.ColumnDefinitions>
+							<ColumnDefinition Width="*" />
+						</Grid.ColumnDefinitions>
+						<Grid.RowDefinitions>
+							<RowDefinition Height="Auto" />
+							<RowDefinition Height="Auto" />
+						</Grid.RowDefinitions>
+						<TextBlock Name="lblLoadingError" Grid.Column="0" Grid.Row="0" Foreground="{DynamicResource {x:Static vsfx:VsBrushes.ToolWindowTabTextKey}}" FontWeight="Bold"  HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10" />
+					</Grid>
+					<!-- The grid that asks whether the user wants to reload or merge changes. -->
+					<Grid Grid.Row="0" Grid.Column="1" Name="gridSavingConcurrencyMerge" Visibility="Collapsed">
+						<Grid.ColumnDefinitions>
+							<ColumnDefinition Width="2*" />
+							<ColumnDefinition Width="2*" />
+						</Grid.ColumnDefinitions>
+						<Grid.RowDefinitions>
+							<RowDefinition Height="Auto" />
+							<RowDefinition Height="Auto" />
+						</Grid.RowDefinitions>
+						<TextBlock Name="lblMergeConcurrency" Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="0" Foreground="{DynamicResource {x:Static vsfx:VsBrushes.ToolWindowTabTextKey}}" FontWeight="Bold"  HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10" TextWrapping="Wrap" />
+					</Grid>
+					<!-- The grid that says that the incident cannot be merged. -->
+					<Grid Grid.Row="0" Grid.Column="1" Name="gridSavingConcurrencyNoMerge" Visibility="Collapsed"  Margin="30 0">
+						<Grid.ColumnDefinitions>
+							<ColumnDefinition Width="2*" />
+							<ColumnDefinition Width="2*" />
+						</Grid.ColumnDefinitions>
+						<Grid.RowDefinitions>
+							<RowDefinition Height="Auto" />
+							<RowDefinition Height="Auto" />
+						</Grid.RowDefinitions>
+						<TextBlock Name="lblNoMergeConcurrency" Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="1" Foreground="{DynamicResource {x:Static vsfx:VsBrushes.ToolWindowTabTextKey}}" FontWeight="Bold"  HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10" TextWrapping="Wrap" />
+					</Grid>
+					<!-- Refresh / Save Anyway Buttons -->
+					<Grid Grid.Column="1" Grid.Row="1" HorizontalAlignment="Center" Visibility="{Binding ElementName=gridSavingConcurrencyMerge, Path=Visibility}">
+						<Grid.ColumnDefinitions>
+							<ColumnDefinition Width="2*" />
+							<ColumnDefinition Width="2*" />
+						</Grid.ColumnDefinitions>
+						<Grid.RowDefinitions>
+							<RowDefinition Height="Auto" />
+						</Grid.RowDefinitions>
+						<Button Name="btnConcurrencyMergeYes" Grid.Column="0" Grid.Row="0" Content="[merge]" IsTabStop="False" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="5" Padding="3" Click="btnConcurrencyMergeYes_Click" />
+						<Button Name="btnConcurrencyMergeNo" Grid.Column="1" Grid.Row="0" Content="[refresh]" IsTabStop="False" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="5" Padding="3" Click="btnConcurrencyRefresh_Click" />
+					</Grid>
+					<!-- Refresh Button -->
+					<Grid Grid.Column="1" Grid.Row="1" HorizontalAlignment="Center" Visibility="{Binding ElementName=gridSavingConcurrencyNoMerge, Path=Visibility}">
+						<Grid.ColumnDefinitions>
+							<ColumnDefinition Width="Auto" />
+						</Grid.ColumnDefinitions>
+						<Grid.RowDefinitions>
+							<RowDefinition Height="Auto" />
+						</Grid.RowDefinitions>
+						<Button Name="btnConcurrencyRefresh" Grid.Column="0" Grid.Row="0" Content="[refresh]" IsTabStop="False" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="5" Padding="3" Click="btnConcurrencyRefresh_Click" />
+					</Grid>
+				</Grid>
 			</Border>
 		</Grid>
 
@@ -491,11 +556,9 @@
 								</Grid.ColumnDefinitions>
 								<Grid.RowDefinitions>
 									<RowDefinition Height="Auto" />
-									<!-- ROW0: Start Date / Closed On -->
 									<RowDefinition Height="Auto" />
-									<!-- ROW1: % Complete / Est. Effort -->
 									<RowDefinition Height="Auto" />
-									<!-- ROW2: Act. Effort -->
+									<RowDefinition Height="Auto" />
 								</Grid.RowDefinitions>
 								<!-- ROW0: Start Date / End Date -->
 								<TextBlock Name="lblStartDate" Grid.Column="0" Grid.Row="0" Style="{StaticResource PaddedLabel}" />
@@ -504,25 +567,43 @@
 								<DatePicker Grid.Column="4" Grid.Row="0" Name="cntrlEndDate" IsTodayHighlighted="True" SelectedDateFormat="Short" Style="{StaticResource PaddedControl}" Height="Auto" />
 								<!-- ROW1: % Complete / Est. Effort -->
 								<TextBlock Name="lblPerComplete" Grid.Column="0" Grid.Row="1" Style="{StaticResource PaddedLabel}" />
-								<StackPanel Grid.Column="1" Grid.Row="1" Orientation="Horizontal">
-									<TextBlock Style="{StaticResource ResourceKey=PaddedLabel}">
-										<Run Name="txtPerComplete" /><Run Text="%" />
-									</TextBlock> 
-								</StackPanel>
+								<Grid Grid.Column="1" Grid.Row="1" HorizontalAlignment="Stretch">
+									<Grid.ColumnDefinitions>
+										<ColumnDefinition Width="*" />
+										<ColumnDefinition Width="Auto" />
+									</Grid.ColumnDefinitions>
+									<ProgressBar Name="barPercentComplete" Grid.Column="0" Height="10" HorizontalAlignment="Stretch" Minimum="0" Maximum="100" />
+									<TextBlock Style="{StaticResource ResourceKey=PaddedLabel}" Grid.Column="1">
+										<Run Text="{Binding ElementName=barPercentComplete,Path=Value}" />
+										<Run Text="%" />
+									</TextBlock>
+								</Grid>
 								<TextBlock Name="lblEstEffort" Grid.Column="3" Grid.Row="1" Style="{StaticResource PaddedLabel}" />
 								<StackPanel Grid.Column="4" Grid.Row="1" Orientation="Horizontal">
-									<ui_cntrl:cntrlMaskedTextBox MaxLength="3" x:Name="cntrlEstEffortH" Style="{StaticResource PaddedControl}" Width="30" MinWidth="0" Mask="###" TextChanged="cntrlMasked_TextChanged" />
-									<TextBlock Style="{StaticResource PaddedLabel}">hours,</TextBlock>
-									<ui_cntrl:cntrlMaskedTextBox MaxLength="2" x:Name="cntrlEstEffortM" Style="{StaticResource PaddedControl}" Width="30" MinWidth="0" Mask="##" TextChanged="cntrlMasked_TextChanged" Background="{Binding ElementName=cntrlEstEffortH, Path=Background}" />
-									<TextBlock Style="{StaticResource PaddedLabel}">minutes</TextBlock>
+									<ui_cntrl:NumericTextBox MaxLength="3" x:Name="cntrlEstEffortH" Style="{StaticResource PaddedControl}" Width="30" MinWidth="0" TextChanged="cntrlMasked_TextChanged" />
+									<TextBlock Style="{StaticResource PaddedLabel}" Name="lblHours4" />
+									<ui_cntrl:NumericTextBox MaxLength="2" x:Name="cntrlEstEffortM" Style="{StaticResource PaddedControl}" Width="30" MinWidth="0" TextChanged="cntrlMasked_TextChanged" Background="{Binding ElementName=cntrlEstEffortH, Path=Background}" />
+									<TextBlock Style="{StaticResource PaddedLabel}" Name="lblMins4" />
 								</StackPanel>
-								<!-- ROW2: Actual Effort -->
+								<!-- ROW2: Projected Effort / Actual Effort -->
+								<TextBlock Name="lblProjEffort" Grid.Column="0" Grid.Row="2" Style="{StaticResource PaddedLabel}" />
+								<TextBlock Grid.Column="1" Grid.Row="2" VerticalAlignment="Center">
+									<Run Name="cntrlProjEffortH" /> <Run Name="lblHours1" />, <Run Name="cntrlProjEffortM"/> <Run Name="lblMins1" />
+								</TextBlock>
 								<TextBlock Name="lblActEffort" Grid.Column="3" Grid.Row="2" Style="{StaticResource PaddedLabel}" />
 								<StackPanel Grid.Column="4" Grid.Row="2" Orientation="Horizontal">
-									<TextBox MaxLength="3" Name="cntrlActEffortH" Style="{StaticResource PaddedControl}" Width="30" MinWidth="0" TextChanged="cntrlMasked_TextChanged" />
-									<TextBlock Style="{StaticResource PaddedLabel}">hours,</TextBlock>
-									<TextBox MaxLength="2" Name="cntrlActEffortM" Style="{StaticResource PaddedControl}" Width="30" MinWidth="0" TextChanged="cntrlMasked_TextChanged" Background="{Binding ElementName=cntrlActEffortH, Path=Background}" />
-									<TextBlock Style="{StaticResource PaddedLabel}">minutes</TextBlock>
+									<ui_cntrl:NumericTextBox MaxLength="3" x:Name="cntrlActEffortH" Style="{StaticResource PaddedControl}" Width="30" MinWidth="0" TextChanged="cntrlMasked_TextChanged" />
+									<TextBlock Style="{StaticResource PaddedLabel}" Name="lblHours2" />
+									<ui_cntrl:NumericTextBox MaxLength="2" x:Name="cntrlActEffortM" Style="{StaticResource PaddedControl}" Width="30" MinWidth="0" TextChanged="cntrlMasked_TextChanged" Background="{Binding ElementName=cntrlActEffortH, Path=Background}" />
+									<TextBlock Style="{StaticResource PaddedLabel}" Name="lblMins2" />
+								</StackPanel>
+								<!-- ROW3: Remaining Effort -->
+								<TextBlock Name="lblRemEffort" Grid.Column="3" Grid.Row="3" Style="{StaticResource PaddedLabel}" />
+								<StackPanel Grid.Column="4" Grid.Row="3" Orientation="Horizontal">
+									<ui_cntrl:NumericTextBox MaxLength="3" x:Name="cntrlRemEffortH" Style="{StaticResource PaddedControl}" Width="30" MinWidth="0" TextChanged="cntrlMasked_TextChanged" />
+									<TextBlock Style="{StaticResource PaddedLabel}" Name="lblHours3" />
+									<ui_cntrl:NumericTextBox MaxLength="2" x:Name="cntrlRemEffortM" Style="{StaticResource PaddedControl}" Width="30" MinWidth="0" TextChanged="cntrlMasked_TextChanged" Background="{Binding ElementName=cntrlActEffortH, Path=Background}" />
+									<TextBlock Style="{StaticResource PaddedLabel}" Name="lblMins3" />
 								</StackPanel>
 							</Grid>
 						</Expander>
