@@ -713,16 +713,16 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 		#endregion
 
 		/// <summary>Merges two RemoteIncidents into one for re-saving.</summary>
-		/// <param name="incUserSaved">The user-saved task to merge with the Concurrent task.</param>
-		/// <param name="incConcurrent">The concurrent task to merge with the User task.</param>
-		/// <param name="incOriginal">The original unchanged task used for reference.</param>
+		/// <param name="tskUserSaved">The user-saved task to merge with the Concurrent task.</param>
+		/// <param name="tskConcurrent">The concurrent task to merge with the User task.</param>
+		/// <param name="tskOriginal">The original unchanged task used for reference.</param>
 		/// <returns>A new RemoteIncident suitable for saving.</returns>
 		/// <remarks>This should only be called when it is known that there are no conflicting values between the User-Saved task and the Concurrent task.</remarks>
 		private RemoteIncident save_MergeConcurrency(RemoteIncident incUserSaved, RemoteIncident incConcurrent, RemoteIncident incOriginal)
 		{
-			//If the field was not changed by the user (incUserSaved == incOriginal), then use the incConcurrent. (Assuming that the
-			// incConcurrent has a possible updated value.
-			//Otherwise, use the incUserSaved value.
+			//If the field was not changed by the user (tskUserSaved == tskOriginal), then use the tskConcurrent. (Assuming that the
+			// tskConcurrent has a possible updated value.
+			//Otherwise, use the tskUserSaved value.
 			try
 			{
 				RemoteIncident retIncident = new RemoteIncident();

@@ -682,10 +682,10 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 					this.barSavingTask.Value--;
 
 					//Re-launch the saving..
-					RemoteIncident incMerged = this.save_MergeConcurrency(this.save_GetFromFields(), this._TaskConcurrent, this._Task);
+					RemoteTask incMerged = this.save_MergeConcurrency(this.save_GetFromFields(), this._TaskConcurrent, this._Task);
 
 					this._clientNumSaving++;
-					client.Incident_UpdateAsync(incMerged, this._clientNum++);
+					client.Task_UpdateAsync(incMerged, this._clientNum++);
 				}
 			}
 			catch (Exception ex)
@@ -697,66 +697,62 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 		#endregion
 
 		/// <summary>Merges two RemoteIncidents into one for re-saving.</summary>
-		/// <param name="incUserSaved">The user-saved incident to merge with the Concurrent incident.</param>
-		/// <param name="incConcurrent">The concurrent incident to merge with the User incident.</param>
-		/// <param name="incOriginal">The original unchanged incident used for reference.</param>
+		/// <param name="tskUserSaved">The user-saved incident to merge with the Concurrent incident.</param>
+		/// <param name="tskConcurrent">The concurrent incident to merge with the User incident.</param>
+		/// <param name="tskOriginal">The original unchanged incident used for reference.</param>
 		/// <returns>A new RemoteIncident suitable for saving.</returns>
 		/// <remarks>This should only be called when it is known that there are no conflicting values between the User-Saved incident and the Concurrent incident.</remarks>
-		private RemoteIncident save_MergeConcurrency(RemoteIncident incUserSaved, RemoteIncident incConcurrent, RemoteIncident incOriginal)
+		private RemoteTask save_MergeConcurrency(RemoteTask tskUserSaved, RemoteTask tskConcurrent, RemoteTask tskOriginal)
 		{
-			//If the field was not changed by the user (incUserSaved == incOriginal), then use the incConcurrent. (Assuming that the
-			// incConcurrent has a possible updated value.
-			//Otherwise, use the incUserSaved value.
+			//If the field was not changed by the user (tskUserSaved == tskOriginal), then use the tskConcurrent. (Assuming that the
+			// tskConcurrent has a possible updated value.
+			//Otherwise, use the tskUserSaved value.
 			try
 			{
-				RemoteIncident retIncident = new RemoteIncident();
+				RemoteTask retTask = new RemoteTask();
 
-				retIncident.ActualEffort = ((incUserSaved.ActualEffort == incOriginal.ActualEffort) ? incConcurrent.ActualEffort : incUserSaved.ActualEffort);
-				retIncident.ClosedDate = ((incUserSaved.ClosedDate == incOriginal.ClosedDate) ? incConcurrent.ClosedDate : incUserSaved.ClosedDate);
-				retIncident.CreationDate = incOriginal.CreationDate;
-				string strDescUser = StaticFuncs.StripTagsCharArray(incUserSaved.Description);
-				string strDescOrig = StaticFuncs.StripTagsCharArray(incOriginal.Description);
-				retIncident.Description = ((strDescOrig.TrimEquals(strDescOrig)) ? incConcurrent.Description : incUserSaved.Description);
-				retIncident.DetectedReleaseId = ((incUserSaved.DetectedReleaseId == incOriginal.DetectedReleaseId) ? incConcurrent.DetectedReleaseId : incUserSaved.DetectedReleaseId);
-				retIncident.EstimatedEffort = ((incUserSaved.EstimatedEffort == incOriginal.EstimatedEffort) ? incConcurrent.EstimatedEffort : incUserSaved.EstimatedEffort);
-				retIncident.IncidentId = incOriginal.IncidentId;
-				retIncident.IncidentStatusId = ((incUserSaved.IncidentStatusId == incOriginal.IncidentStatusId) ? incConcurrent.IncidentStatusId : incUserSaved.IncidentStatusId);
-				retIncident.IncidentTypeId = ((incUserSaved.IncidentTypeId == incOriginal.IncidentTypeId) ? incConcurrent.IncidentTypeId : incUserSaved.IncidentTypeId);
-				retIncident.LastUpdateDate = incConcurrent.LastUpdateDate;
-				retIncident.List01 = ((incUserSaved.List01 == incOriginal.List01) ? incConcurrent.List01 : incUserSaved.List01);
-				retIncident.List02 = ((incUserSaved.List02 == incOriginal.List02) ? incConcurrent.List02 : incUserSaved.List02);
-				retIncident.List03 = ((incUserSaved.List03 == incOriginal.List03) ? incConcurrent.List03 : incUserSaved.List03);
-				retIncident.List04 = ((incUserSaved.List04 == incOriginal.List04) ? incConcurrent.List04 : incUserSaved.List04);
-				retIncident.List05 = ((incUserSaved.List05 == incOriginal.List05) ? incConcurrent.List05 : incUserSaved.List05);
-				retIncident.List06 = ((incUserSaved.List06 == incOriginal.List06) ? incConcurrent.List06 : incUserSaved.List06);
-				retIncident.List07 = ((incUserSaved.List07 == incOriginal.List07) ? incConcurrent.List07 : incUserSaved.List07);
-				retIncident.List08 = ((incUserSaved.List08 == incOriginal.List08) ? incConcurrent.List08 : incUserSaved.List08);
-				retIncident.List09 = ((incUserSaved.List09 == incOriginal.List09) ? incConcurrent.List09 : incUserSaved.List09);
-				retIncident.List10 = ((incUserSaved.List10 == incOriginal.List10) ? incConcurrent.List10 : incUserSaved.List10);
-				retIncident.Name = ((incUserSaved.Name.TrimEquals(incOriginal.Name)) ? incConcurrent.Name : incUserSaved.Name);
-				retIncident.OpenerId = ((incUserSaved.OpenerId == incOriginal.OpenerId) ? incConcurrent.OpenerId : incUserSaved.OpenerId);
-				retIncident.OwnerId = ((incUserSaved.OwnerId == incOriginal.OwnerId) ? incConcurrent.OwnerId : incUserSaved.OwnerId);
-				retIncident.PriorityId = ((incUserSaved.PriorityId == incOriginal.PriorityId) ? incConcurrent.PriorityId : incUserSaved.PriorityId);
-				retIncident.ProjectId = incOriginal.ProjectId;
-				retIncident.RemainingEffort = ((incUserSaved.RemainingEffort == incOriginal.RemainingEffort) ? incConcurrent.RemainingEffort : incUserSaved.RemainingEffort);
-				retIncident.ResolvedReleaseId = ((incUserSaved.ResolvedReleaseId == incOriginal.ResolvedReleaseId) ? incConcurrent.ResolvedReleaseId : incUserSaved.ResolvedReleaseId);
-				retIncident.SeverityId = ((incUserSaved.SeverityId == incOriginal.SeverityId) ? incConcurrent.SeverityId : incUserSaved.SeverityId);
-				retIncident.StartDate = ((incUserSaved.StartDate == incOriginal.StartDate) ? incConcurrent.StartDate : incUserSaved.StartDate);
-				retIncident.TestRunStepId = ((incUserSaved.TestRunStepId == incOriginal.TestRunStepId) ? incConcurrent.TestRunStepId : incUserSaved.TestRunStepId);
-				retIncident.Text01 = ((retIncident.Text01.TrimEquals(incOriginal.Text01)) ? incConcurrent.Text01 : incUserSaved.Text01);
-				retIncident.Text02 = ((retIncident.Text02.TrimEquals(incOriginal.Text02)) ? incConcurrent.Text02 : incUserSaved.Text02);
-				retIncident.Text03 = ((retIncident.Text03.TrimEquals(incOriginal.Text03)) ? incConcurrent.Text03 : incUserSaved.Text03);
-				retIncident.Text04 = ((retIncident.Text04.TrimEquals(incOriginal.Text04)) ? incConcurrent.Text04 : incUserSaved.Text04);
-				retIncident.Text05 = ((retIncident.Text05.TrimEquals(incOriginal.Text05)) ? incConcurrent.Text05 : incUserSaved.Text05);
-				retIncident.Text06 = ((retIncident.Text06.TrimEquals(incOriginal.Text06)) ? incConcurrent.Text06 : incUserSaved.Text06);
-				retIncident.Text07 = ((retIncident.Text07.TrimEquals(incOriginal.Text07)) ? incConcurrent.Text07 : incUserSaved.Text07);
-				retIncident.Text08 = ((retIncident.Text08.TrimEquals(incOriginal.Text01)) ? incConcurrent.Text08 : incUserSaved.Text08);
-				retIncident.Text09 = ((retIncident.Text09.TrimEquals(incOriginal.Text09)) ? incConcurrent.Text09 : incUserSaved.Text09);
-				retIncident.Text10 = ((retIncident.Text10.TrimEquals(incOriginal.Text10)) ? incConcurrent.Text10 : incUserSaved.Text10);
-				retIncident.VerifiedReleaseId = ((incUserSaved.VerifiedReleaseId == incOriginal.VerifiedReleaseId) ? incConcurrent.VerifiedReleaseId : incUserSaved.VerifiedReleaseId);
+				retTask.ActualEffort = ((tskUserSaved.ActualEffort == tskOriginal.ActualEffort) ? tskConcurrent.ActualEffort : tskUserSaved.ActualEffort);
+				retTask.CreationDate = tskOriginal.CreationDate;
+				retTask.CreatorId = ((tskUserSaved.CreatorId == tskOriginal.CreatorId) ? tskConcurrent.CreatorId : tskUserSaved.CreatorId);
+				string strDescUser = StaticFuncs.StripTagsCharArray(tskUserSaved.Description);
+				string strDescOrig = StaticFuncs.StripTagsCharArray(tskOriginal.Description);
+				retTask.Description = ((strDescOrig.TrimEquals(strDescOrig)) ? tskConcurrent.Description : tskUserSaved.Description);
+				retTask.EndDate = ((tskUserSaved.EndDate == tskOriginal.EndDate) ? tskConcurrent.EndDate : tskUserSaved.EndDate);
+				retTask.EstimatedEffort = ((tskUserSaved.EstimatedEffort == tskOriginal.EstimatedEffort) ? tskConcurrent.EstimatedEffort : tskUserSaved.EstimatedEffort);
+				retTask.LastUpdateDate = tskConcurrent.LastUpdateDate;
+				retTask.List01 = ((tskUserSaved.List01 == tskOriginal.List01) ? tskConcurrent.List01 : tskUserSaved.List01);
+				retTask.List02 = ((tskUserSaved.List02 == tskOriginal.List02) ? tskConcurrent.List02 : tskUserSaved.List02);
+				retTask.List03 = ((tskUserSaved.List03 == tskOriginal.List03) ? tskConcurrent.List03 : tskUserSaved.List03);
+				retTask.List04 = ((tskUserSaved.List04 == tskOriginal.List04) ? tskConcurrent.List04 : tskUserSaved.List04);
+				retTask.List05 = ((tskUserSaved.List05 == tskOriginal.List05) ? tskConcurrent.List05 : tskUserSaved.List05);
+				retTask.List06 = ((tskUserSaved.List06 == tskOriginal.List06) ? tskConcurrent.List06 : tskUserSaved.List06);
+				retTask.List07 = ((tskUserSaved.List07 == tskOriginal.List07) ? tskConcurrent.List07 : tskUserSaved.List07);
+				retTask.List08 = ((tskUserSaved.List08 == tskOriginal.List08) ? tskConcurrent.List08 : tskUserSaved.List08);
+				retTask.List09 = ((tskUserSaved.List09 == tskOriginal.List09) ? tskConcurrent.List09 : tskUserSaved.List09);
+				retTask.List10 = ((tskUserSaved.List10 == tskOriginal.List10) ? tskConcurrent.List10 : tskUserSaved.List10);
+				retTask.Name = ((tskUserSaved.Name.TrimEquals(tskOriginal.Name)) ? tskConcurrent.Name : tskUserSaved.Name);
+				retTask.OwnerId = ((tskUserSaved.OwnerId == tskOriginal.OwnerId) ? tskConcurrent.OwnerId : tskUserSaved.OwnerId);
+				retTask.ProjectId = tskOriginal.ProjectId;
+				retTask.ReleaseId = ((tskUserSaved.ReleaseId == tskOriginal.ReleaseId) ? tskConcurrent.ReleaseId : tskUserSaved.ReleaseId);
+				retTask.RemainingEffort = ((tskUserSaved.RemainingEffort == tskOriginal.RemainingEffort) ? tskConcurrent.RemainingEffort : tskUserSaved.RemainingEffort);
+				retTask.RequirementId = ((tskUserSaved.RequirementId == tskOriginal.RequirementId) ? tskConcurrent.RequirementId : tskUserSaved.RequirementId);
+				retTask.StartDate = ((tskUserSaved.StartDate == tskOriginal.StartDate) ? tskConcurrent.StartDate : tskUserSaved.StartDate);
+				retTask.TaskId = tskOriginal.TaskId;
+				retTask.TaskPriorityId = ((tskUserSaved.TaskPriorityId == tskOriginal.TaskPriorityId) ? tskConcurrent.TaskPriorityId : tskUserSaved.TaskPriorityId);
+				retTask.TaskStatusId = ((tskUserSaved.TaskStatusId == tskOriginal.TaskStatusId) ? tskConcurrent.TaskStatusId : tskUserSaved.TaskStatusId);
+				retTask.Text01 = ((retTask.Text01.TrimEquals(tskOriginal.Text01)) ? tskConcurrent.Text01 : tskUserSaved.Text01);
+				retTask.Text02 = ((retTask.Text02.TrimEquals(tskOriginal.Text02)) ? tskConcurrent.Text02 : tskUserSaved.Text02);
+				retTask.Text03 = ((retTask.Text03.TrimEquals(tskOriginal.Text03)) ? tskConcurrent.Text03 : tskUserSaved.Text03);
+				retTask.Text04 = ((retTask.Text04.TrimEquals(tskOriginal.Text04)) ? tskConcurrent.Text04 : tskUserSaved.Text04);
+				retTask.Text05 = ((retTask.Text05.TrimEquals(tskOriginal.Text05)) ? tskConcurrent.Text05 : tskUserSaved.Text05);
+				retTask.Text06 = ((retTask.Text06.TrimEquals(tskOriginal.Text06)) ? tskConcurrent.Text06 : tskUserSaved.Text06);
+				retTask.Text07 = ((retTask.Text07.TrimEquals(tskOriginal.Text07)) ? tskConcurrent.Text07 : tskUserSaved.Text07);
+				retTask.Text08 = ((retTask.Text08.TrimEquals(tskOriginal.Text01)) ? tskConcurrent.Text08 : tskUserSaved.Text08);
+				retTask.Text09 = ((retTask.Text09.TrimEquals(tskOriginal.Text09)) ? tskConcurrent.Text09 : tskUserSaved.Text09);
+				retTask.Text10 = ((retTask.Text10.TrimEquals(tskOriginal.Text10)) ? tskConcurrent.Text10 : tskUserSaved.Text10);
 
 				//Return our new incident.
-				return retIncident;
+				return retTask;
 			}
 			catch (Exception ex)
 			{

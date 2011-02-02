@@ -102,7 +102,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 					case 4:
 						newStatus.Name = StaticFuncs.getCultureResource.GetString("app_Task_Status_Blocked");
 						break;
-					case 4:
+					case 5:
 						newStatus.Name = StaticFuncs.getCultureResource.GetString("app_Task_Status_Deferred");
 						break;
 				}
@@ -330,11 +330,11 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			//Fire off the url.
 			try
 			{
-				System.Diagnostics.Process.Start(this._IncidentUrl);
+				System.Diagnostics.Process.Start(this._TaskUrl);
 			}
 			catch (Exception ex)
 			{
-				Logger.LogMessage(ex, "Error launching URL: " + this._IncidentUrl);
+				Logger.LogMessage(ex, "Error launching URL: " + this._TaskUrl);
 				MessageBox.Show(StaticFuncs.getCultureResource.GetString("app_General_ErrorLaunchingUrlMessage"), StaticFuncs.getCultureResource.GetString("app_General_Error"), MessageBoxButton.OK, MessageBoxImage.Error);
 			}
 		}

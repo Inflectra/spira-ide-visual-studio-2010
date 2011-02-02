@@ -201,7 +201,8 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010
 							break;
 
 						case TreeViewArtifact.ArtifactTypeEnum.Task:
-							//TODO: Create task detail screen.
+							frmDetailsTask detTask= new frmDetailsTask(Artifact, window);
+							detailContent = detTask;
 							break;
 					}
 
