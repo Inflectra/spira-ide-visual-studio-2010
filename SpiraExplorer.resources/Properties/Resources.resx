@@ -579,4 +579,34 @@ Are you sure you want to continue?</value>
   <data name="app_General_CreateWindowError" xml:space="preserve">
     <value>Could not create ToolWindow.</value>
   </data>
+  <data name="app_Task_Priority_0" xml:space="preserve">
+    <value>-- None --</value>
+  </data>
+  <data name="app_Task_Priority_1" xml:space="preserve">
+    <value>1 - Critical</value>
+  </data>
+  <data name="app_Task_Priority_2" xml:space="preserve">
+    <value>2 - High</value>
+  </data>
+  <data name="app_Task_Priority_3" xml:space="preserve">
+    <value>3 - Medium</value>
+  </data>
+  <data name="app_Task_Priority_4" xml:space="preserve">
+    <value>4 - Low</value>
+  </data>
+  <data name="app_Task_Status_Blocked" xml:space="preserve">
+    <value>Blocked</value>
+  </data>
+  <data name="app_Task_Status_Completed" xml:space="preserve">
+    <value>Completed</value>
+  </data>
+  <data name="app_Task_Status_Deferred" xml:space="preserve">
+    <value>Deferred</value>
+  </data>
+  <data name="app_Task_Status_InProgress" xml:space="preserve">
+    <value>In Progress</value>
+  </data>
+  <data name="app_Task_Status_NotStarted" xml:space="preserve">
+    <value>Not Started</value>
+  </data>
 </root>
