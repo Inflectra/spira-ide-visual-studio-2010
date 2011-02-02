@@ -137,6 +137,13 @@
       <DependentUpon>wpfColorPickerDialog.xaml</DependentUpon>
     </Compile>
     <Compile Include="Forms\cntrlNumericTextBox.cs" />
+    <Compile Include="Forms\frmDetailsTask\frmDetailsTask - Load.cs" />
+    <Compile Include="Forms\frmDetailsTask\frmDetailsTask - Save.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Forms\frmDetailsTask\frmDetailsTask.xaml.cs">
+      <DependentUpon>frmDetailsTask.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Forms\frmAssignProject\frmAssignProject.xaml.cs">
       <DependentUpon>frmAssignProject.xaml</DependentUpon>
     </Compile>
@@ -192,6 +199,11 @@
     </VSCTCompile>
   </ItemGroup>
   <ItemGroup>
+    <Resource Include="Resources\imgOpenWeb.png" />
+    <Resource Include="Resources\imgReload.png" />
+    <Resource Include="Resources\imgSave.png" />
+    <Resource Include="Resources\imgTimer.png" />
+    <Resource Include="Resources\imgShortcut.png" />
     <Content Include="Resources\Screenshot.png">
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
@@ -211,10 +223,6 @@
     <Resource Include="Forms\cntrlRichTextEditor\Resources\img_listnumber.png" />
     <Resource Include="Forms\cntrlRichTextEditor\Resources\img_outdent.png" />
     <Resource Include="Forms\cntrlRichTextEditor\Resources\img_underline.png" />
-    <Resource Include="Resources\imgOpenWeb.png" />
-    <Resource Include="Resources\imgReload.png" />
-    <Resource Include="Resources\imgSave.png" />
-    <Resource Include="Resources\imgTimer.png" />
     <Content Include="Resources\Package.ico">
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
@@ -237,6 +245,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Forms\cntrlRichTextEditor\HelperControls\cntrlColorPicker\wpfColorPickerDialog.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Forms\frmDetailsTask\frmDetailsTask.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

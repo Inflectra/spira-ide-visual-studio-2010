@@ -3,7 +3,7 @@
 	<Identifier Id="6fdddea3-588b-4fe1-acb7-9c5b03bccbad">
 		<Name>SpiraExplorer</Name>
 		<Author>Inflectra</Author>
-<Version>3.0.0.244</Version>
+<Version>3.0.0.246</Version>
 		<Description xml:space="preserve">This extension allows you to integrate SpiraTeam with Visual Studio and view assigned Tasks, Requirements, and Incidents from within the VS UI.</Description>
 		<Locale>1033</Locale>
 		<MoreInfoUrl>http://google.com</MoreInfoUrl>

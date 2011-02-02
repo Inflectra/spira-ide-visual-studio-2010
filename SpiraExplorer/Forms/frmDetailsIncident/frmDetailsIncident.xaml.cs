@@ -379,7 +379,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 				//Set the timer.
 				this._ArtifactDetails.IsTimed = false;
 
-				//Get the value and add it to the incident.
+				//Get the value and add it to the task.
 				TimeSpan workedSpan = this._ArtifactDetails.WorkTime;
 
 				//Add it to the Incident.

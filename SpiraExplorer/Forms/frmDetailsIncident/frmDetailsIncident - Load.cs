@@ -251,7 +251,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			System.Diagnostics.Debug.WriteLine(CLASS + METHOD + " EXIT. Clients - Running: " + this._clientNumRunning.ToString() + ", Total: " + this._clientNum.ToString());
 		}
 
-		/// <summary>Hit when we're finished getting our incident types.</summary>
+		/// <summary>Hit when we're finished getting our task types.</summary>
 		/// <param name="sender">ImportExportClient</param>
 		/// <param name="e">Incident_RetrieveTypesCompletedEventArgs</param>
 		private void _client_Incident_RetrieveTypesCompleted(object sender, Incident_RetrieveTypesCompletedEventArgs e)
@@ -280,7 +280,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			System.Diagnostics.Debug.WriteLine(CLASS + METHOD + " EXIT. Clients - Running: " + this._clientNumRunning.ToString() + ", Total: " + this._clientNum.ToString());
 		}
 
-		/// <summary>Hit when we're finished getting our incident statuses.</summary>
+		/// <summary>Hit when we're finished getting our task statuses.</summary>
 		/// <param name="sender">ImportExportClient</param>
 		/// <param name="e">Incident_RetrieveStatusesCompletedEventArgs</param>
 		private void _client_Incident_RetrieveStatusesCompleted(object sender, Incident_RetrieveStatusesCompletedEventArgs e)
@@ -309,7 +309,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			System.Diagnostics.Debug.WriteLine(CLASS + METHOD + " EXIT. Clients - Running: " + this._clientNumRunning.ToString() + ", Total: " + this._clientNum.ToString());
 		}
 
-		/// <summary>Hit when we're finished getting our incident priorities.</summary>
+		/// <summary>Hit when we're finished getting our task priorities.</summary>
 		/// <param name="sender">ImportExportClient</param>
 		/// <param name="e">Incident_RetrievePrioritiesCompletedEventArgs</param>
 		private void _client_Incident_RetrievePrioritiesCompleted(object sender, Incident_RetrievePrioritiesCompletedEventArgs e)
@@ -335,7 +335,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			System.Diagnostics.Debug.WriteLine(CLASS + METHOD + " EXIT. Clients - Running: " + this._clientNumRunning.ToString() + ", Total: " + this._clientNum.ToString());
 		}
 
-		/// <summary>Hit when we're finished getting our incident severities.</summary>
+		/// <summary>Hit when we're finished getting our task severities.</summary>
 		/// <param name="sender">ImportExportClient</param>
 		/// <param name="e">Incident_RetrieveSeveritiesCompletedEventArgs</param>
 		private void _client_Incident_RetrieveSeveritiesCompleted(object sender, Incident_RetrieveSeveritiesCompletedEventArgs e)
@@ -364,7 +364,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			System.Diagnostics.Debug.WriteLine(CLASS + METHOD + " EXIT. Clients - Running: " + this._clientNumRunning.ToString() + ", Total: " + this._clientNum.ToString());
 		}
 
-		/// <summary>Hit when we're finished getting incident resolutions.</summary>
+		/// <summary>Hit when we're finished getting task resolutions.</summary>
 		/// <param name="sender">IMportExportClient</param>
 		/// <param name="e">Incident_RetrieveResolutionsCompletedEventArgs</param>
 		private void _client_Incident_RetrieveResolutionsCompleted(object sender, Incident_RetrieveResolutionsCompletedEventArgs e)
@@ -394,7 +394,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			System.Diagnostics.Debug.WriteLine(CLASS + METHOD + " EXIT. Clients - Running: " + this._clientNumRunning.ToString() + ", Total: " + this._clientNum.ToString());
 		}
 
-		/// <summary>Hit when we're finished getting the main incident details.</summary>
+		/// <summary>Hit when we're finished getting the main task details.</summary>
 		/// <param name="sender">ImportExportClient</param>
 		/// <param name="e">Incident_RetrieveByIdCompletedEventArgs</param>
 		private void _client_Incident_RetrieveByIdCompleted(object sender, Incident_RetrieveByIdCompletedEventArgs e)
@@ -947,8 +947,8 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 
 
 
-		/// <summary>Load the specified incident into the data fields.</summary>
-		/// <param name="incident">The incident details to load into fields.</param>
+		/// <summary>Load the specified task into the data fields.</summary>
+		/// <param name="task">The task details to load into fields.</param>
 		private void loadItem_DisplayInformation(Business.SpiraTeam_Client.RemoteIncident incident)
 		{
 			const string METHOD = "loadItem_DisplayInformation()";
