@@ -192,7 +192,9 @@
     </VSCTCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\img_Spira_32b.bmp" />
+    <Content Include="Resources\Screenshot.png">
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
     <None Include="Resources\img_Spira_24b.bmp" />
     <Resource Include="Forms\cntrlRichTextEditor\Resources\img_bold.png" />
     <Resource Include="Forms\cntrlRichTextEditor\Resources\img_font.png" />
@@ -213,7 +215,9 @@
     <Resource Include="Resources\imgReload.png" />
     <Resource Include="Resources\imgSave.png" />
     <Resource Include="Resources\imgTimer.png" />
-    <Content Include="Resources\Package.ico" />
+    <Content Include="Resources\Package.ico">
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <Page Include="Forms\cntlDiscussionFrame\wpfDiscussionFrame.xaml">
@@ -278,7 +282,8 @@
     </VisualStudio>
   </ProjectExtensions>
   <PropertyGroup>
-    <PreBuildEvent>rmdir /s /q "C:\Users\mike\AppData\Local\Microsoft\VisualStudio\10.0Exp\Extensions"</PreBuildEvent>
+    <PreBuildEvent>"C:\Subversion\Projects\Internal Applications\VSIPVersionUpdater\VSIPVersionUpdater\bin\Debug\VSIPVersionUpdater.exe" "$(ProjectDir)Properties\AssemblyInfo.cs" "$(ProjectDir)Properties\source.extension.vsixmanifest"
+rmdir /s /q "C:\Users\mike\AppData\Local\Microsoft\VisualStudio\10.0Exp\Extensions"</PreBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

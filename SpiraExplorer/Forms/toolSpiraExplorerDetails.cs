@@ -21,22 +21,16 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 		public toolSpiraExplorerDetails() :
 			base(null)
 		{
-			base.Caption = "";
-			// Set the image that will appear on the tab of the window frame
-			// when docked with an other window
-			// The resource ID correspond to the one defined in the resx file
-			// while the Index is the offset in the bitmap strip. Each image in
-			// the strip being 16x16.
-			this.BitmapResourceID = 301;
-			this.BitmapIndex = 1;
 
+			base.Caption = "";
 			base.Content = new cntrlDetailsForm();
+
 		}
 
 		public toolSpiraExplorerDetails(object ContentControl)
 			: this()
 		{
-			this.Content = ContentControl;
+			this.FormControl = ContentControl;
 		}
 
 		/// <summary>The contents of the tool window.</summary>
