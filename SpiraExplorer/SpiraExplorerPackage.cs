@@ -70,7 +70,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010
 
 			if ((null == window) || (null == window.Frame))
 			{
-				throw new NotSupportedException(Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Resources.CanNotCreateWindow);
+				throw new NotSupportedException(StaticFuncs.getCultureResource.GetString("app_General_CreateWindowError"));
 			}
 			IVsWindowFrame windowFrame = (IVsWindowFrame)window.Frame;
 			Microsoft.VisualStudio.ErrorHandler.ThrowOnFailure(windowFrame.Show());

@@ -29,6 +29,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 		private bool _isLoadingInformation;
 		private bool _isWorkflowChanging;
 		#endregion
+		private Grid _gridCurrentlyFadingOut;
 
 		private TreeViewArtifact _ArtifactDetails;
 
@@ -261,23 +262,16 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 		{
 			try
 			{
-				if (this.panelStatus.Opacity < 0.1 && this.panelStatus.Visibility != System.Windows.Visibility.Collapsed)
+				if (this._gridCurrentlyFadingOut != null)
 				{
-					this.panelStatus.Visibility = System.Windows.Visibility.Collapsed;
-				}
-				else if (this.panelError.Opacity < 0.1 && this.panelError.Visibility != System.Windows.Visibility.Collapsed)
-				{
-					this.panelError.Visibility = System.Windows.Visibility.Collapsed;
-				}
-				else if (this.panelSaving.Opacity < 0.1 && this.panelSaving.Visibility != System.Windows.Visibility.Collapsed)
-				{
-					this.panelSaving.Visibility = System.Windows.Visibility.Collapsed;
+					this._gridCurrentlyFadingOut.Visibility = System.Windows.Visibility.Collapsed;
+					this._gridCurrentlyFadingOut = null;
 				}
 			}
 			catch (Exception ex)
 			{
 				//Error occurred, clear them all.
-				//TODO: Log error.
+				Logger.LogMessage(ex, "Clearing panel fade out.");
 				this.panelStatus.Visibility = System.Windows.Visibility.Collapsed;
 				this.panelError.Visibility = System.Windows.Visibility.Collapsed;
 				this.panelSaving.Visibility = System.Windows.Visibility.Collapsed;
@@ -633,6 +627,9 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 				case System.Windows.Visibility.Collapsed:
 				case System.Windows.Visibility.Hidden:
 				default:
+					//Assign to the var..
+					this._gridCurrentlyFadingOut = Panel;
+
 					//Fade it out.
 					Storyboard storyFadeOut = new Storyboard();
 					DoubleAnimation animFadeOut = new DoubleAnimation(1, 0, new TimeSpan(0, 0, 0, 0, 250));

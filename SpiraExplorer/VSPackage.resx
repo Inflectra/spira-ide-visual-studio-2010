@@ -1,13 +1,4 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<!--
-    VS SDK Notes: This resx file contains the resources that will be consumed directly by your package.
-    For example, if you chose to create a tool window, there is a resource with ID 'CanNotCreateWindow'. This
-    is used in VsPkg.cs to determine the string to show the user if there is an error when attempting to create
-    the tool window.
-
-    Resources that are accessed directly from your package *by Visual Studio* are stored in the VSPackage.resx 
-    file.
--->
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -126,10 +117,33 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="CanNotCreateWindow" xml:space="preserve">
-    <value>Can not create tool window.</value>
+  <data name="110" xml:space="preserve">
+    <value>SpiraExplorer</value>
   </data>
-  <data name="ToolWindowTitle" xml:space="preserve">
-    <value>SpiraTeam Project Explorer</value>
+  <data name="112" xml:space="preserve">
+    <value>This extension allows you to integrate SpiraTeam with Visual Studio and view assigned Tasks, Requirements, and Incidents from within the VS UI.</value>
+  </data>
+  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="400" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>.\Resources\Package.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+  <data name="301" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        Qk02AwAAAAAAADYAAAAoAAAAEAAAABAAAAABABgAAAAAAAAAAAASCwAAEgsAAAAAAAAAAAAAfn5+s7Oz
+        s7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozfn5+tLS0/v7+/v7+/v7+8fX9uM72
+        jrHweKLueqPul7fx1eL5/v7+/v7+/v7+/v7+s7OztLS0/v7+1uP5d6HtNnTlNnTlZpXri6/wlLXxgqju
+        UYfobJns6vH8/v7+/v7+s7OzrrCze6TuMXHlPHjmm7ny7/T8/v7+/v7+/v7+/v7+/v7+z974eaLt5+77
+        /v7+s7OztLS0YpPraZfs6fD8/v7++fv+3ef63Ob6+fr+/v7+/v7+/v7+/P3+vND2+/z+s7OztLS06O/8
+        /f3+/v7+5+77OXbmMHDlMHDlPXnmtsz1/v7+/v7+/v7+/v7++fv+s7OztLS0/v7+/v7+/v7+/P3+gqnu
+        2+b67fL8X5DqPHnl/v7+/v7+/v7+/v7+/v7+s7OztLS0/v7+/v7+/v7+/v7++fv+m7ryVYnpMXDkTITo
+        /v7+/v7+/v7+/v7+/v7+s7OztLS0/v7+/v7+/v7+/v7+pcDzMHDlWo3qnrzy7PL8/v7+/v7+/v7+/v7+
+        /v7+s7OztLS0/v7+/v7+/v7+/v7+rMX0MHDlo7/zydr4ia3w1OH5/v7+/v7+/v7+/v7+s7OztLS0+fv+
+        /v7+/v7+/v7++vv+ia3vPnnmMXDkRH7mxdf3/v7+/v7+6vD8+/z+s7OztLS05e370d/5/v7+/v7+/v7+
+        /v7+/v7++/z+/v7+/v7+/v7+xdf3RH7nrcb0s7OztLS0/v7+tsz1jrHw7fL8/v7+/v7+/v7+/v7+/v7+
+        2OT5dZ/tMXHlPnnms8r1s7OztLS0/v7+/v7+w9X3TIPoaJbrjbDwlbbxgqjvU4jpMXDlRH7nl7fx8PT8
+        /v7+s7OztLS0/v7+/v7+/v7++Pr+uc71iK3vdaDtfKXumrnxy9v4+/z+/v7+/v7+/v7+s7Ozf39/tLS0
+        tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0fn5+
+</value>
   </data>
 </root>

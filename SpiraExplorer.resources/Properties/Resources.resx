@@ -257,7 +257,7 @@
     <value>New SpiraTeam Project</value>
     <comment>String used for the NewProject title bar.</comment>
   </data>
-  <data name="strProjectTreeName" xml:space="preserve">
+  <data name="app_Tree_Name" xml:space="preserve">
     <value>SpiraTeam Project Explorer</value>
     <comment>String used for the ProjectTree ToolWindow </comment>
   </data>
@@ -575,5 +575,8 @@ Are you sure you want to continue?</value>
   </data>
   <data name="app_Incident_RemEffort" xml:space="preserve">
     <value>Remaining Effort</value>
+  </data>
+  <data name="app_General_CreateWindowError" xml:space="preserve">
+    <value>Could not create ToolWindow.</value>
   </data>
 </root>
