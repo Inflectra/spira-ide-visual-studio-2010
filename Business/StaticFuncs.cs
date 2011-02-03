@@ -10,6 +10,7 @@ using Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business.SpiraTeam_Cli
 using Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Properties;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
+using System.Linq;
 
 namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business
 {
@@ -194,6 +195,34 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business
 				}
 			}
 			return new string(array, 0, arrayIndex);
+		}
+
+		/// <summary>Returns the value in minutes from the given string values.</summary>
+		/// <param name="Hours">String from the Hours textbox.</param>
+		/// <param name="Minutes">String from the Minutes textbox.</param>
+		/// <param name="AllowNull">Whether or not to allow returning of a null value. Defaukt - Yes.</param>
+		/// <returns>The number of minutes that the strings represent.</returns>
+		public static int? GetMinutesFromValues(string Hours, string Minutes, bool AllowNull = true)
+		{
+			int? retInt = null;
+
+			if (!string.IsNullOrWhiteSpace(Hours) || !string.IsNullOrWhiteSpace(Minutes) || !AllowNull)
+			{
+				int intHours = 0;
+				int intMinutes = 0;
+				if (!string.IsNullOrWhiteSpace(Hours) && Hours.All<char>(char.IsNumber))
+				{
+					intHours = int.Parse(Hours);
+				}
+				if (!string.IsNullOrWhiteSpace(Minutes) && Minutes.All<char>(char.IsNumber))
+				{
+					intMinutes= int.Parse(Minutes);
+				}
+
+				retInt = (intHours * 60) + intMinutes;
+			}
+
+			return retInt;
 		}
 	}
 }

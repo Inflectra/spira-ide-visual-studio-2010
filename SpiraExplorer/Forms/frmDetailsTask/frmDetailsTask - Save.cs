@@ -334,7 +334,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 					//Log message.
 					Logger.LogMessage(e.Error, "Adding Comment to Incident");
 					//Display error that the item saved, but adding the new resolution didn't.
-					MessageBox.Show(StaticFuncs.getCultureResource.GetString("app_Incident_AddCommentErrorMessage"), StaticFuncs.getCultureResource.GetString("app_Incident_UpdateError"), MessageBoxButton.OK, MessageBoxImage.Error);
+					MessageBox.Show(StaticFuncs.getCultureResource.GetString("app_Task_AddCommentErrorMessage"), StaticFuncs.getCultureResource.GetString("app_Incident_UpdateError"), MessageBoxButton.OK, MessageBoxImage.Error);
 				}
 
 				//Regardless of what happens, we're disconnecting here.
@@ -359,7 +359,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			if (this._clientNumSaving == 0)
 			{
 				this.IsSaving = false;
-				this.lblLoadingTask.Text = StaticFuncs.getCultureResource.GetString("app_Incident_Refreshing");
+				this.lblLoadingTask.Text = StaticFuncs.getCultureResource.GetString("app_Task_Refreshing");
 				this.load_LoadItem();
 			}
 
@@ -521,7 +521,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 
 				//*Standard fields..
 				retTask.Name = this.cntrlTaskName.Text.Trim();
-				retTask.TaskPriorityId = (int?)this.cntrlPriority.SelectedValue;
+				retTask.TaskPriorityId = ((TaskPriority)this.cntrlPriority.SelectedValue).PriorityId;
 				retTask.CreatorId = ((RemoteUser)this.cntrlDetectedBy.SelectedItem).UserId;
 				retTask.OwnerId = ((RemoteUser)this.cntrlOwnedBy.SelectedItem).UserId;
 				retTask.ReleaseId = ((RemoteRelease)this.cntrlDetectedIn.SelectedItem).ReleaseId;
@@ -533,24 +533,10 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 				//*Schedule fields..
 				retTask.StartDate = this.cntrlStartDate.SelectedDate;
 				retTask.EndDate = this.cntrlEndDate.SelectedDate;
-				string strEstEffortH = this.cntrlEstEffortH.Text.Replace('_', ' ').Trim();
-				string strEstEffortM = this.cntrlEstEffortM.Text.Replace('_', ' ').Trim();
-				if (string.IsNullOrWhiteSpace(strEstEffortH) && string.IsNullOrWhiteSpace(strEstEffortM))
-					retTask.EstimatedEffort = null;
-				else
-					retTask.EstimatedEffort = int.Parse(strEstEffortH) * 60 + int.Parse(strEstEffortM);
-				string strActEffortH = this.cntrlActEffortH.Text.Replace('_', ' ').Trim();
-				string strActEffortM = this.cntrlActEffortM.Text.Replace('_', ' ').Trim();
-				if (string.IsNullOrWhiteSpace(strActEffortH) && string.IsNullOrWhiteSpace(strActEffortM))
-					retTask.ActualEffort = null;
-				else
-					retTask.ActualEffort = int.Parse(strActEffortH) * 60 + int.Parse(strActEffortM);
-				string strRemEffortH = this.cntrlRemEffortH.Text.Replace('_', ' ').Trim();
-				string strRemEffortM = this.cntrlRemEffortM.Text.Replace('_', ' ').Trim();
-				if (string.IsNullOrWhiteSpace(strRemEffortH) && string.IsNullOrWhiteSpace(strRemEffortM))
-					retTask.RemainingEffort = null;
-				else
-					retTask.RemainingEffort = int.Parse(strRemEffortH) * 60 + int.Parse(strRemEffortM);
+				retTask.TaskStatusId = ((TaskStatus)this.cntrlStatus.SelectedValue).StatusId.Value;
+				retTask.EstimatedEffort = StaticFuncs.GetMinutesFromValues(this.cntrlEstEffortH.Text, this.cntrlEstEffortM.Text);
+				retTask.ActualEffort = StaticFuncs.GetMinutesFromValues(this.cntrlActEffortH.Text, this.cntrlActEffortM.Text);
+				retTask.RemainingEffort = StaticFuncs.GetMinutesFromValues(this.cntrlRemEffortH.Text, this.cntrlRemEffortM.Text);
 
 				//Custom fields..
 				foreach (UIElement eleItem in this.gridCustomProperties.Children)
@@ -640,7 +626,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			}
 			catch (Exception ex)
 			{
-				//TODO: Log error here.
+				Logger.LogMessage(ex, "Creating new Task to Update");
 
 				retTask = null;
 			}
@@ -658,7 +644,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			//Hide the error panel, jump to loading..
 			this.display_SetOverlayWindow(this.panelError, System.Windows.Visibility.Collapsed);
 			this.display_SetOverlayWindow(this.panelStatus, System.Windows.Visibility.Visible);
-			this.lblLoadingTask.Text = StaticFuncs.getCultureResource.GetString("app_Incident_Refreshing");
+			this.lblLoadingTask.Text = StaticFuncs.getCultureResource.GetString("app_Task_Refreshing");
 
 			this.load_LoadItem();
 		}

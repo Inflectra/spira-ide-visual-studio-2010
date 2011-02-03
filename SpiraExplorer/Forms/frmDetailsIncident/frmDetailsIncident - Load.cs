@@ -1122,8 +1122,8 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 				this.cntrlActEffortH.Text = ((existingH == 0 && existingM == 0 && !incident.ActualEffort.HasValue) ? null : existingH.ToString());
 				this.cntrlActEffortM.Text = ((existingH == 0 && existingM == 0 && !incident.ActualEffort.HasValue) ? null : existingM.ToString());
 				//Get projected effort..
-				this.cntrlProjEffortH.Text = ((incident.ProjectedEffort.HasValue) ? Math.Floor(((double)incident.ProjectedEffort / (double)60)).ToString() : null);
-				this.cntrlProjEffortM.Text = ((incident.ProjectedEffort.HasValue) ? ((double)incident.ProjectedEffort % (double)60).ToString() : null);
+				this.cntrlProjEffortH.Text = ((incident.ProjectedEffort.HasValue) ? Math.Floor(((double)incident.ProjectedEffort / (double)60)).ToString() : "0");
+				this.cntrlProjEffortM.Text = ((incident.ProjectedEffort.HasValue) ? ((double)incident.ProjectedEffort % (double)60).ToString() : "0");
 				//Get remaining effort..
 				this.cntrlRemEffortH.Text = ((incident.RemainingEffort.HasValue) ? Math.Floor(((double)incident.RemainingEffort / (double)60)).ToString() : null);
 				this.cntrlRemEffortM.Text = ((incident.RemainingEffort.HasValue) ? ((double)incident.RemainingEffort % (double)60).ToString() : null);

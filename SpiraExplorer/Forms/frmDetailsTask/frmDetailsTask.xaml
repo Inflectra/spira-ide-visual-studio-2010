@@ -449,18 +449,18 @@
 							<ComboBox Grid.Column="4" Grid.Row="1" Name="cntrlOwnedBy" Style="{StaticResource PaddedControl}" SelectionChanged="_cntrl_TextChanged" DisplayMemberPath="FullName" />
 							<!-- ROW2: Requirement, Last Updated -->
 							<TextBlock Name="lblRequirement" Grid.Column="0" Grid.Row="2" Style="{StaticResource PaddedLabel}" />
-							<Grid Grid.Column="1" Grid.Row="2" HorizontalAlignment="Stretch" Style="{StaticResource PaddedLabel}" >
+							<Grid Grid.Column="1" Grid.Row="2" HorizontalAlignment="Left" Style="{StaticResource PaddedLabel}" >
 								<Grid.ColumnDefinitions>
 									<ColumnDefinition Width="*" />
 									<ColumnDefinition Width="Auto" />
-									<ColumnDefinition Width="Auto" />
 								</Grid.ColumnDefinitions>
-								<TextBlock Name="txtRequirement" Grid.Column="0" Grid.Row="0" TextTrimming="WordEllipsis" TextWrapping="NoWrap" />
-								<TextBlock Name="txtRequirementID" Grid.Column="1" Grid.Row="0" TextTrimming="None" TextWrapping="NoWrap" />
-								<Image Grid.Column="2" Grid.Row="0" Height="16" Width="16" Source="/SpiraExplorer;component/Resources/imgShortcut.png" />
+								<TextBlock Grid.Column="0" Grid.Row="0" TextTrimming="WordEllipsis" TextWrapping="NoWrap" HorizontalAlignment="Left">
+									<Run Name="txtRequirement" /> <Run Name="txtRequirementID" />
+								</TextBlock>
+								<Image Name="imgReqLink" Grid.Column="1" Grid.Row="0" Height="16" Width="16" Source="/SpiraExplorer;component/Resources/imgShortcut.png" Visibility="Collapsed" />
 							</Grid>
-							<TextBlock Name="lblLastModified" Grid.Column="3" Grid.Row="2" FontWeight="Bold" Style="{StaticResource PaddedLabel}" />
-							<TextBlock Name="txtLastModified" Grid.Column="4" Grid.Row="2" TextWrapping="NoWrap" FontWeight="Bold" Style="{StaticResource PaddedLabel}" />
+							<TextBlock Name="lblLastModified" Grid.Column="3" Grid.Row="2" Style="{StaticResource PaddedLabel}" />
+							<TextBlock Name="txtLastModified" Grid.Column="4" Grid.Row="2" TextWrapping="NoWrap" Style="{StaticResource PaddedLabel}" HorizontalAlignment="Left" />
 							<!-- ROW3: Release, Creator -->
 							<TextBlock  Name="lblDetectedIn" Grid.Column="0" Grid.Row="3" Style="{StaticResource PaddedLabel}" />
 							<ComboBox Grid.Column="1" Grid.Row="3" Name="cntrlDetectedIn" Style="{StaticResource PaddedControl}" SelectionChanged="_cntrl_TextChanged" />
@@ -542,9 +542,9 @@
 								</Grid.RowDefinitions>
 								<!-- ROW0: Start Date / End Date -->
 								<TextBlock Name="lblStartDate" Grid.Column="0" Grid.Row="0" Style="{StaticResource PaddedLabel}" />
-								<DatePicker Grid.Column="1" Grid.Row="0" Name="cntrlStartDate" IsTodayHighlighted="True" SelectedDateFormat="Short" Style="{StaticResource PaddedControl}" Height="Auto" />
+								<DatePicker Grid.Column="1" Grid.Row="0" Name="cntrlStartDate" IsTodayHighlighted="True" SelectedDateFormat="Short" Style="{StaticResource PaddedControl}" Height="Auto" SelectedDateChanged="cntrlDate_SelectedDateChanged" />
 								<TextBlock Name="lblEndDate" Grid.Column="3" Grid.Row="0" Style="{StaticResource PaddedLabel}" />
-								<DatePicker Grid.Column="4" Grid.Row="0" Name="cntrlEndDate" IsTodayHighlighted="True" SelectedDateFormat="Short" Style="{StaticResource PaddedControl}" Height="Auto" />
+								<DatePicker Grid.Column="4" Grid.Row="0" Name="cntrlEndDate" IsTodayHighlighted="True" SelectedDateFormat="Short" Style="{StaticResource PaddedControl}" Height="Auto" SelectedDateChanged="cntrlDate_SelectedDateChanged" />
 								<!-- ROW1: Status, Projected Effort -->
 								<TextBlock Name="lblStatus" Grid.Column="0" Grid.Row="1" Style="{StaticResource PaddedLabel}" />
 								<ComboBox Grid.Column="1" Grid.Row="1" Name="cntrlStatus" Style="{StaticResource PaddedControl}" DisplayMemberPath="Name" SelectionChanged="_cntrl_TextChanged" />
@@ -572,9 +572,9 @@
 									<ui_cntrl:NumericTextBox MaxLength="2" x:Name="cntrlEstEffortM" Style="{StaticResource PaddedControl}" Width="30" MinWidth="0" TextChanged="cntrlMasked_TextChanged" Background="{Binding ElementName=cntrlEstEffortH, Path=Background}" />
 									<TextBlock Style="{StaticResource PaddedLabel}" Name="lblMins4" />
 								</StackPanel>
-								<!-- ROW3: Projected Effort / Actual Effort -->
-								<TextBlock Name="lblActEffort" Grid.Column="3" Grid.Row="3" Style="{StaticResource PaddedLabel}" />
-								<StackPanel Grid.Column="4" Grid.Row="3" Orientation="Horizontal">
+								<!-- ROW3: Actual Effort / Remaining Effort -->
+								<TextBlock Name="lblActEffort" Grid.Column="0" Grid.Row="3" Style="{StaticResource PaddedLabel}" />
+								<StackPanel Grid.Column="1" Grid.Row="3" Orientation="Horizontal">
 									<ui_cntrl:NumericTextBox MaxLength="3" x:Name="cntrlActEffortH" Style="{StaticResource PaddedControl}" Width="30" MinWidth="0" TextChanged="cntrlMasked_TextChanged" />
 									<TextBlock Style="{StaticResource PaddedLabel}" Name="lblHours2" />
 									<ui_cntrl:NumericTextBox MaxLength="2" x:Name="cntrlActEffortM" Style="{StaticResource PaddedControl}" Width="30" MinWidth="0" TextChanged="cntrlMasked_TextChanged" Background="{Binding ElementName=cntrlActEffortH, Path=Background}" />

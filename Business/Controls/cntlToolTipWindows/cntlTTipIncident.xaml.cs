@@ -23,7 +23,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business.Forms
 			this.txtProject.Text = StaticFuncs.getCultureResource.GetString("app_Project") + ":";
 			this.txtOwner.Text = StaticFuncs.getCultureResource.GetString("app_General_Owner") + ":";
 			this.txtStatusType.Text = StaticFuncs.getCultureResource.GetString("app_Incident_StatusType") + ":";
-			this.txtEstimate.Text = StaticFuncs.getCultureResource.GetString("app_Incident_EstEffort") + ":";
+			this.txtEstimate.Text = StaticFuncs.getCultureResource.GetString("app_General_EstEffort") + ":";
 			this.txtProjected.Text = StaticFuncs.getCultureResource.GetString("app_General_ProjEffort") + ":";
 			this.txtPriority.Text = StaticFuncs.getCultureResource.GetString("app_General_Priority") + ":";
 			this.txtSeverity.Text = StaticFuncs.getCultureResource.GetString("app_Incident_Severity") + ":";

@@ -45,23 +45,25 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			this.toolTxtRefresh.Text = StaticFuncs.getCultureResource.GetString("app_General_Refresh");
 			this.toolTxtLoadWeb.Text = StaticFuncs.getCultureResource.GetString("app_General_ViewBrowser");
 			this.toolTxtTimer.Text = StaticFuncs.getCultureResource.GetString("app_General_StartTimer");
-			this.lblLoadingTask.Text = StaticFuncs.getCultureResource.GetString("app_Incident_Loading");
-			this.lblSavingTask.Text = StaticFuncs.getCultureResource.GetString("app_Incident_Saving");
-			this.lblExpanderDetails.Text = StaticFuncs.getCultureResource.GetString("app_Incident_ExpanderDetails");
+			this.lblLoadingTask.Text = StaticFuncs.getCultureResource.GetString("app_Task_Loading");
+			this.lblSavingTask.Text = StaticFuncs.getCultureResource.GetString("app_Task_Saving");
+			this.lblExpanderDetails.Text = StaticFuncs.getCultureResource.GetString("app_General_ExpanderDetails");
 			this.lblName.Text = StaticFuncs.getCultureResource.GetString("app_General_Name") + ":";
 			this.lblTxtToken.Text = StaticFuncs.getCultureResource.GetString("app_General_CopyToClipboard");
-			this.lblStatus.Text = StaticFuncs.getCultureResource.GetString("app_Incident_Status") + ":";
-			this.lblDetectedBy.Text = StaticFuncs.getCultureResource.GetString("app_Incident_DetectedBy") + ":";
-			this.lblOwnedBy.Text = StaticFuncs.getCultureResource.GetString("app_Incident_OwnedBy") + ":";
+			this.lblStatus.Text = StaticFuncs.getCultureResource.GetString("app_General_Status") + ":";
+			this.lblDetectedBy.Text = StaticFuncs.getCultureResource.GetString("app_Task_OpenedBy") + ":";
+			this.lblOwnedBy.Text = StaticFuncs.getCultureResource.GetString("app_General_OwnedBy") + ":";
 			this.lblPriority.Text = StaticFuncs.getCultureResource.GetString("app_General_Priority") + ":";
-			this.lblDetectedIn.Text = StaticFuncs.getCultureResource.GetString("app_Incident_DetectedRelease") + ":";
+			this.lblDetectedIn.Text = StaticFuncs.getCultureResource.GetString("app_Task_Release") + ":";
+			this.lblRequirement.Text = StaticFuncs.getCultureResource.GetString("app_Task_Requirement") + ":";
+			this.lblLastModified.Text = StaticFuncs.getCultureResource.GetString("app_Task_LastModified") + ":";
 			this.lblDescription.Text = StaticFuncs.getCultureResource.GetString("app_General_Description") + ":";
-			this.lblExpanderComments.Text = StaticFuncs.getCultureResource.GetString("app_Incident_ExpanderResolution");
-			this.lblExpanderSchedule.Text = StaticFuncs.getCultureResource.GetString("app_Incident_ExpanderSchedule");
-			this.lblPerComplete.Text = StaticFuncs.getCultureResource.GetString("app_Incident_PerComplete") + ":";
+			this.lblExpanderComments.Text = StaticFuncs.getCultureResource.GetString("app_General_ExpanderResolution");
+			this.lblExpanderSchedule.Text = StaticFuncs.getCultureResource.GetString("app_General_ExpanderSchedule");
+			this.lblPerComplete.Text = StaticFuncs.getCultureResource.GetString("app_General_PerComplete") + ":";
 			this.lblStartDate.Text = StaticFuncs.getCultureResource.GetString("app_General_StartDate") + ":";
 			this.lblEndDate.Text = StaticFuncs.getCultureResource.GetString("app_General_EndDate") + ":";
-			this.lblEstEffort.Text = StaticFuncs.getCultureResource.GetString("app_Incident_EstEffort") + ":";
+			this.lblEstEffort.Text = StaticFuncs.getCultureResource.GetString("app_General_EstEffort") + ":";
 			this.lblHours4.Text = StaticFuncs.getCultureResource.GetString("app_General_Hours");
 			this.lblMins4.Text = StaticFuncs.getCultureResource.GetString("app_General_Minutes");
 			this.lblProjEffort.Text = StaticFuncs.getCultureResource.GetString("app_General_ProjEffort") + ":";
@@ -70,17 +72,17 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			this.lblActEffort.Text = StaticFuncs.getCultureResource.GetString("app_General_ActEffort") + ":";
 			this.lblHours2.Text = StaticFuncs.getCultureResource.GetString("app_General_Hours");
 			this.lblMins2.Text = StaticFuncs.getCultureResource.GetString("app_General_Minutes");
-			this.lblRemEffort.Text = StaticFuncs.getCultureResource.GetString("app_Incident_RemEffort") + ":";
+			this.lblRemEffort.Text = StaticFuncs.getCultureResource.GetString("app_General_RemEffort") + ":";
 			this.lblHours3.Text = StaticFuncs.getCultureResource.GetString("app_General_Hours");
 			this.lblMins3.Text = StaticFuncs.getCultureResource.GetString("app_General_Minutes");
-			this.lblExpanderCustom.Text = StaticFuncs.getCultureResource.GetString("app_Incident_ExpanderCustom");
+			this.lblExpanderCustom.Text = StaticFuncs.getCultureResource.GetString("app_General_ExpanderCustom");
 			this.lblExpanderAttachments.Text = StaticFuncs.getCultureResource.GetString("app_General_Attachments");
 			this.lblAddNewResolution.Text = StaticFuncs.getCultureResource.GetString("app_General_AddNewComment") + ":";
 			this.btnConcurrencyMergeNo.Content = StaticFuncs.getCultureResource.GetString("app_General_Refresh");
-			this.btnConcurrencyMergeYes.Content = StaticFuncs.getCultureResource.GetString("app_Incident_Merge");
-			this.lblMergeConcurrency.Text = StaticFuncs.getCultureResource.GetString("app_Incident_AskMergeConcurrency");
+			this.btnConcurrencyMergeYes.Content = StaticFuncs.getCultureResource.GetString("app_General_Merge");
+			this.lblMergeConcurrency.Text = StaticFuncs.getCultureResource.GetString("app_Task_MergeConcurrency");
 			this.btnConcurrencyRefresh.Content = StaticFuncs.getCultureResource.GetString("app_General_Refresh");
-			this.lblNoMergeConcurrency.Text = StaticFuncs.getCultureResource.GetString("app_Incident_NoMergeConcurrency");
+			this.lblNoMergeConcurrency.Text = StaticFuncs.getCultureResource.GetString("app_Task_NoMergeConcurrency");
 
 			//Load fixed-option dropdowns.
 			// -- Status
@@ -207,6 +209,14 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			{
 				Logger.LogMessage(ex, "TextChanged Event");
 		}
+		}
+
+		/// <summary>Hit when a date changes in a DateControl.</summary>
+		/// <param name="sender">DatePicker</param>
+		/// <param name="e">SelectionChangedEventArgs</param>
+		private void cntrlDate_SelectedDateChanged(object sender, SelectionChangedEventArgs e)
+		{
+			this._cntrl_TextChanged(sender, e);
 		}
 
 		/// <summary>Hit when a toolbar button's Enabled property is changed, to 'grey' out the button images.</summary>
@@ -355,7 +365,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			if (isUserSure == MessageBoxResult.Yes)
 			{
 				//User is sure, change the label, and launch the refresh.
-				this.lblLoadingTask.Text = StaticFuncs.getCultureResource.GetString("app_Incident_Refreshing");
+				this.lblLoadingTask.Text = StaticFuncs.getCultureResource.GetString("app_Task_Refreshing");
 				this.load_LoadItem();
 			}
 		}

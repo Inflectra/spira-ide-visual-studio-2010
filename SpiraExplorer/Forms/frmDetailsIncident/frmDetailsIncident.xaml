@@ -562,9 +562,9 @@
 								</Grid.RowDefinitions>
 								<!-- ROW0: Start Date / End Date -->
 								<TextBlock Name="lblStartDate" Grid.Column="0" Grid.Row="0" Style="{StaticResource PaddedLabel}" />
-								<DatePicker Grid.Column="1" Grid.Row="0" Name="cntrlStartDate" IsTodayHighlighted="True" SelectedDateFormat="Short" Style="{StaticResource PaddedControl}" Height="Auto" />
+								<DatePicker Grid.Column="1" Grid.Row="0" Name="cntrlStartDate" IsTodayHighlighted="True" SelectedDateFormat="Short" Style="{StaticResource PaddedControl}" Height="Auto" SelectedDateChanged="cntrlDate_SelectedDateChanged" />
 								<TextBlock Name="lblEndDate" Grid.Column="3" Grid.Row="0" Style="{StaticResource PaddedLabel}" />
-								<DatePicker Grid.Column="4" Grid.Row="0" Name="cntrlEndDate" IsTodayHighlighted="True" SelectedDateFormat="Short" Style="{StaticResource PaddedControl}" Height="Auto" />
+								<DatePicker Grid.Column="4" Grid.Row="0" Name="cntrlEndDate" IsTodayHighlighted="True" SelectedDateFormat="Short" Style="{StaticResource PaddedControl}" Height="Auto" SelectedDateChanged="cntrlDate_SelectedDateChanged" />
 								<!-- ROW1: % Complete / Est. Effort -->
 								<TextBlock Name="lblPerComplete" Grid.Column="0" Grid.Row="1" Style="{StaticResource PaddedLabel}" />
 								<Grid Grid.Column="1" Grid.Row="1" HorizontalAlignment="Stretch">

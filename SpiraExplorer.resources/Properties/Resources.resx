@@ -319,7 +319,7 @@ http://server/SpiraTeam/</value>
   <data name="app_Incident_DetectedRelease" xml:space="preserve">
     <value>Detected Release</value>
   </data>
-  <data name="app_Incident_EstEffort" xml:space="preserve">
+  <data name="app_General_EstEffort" xml:space="preserve">
     <value>Estimated Effort</value>
   </data>
   <data name="app_Incident_Id" xml:space="preserve">
@@ -451,26 +451,23 @@ http://server/SpiraTeam/</value>
   <data name="app_Incident_DetectedBy" xml:space="preserve">
     <value>Detected By</value>
   </data>
-  <data name="app_Incident_ExpanderCustom" xml:space="preserve">
+  <data name="app_General_ExpanderCustom" xml:space="preserve">
     <value>Custom Properties</value>
   </data>
-  <data name="app_Incident_ExpanderDetails" xml:space="preserve">
+  <data name="app_General_ExpanderDetails" xml:space="preserve">
     <value>Details / Description</value>
   </data>
-  <data name="app_Incident_ExpanderResolution" xml:space="preserve">
+  <data name="app_General_ExpanderResolution" xml:space="preserve">
     <value>Comments</value>
   </data>
-  <data name="app_Incident_ExpanderSchedule" xml:space="preserve">
+  <data name="app_General_ExpanderSchedule" xml:space="preserve">
     <value>Schedule</value>
   </data>
-  <data name="app_Incident_OwnedBy" xml:space="preserve">
+  <data name="app_General_OwnedBy" xml:space="preserve">
     <value>Owned By</value>
   </data>
-  <data name="app_Incident_PerComplete" xml:space="preserve">
+  <data name="app_General_PerComplete" xml:space="preserve">
     <value>Percent Complete</value>
-  </data>
-  <data name="app_Incident_Status" xml:space="preserve">
-    <value>Status</value>
   </data>
   <data name="app_Incident_Type" xml:space="preserve">
     <value>Type</value>
@@ -561,7 +558,7 @@ Are you sure you want to continue?</value>
   <data name="app_Incident_AskMergeConcurrency" xml:space="preserve">
     <value>The incident you are trying to save has been modified by someone else but can be merged with the other changes. Do you want to merge your changed fields with the current version of the incident, or do you wish to reload the incident, losing all changes?</value>
   </data>
-  <data name="app_Incident_Merge" xml:space="preserve">
+  <data name="app_General_Merge" xml:space="preserve">
     <value>_Merge</value>
   </data>
   <data name="app_Incident_NoMergeConcurrency" xml:space="preserve">
@@ -573,7 +570,7 @@ Are you sure you want to continue?</value>
   <data name="app_General_Minutes" xml:space="preserve">
     <value>minutes</value>
   </data>
-  <data name="app_Incident_RemEffort" xml:space="preserve">
+  <data name="app_General_RemEffort" xml:space="preserve">
     <value>Remaining Effort</value>
   </data>
   <data name="app_General_CreateWindowError" xml:space="preserve">
@@ -608,5 +605,35 @@ Are you sure you want to continue?</value>
   </data>
   <data name="app_Task_Status_NotStarted" xml:space="preserve">
     <value>Not Started</value>
+  </data>
+  <data name="app_Task_LastModified" xml:space="preserve">
+    <value>Last Modified:</value>
+  </data>
+  <data name="app_Task_Loading" xml:space="preserve">
+    <value>Loading Task Details, please wait...</value>
+  </data>
+  <data name="app_Task_MergeConcurrency" xml:space="preserve">
+    <value>The task you are trying to save has been modified by someone else but can be merged with the other changes. Do you want to merge your changed fields with the current version of the task, or do you wish to reload the task, losing all changes?</value>
+  </data>
+  <data name="app_Task_NoMergeConcurrency" xml:space="preserve">
+    <value>The task you are trying to save has been modified by someone else and cannot be saved without data loss. Please refresh your task and make your changes again.</value>
+  </data>
+  <data name="app_Task_OpenedBy" xml:space="preserve">
+    <value>Opened By</value>
+  </data>
+  <data name="app_Task_Refreshing" xml:space="preserve">
+    <value>Refreshing Task Details, please wait...</value>
+  </data>
+  <data name="app_Task_Release" xml:space="preserve">
+    <value>Assigned Release</value>
+  </data>
+  <data name="app_Task_Requirement" xml:space="preserve">
+    <value>Assigned Requirement</value>
+  </data>
+  <data name="app_Task_Saving" xml:space="preserve">
+    <value>Saving Task, please wait...</value>
+  </data>
+  <data name="app_Task_AddCommentErrorMessage" xml:space="preserve">
+    <value>The task was updated, but there was an error adding your comment.</value>
   </data>
 </root>

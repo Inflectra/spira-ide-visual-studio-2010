@@ -549,24 +549,9 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 				//*Schedule fields..
 				retIncident.StartDate = this.cntrlStartDate.SelectedDate;
 				retIncident.ClosedDate = this.cntrlEndDate.SelectedDate;
-				string strEstEffortH = this.cntrlEstEffortH.Text.Replace('_', ' ').Trim();
-				string strEstEffortM = this.cntrlEstEffortM.Text.Replace('_', ' ').Trim();
-				if (string.IsNullOrWhiteSpace(strEstEffortH) && string.IsNullOrWhiteSpace(strEstEffortM))
-					retIncident.EstimatedEffort = null;
-				else
-					retIncident.EstimatedEffort = int.Parse(strEstEffortH) * 60 + int.Parse(strEstEffortM);
-				string strActEffortH = this.cntrlActEffortH.Text.Replace('_', ' ').Trim();
-				string strActEffortM = this.cntrlActEffortM.Text.Replace('_', ' ').Trim();
-				if (string.IsNullOrWhiteSpace(strActEffortH) && string.IsNullOrWhiteSpace(strActEffortM))
-					retIncident.ActualEffort = null;
-				else
-					retIncident.ActualEffort = int.Parse(strActEffortH) * 60 + int.Parse(strActEffortM);
-				string strRemEffortH = this.cntrlRemEffortH.Text.Replace('_', ' ').Trim();
-				string strRemEffortM = this.cntrlRemEffortM.Text.Replace('_', ' ').Trim();
-				if (string.IsNullOrWhiteSpace(strRemEffortH) && string.IsNullOrWhiteSpace(strRemEffortM))
-					retIncident.RemainingEffort = null;
-				else
-					retIncident.RemainingEffort = int.Parse(strRemEffortH) * 60 + int.Parse(strRemEffortM);
+				retIncident.EstimatedEffort = StaticFuncs.GetMinutesFromValues(this.cntrlEstEffortH.Text, this.cntrlEstEffortM.Text);
+				retIncident.ActualEffort = StaticFuncs.GetMinutesFromValues(this.cntrlActEffortH.Text, this.cntrlActEffortM.Text);
+				retIncident.RemainingEffort = StaticFuncs.GetMinutesFromValues(this.cntrlRemEffortH.Text, this.cntrlRemEffortM.Text);
 
 				//Custom fields..
 				foreach (UIElement eleItem in this.gridCustomProperties.Children)

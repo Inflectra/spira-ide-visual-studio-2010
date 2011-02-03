@@ -50,25 +50,25 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			this.mnuTxtActions.Text = StaticFuncs.getCultureResource.GetString("app_Incident_StatusActions") + ":";
 			this.lblLoadingIncident.Text = StaticFuncs.getCultureResource.GetString("app_Incident_Loading");
 			this.lblSavingIncident.Text = StaticFuncs.getCultureResource.GetString("app_Incident_Saving");
-			this.lblExpanderDetails.Text = StaticFuncs.getCultureResource.GetString("app_Incident_ExpanderDetails");
+			this.lblExpanderDetails.Text = StaticFuncs.getCultureResource.GetString("app_General_ExpanderDetails");
 			this.lblName.Text = StaticFuncs.getCultureResource.GetString("app_General_Name") + ":";
 			this.lblTxtToken.Text = StaticFuncs.getCultureResource.GetString("app_General_CopyToClipboard");
 			this.lblType.Text = StaticFuncs.getCultureResource.GetString("app_Incident_Type") + ":";
-			this.lblStatus.Text = StaticFuncs.getCultureResource.GetString("app_Incident_Status") + ":";
+			this.lblStatus.Text = StaticFuncs.getCultureResource.GetString("app_General_Status") + ":";
 			this.lblDetectedBy.Text = StaticFuncs.getCultureResource.GetString("app_Incident_DetectedBy") + ":";
-			this.lblOwnedBy.Text = StaticFuncs.getCultureResource.GetString("app_Incident_OwnedBy") + ":";
+			this.lblOwnedBy.Text = StaticFuncs.getCultureResource.GetString("app_General_OwnedBy") + ":";
 			this.lblPriority.Text = StaticFuncs.getCultureResource.GetString("app_General_Priority") + ":";
 			this.lblSeverity.Text = StaticFuncs.getCultureResource.GetString("app_Incident_Severity") + ":";
 			this.lblDetectedIn.Text = StaticFuncs.getCultureResource.GetString("app_Incident_DetectedRelease") + ":";
 			this.lblResolvedIn.Text = StaticFuncs.getCultureResource.GetString("app_Incident_ResolvedRelease") + ":";
 			this.lblVerifiedIn.Text = StaticFuncs.getCultureResource.GetString("app_Incident_VerifiedRelease") + ":";
 			this.lblDescription.Text = StaticFuncs.getCultureResource.GetString("app_General_Description") + ":";
-			this.lblExpanderResolution.Text = StaticFuncs.getCultureResource.GetString("app_Incident_ExpanderResolution");
-			this.lblExpanderSchedule.Text = StaticFuncs.getCultureResource.GetString("app_Incident_ExpanderSchedule");
-			this.lblPerComplete.Text = StaticFuncs.getCultureResource.GetString("app_Incident_PerComplete") + ":";
+			this.lblExpanderResolution.Text = StaticFuncs.getCultureResource.GetString("app_General_ExpanderResolution");
+			this.lblExpanderSchedule.Text = StaticFuncs.getCultureResource.GetString("app_General_ExpanderSchedule");
+			this.lblPerComplete.Text = StaticFuncs.getCultureResource.GetString("app_General_PerComplete") + ":";
 			this.lblStartDate.Text = StaticFuncs.getCultureResource.GetString("app_General_StartDate") + ":";
 			this.lblEndDate.Text = StaticFuncs.getCultureResource.GetString("app_General_EndDate") + ":";
-			this.lblEstEffort.Text = StaticFuncs.getCultureResource.GetString("app_Incident_EstEffort") + ":";
+			this.lblEstEffort.Text = StaticFuncs.getCultureResource.GetString("app_General_EstEffort") + ":";
 			this.lblHours4.Text = StaticFuncs.getCultureResource.GetString("app_General_Hours");
 			this.lblMins4.Text = StaticFuncs.getCultureResource.GetString("app_General_Minutes");
 			this.lblProjEffort.Text = StaticFuncs.getCultureResource.GetString("app_General_ProjEffort") + ":";
@@ -77,14 +77,14 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			this.lblActEffort.Text = StaticFuncs.getCultureResource.GetString("app_General_ActEffort") + ":";
 			this.lblHours2.Text = StaticFuncs.getCultureResource.GetString("app_General_Hours");
 			this.lblMins2.Text = StaticFuncs.getCultureResource.GetString("app_General_Minutes");
-			this.lblRemEffort.Text = StaticFuncs.getCultureResource.GetString("app_Incident_RemEffort") + ":";
+			this.lblRemEffort.Text = StaticFuncs.getCultureResource.GetString("app_General_RemEffort") + ":";
 			this.lblHours3.Text = StaticFuncs.getCultureResource.GetString("app_General_Hours");
 			this.lblMins3.Text = StaticFuncs.getCultureResource.GetString("app_General_Minutes");
-			this.lblExpanderCustom.Text = StaticFuncs.getCultureResource.GetString("app_Incident_ExpanderCustom");
+			this.lblExpanderCustom.Text = StaticFuncs.getCultureResource.GetString("app_General_ExpanderCustom");
 			this.lblExpanderAttachments.Text = StaticFuncs.getCultureResource.GetString("app_General_Attachments");
 			this.lblAddNewResolution.Text = StaticFuncs.getCultureResource.GetString("app_General_AddNewComment") + ":";
 			this.btnConcurrencyMergeNo.Content = StaticFuncs.getCultureResource.GetString("app_General_Refresh");
-			this.btnConcurrencyMergeYes.Content = StaticFuncs.getCultureResource.GetString("app_Incident_Merge");
+			this.btnConcurrencyMergeYes.Content = StaticFuncs.getCultureResource.GetString("app_General_Merge");
 			this.lblMergeConcurrency.Text = StaticFuncs.getCultureResource.GetString("app_Incident_AskMergeConcurrency");
 			this.btnConcurrencyRefresh.Content = StaticFuncs.getCultureResource.GetString("app_General_Refresh");
 			this.lblNoMergeConcurrency.Text = StaticFuncs.getCultureResource.GetString("app_Incident_NoMergeConcurrency");
@@ -174,6 +174,15 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 				Logger.LogMessage(ex);
 			}
 		}
+
+		/// <summary>Hit when a date changes in a DateControl.</summary>
+		/// <param name="sender">DatePicker</param>
+		/// <param name="e">SelectionChangedEventArgs</param>
+		private void cntrlDate_SelectedDateChanged(object sender, SelectionChangedEventArgs e)
+		{
+			this._cntrl_TextChanged(sender, e);
+		}
+
 
 		/// <summary>Hit when a textbox or dropdown list changes.</summary>
 		/// <param name="sender">cntrlIncidentName, cntrlDetectedBy, cntrlOwnedBy, cntrlPriority, cntrlSeverity, cntrlDetectedIn, cntrlResolvedIn, cntrlVerifiedIn, cntrlDescription</param>

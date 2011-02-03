@@ -76,7 +76,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 
 				//Fire the connection off here.
 				this._clientNumRunning++;
-				this.barLoadingTask.Maximum = 18;
+				this.barLoadingTask.Maximum = 10;
 				this._client.Connection_Authenticate2Async(this._Project.UserName, this._Project.UserPass, StaticFuncs.getCultureResource.GetString("app_ReportName"));
 
 			}
@@ -156,7 +156,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 					// - The Task.
 					this._client.Task_RetrieveByIdAsync(this._ArtifactDetails.ArtifactId, this._clientNum++);
 					// - Task's Documents
-					this._client.Document_RetrieveForArtifact(6, this._ArtifactDetails.ArtifactId, new List<RemoteFilter>(), new RemoteSort());
+					this._client.Document_RetrieveForArtifactAsync(6, this._ArtifactDetails.ArtifactId, new List<RemoteFilter>(), new RemoteSort());
 					// - Project users.
 					this._client.Project_RetrieveUserMembershipAsync(this._clientNum++);
 					// - Task Custom Properties
@@ -447,6 +447,10 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 						this._clientNumRunning++;
 						this._client.Requirement_RetrieveByIdAsync(e.Result.RequirementId.Value, this._clientNum++);
 					}
+					else
+					{
+						this.imgReqLink.Visibility = System.Windows.Visibility.Collapsed;
+					}
 
 					//See if we're ready to get the actual data.
 					this.load_IsReadyToDisplayData();
@@ -479,11 +483,13 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 					//Populate the fields..
 					this.txtRequirement.Text = e.Result.Name;
 					this.txtRequirementID.Text = "[RQ:" + e.Result.RequirementId.ToString() + "]";
+					this.imgReqLink.Visibility = System.Windows.Visibility.Visible;
 				}
 				else
 				{
 					//Not a major error.
 					Logger.LogMessage(e.Error, "Pulling requirement data for task.");
+					this.imgReqLink.Visibility = System.Windows.Visibility.Collapsed;
 				}
 
 				//See if the rest of the data can be displayed.
@@ -597,6 +603,32 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 				Logger.LogMessage(ex, "Populating Task Comments");
 			}
 		}
+
+		/// <summary>Selects the given ID in the Priority Control</summary>
+		/// <param name="PriorityId">Integer of the selected priority.</param>
+		private void loadItem_SelectPriority(int? PriorityId)
+		{
+			foreach (TaskPriority availPri in this.cntrlPriority.Items)
+			{
+				if (availPri.PriorityId == PriorityId)
+				{
+					this.cntrlPriority.SelectedItem = availPri;
+				}
+			}
+		}
+
+		/// <summary>Selects the given ID in the Status Control</summary>
+		/// <param name="PriorityId">Integer of the selected status.</param>
+		private void loadItem_SelectStatus(int? StatusId)
+		{
+			foreach (TaskStatus availSta in this.cntrlStatus.Items)
+			{
+				if (availSta.StatusId == StatusId)
+				{
+					this.cntrlStatus.SelectedItem = availSta;
+				}
+			}
+		}
 		#endregion
 
 
@@ -624,12 +656,15 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 				this.cntrlResolution.HTMLText = "";
 
 				// - Requirement and Last Modified
-				this.txtLastModified.Text = task.LastUpdateDate.ToShortTimeString();
+				this.txtLastModified.Text = task.LastUpdateDate.ToString();
 
 				// - Users
 				this.loadItem_PopulateUser(this.cntrlDetectedBy, task.CreatorId);
 				this.cntrlDetectedBy.Items.RemoveAt(0);
 				this.loadItem_PopulateUser(this.cntrlOwnedBy, task.OwnerId);
+
+				// - Priority
+				this.loadItem_SelectPriority(task.TaskPriorityId);
 
 				// - Releases
 				this.loadItem_PopulateReleaseControl(this.cntrlDetectedIn, task.ReleaseId);
@@ -745,9 +780,13 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 				#endregion
 
 				#region Schedule
+				//Start, End Dates
 				this.cntrlStartDate.SelectedDate = task.StartDate;
 				this.cntrlEndDate.SelectedDate = task.EndDate;
+				//Percentage
 				this.barPercentComplete.Value = task.CompletionPercent;
+				//Status
+				this.loadItem_SelectStatus(task.TaskStatusId);
 				//Get estimated effort..
 				this.cntrlEstEffortH.Text = ((task.EstimatedEffort.HasValue) ? Math.Floor(((double)task.EstimatedEffort / (double)60)).ToString() : null);
 				this.cntrlEstEffortM.Text = ((task.EstimatedEffort.HasValue) ? ((double)task.EstimatedEffort % (double)60).ToString() : null);
@@ -777,8 +816,8 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 				this.cntrlActEffortH.Text = ((existingH == 0 && existingM == 0 && !task.ActualEffort.HasValue) ? null : existingH.ToString());
 				this.cntrlActEffortM.Text = ((existingH == 0 && existingM == 0 && !task.ActualEffort.HasValue) ? null : existingM.ToString());
 				//Get projected effort..
-				this.cntrlProjEffortH.Text = ((task.ProjectedEffort.HasValue) ? Math.Floor(((double)task.ProjectedEffort / (double)60)).ToString() : null);
-				this.cntrlProjEffortM.Text = ((task.ProjectedEffort.HasValue) ? ((double)task.ProjectedEffort % (double)60).ToString() : null);
+				this.cntrlProjEffortH.Text = ((task.ProjectedEffort.HasValue) ? Math.Floor(((double)task.ProjectedEffort / (double)60)).ToString() : "0");
+				this.cntrlProjEffortM.Text = ((task.ProjectedEffort.HasValue) ? ((double)task.ProjectedEffort % (double)60).ToString() : "0");
 				//Get remaining effort..
 				this.cntrlRemEffortH.Text = ((task.RemainingEffort.HasValue) ? Math.Floor(((double)task.RemainingEffort / (double)60)).ToString() : null);
 				this.cntrlRemEffortM.Text = ((task.RemainingEffort.HasValue) ? ((double)task.RemainingEffort % (double)60).ToString() : null);
