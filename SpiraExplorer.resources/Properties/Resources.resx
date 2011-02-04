@@ -636,4 +636,28 @@ Are you sure you want to continue?</value>
   <data name="app_Task_AddCommentErrorMessage" xml:space="preserve">
     <value>The task was updated, but there was an error adding your comment.</value>
   </data>
+  <data name="app_Requirement_Status_Accepted" xml:space="preserve">
+    <value>Accepted</value>
+  </data>
+  <data name="app_Requirement_Status_Completed" xml:space="preserve">
+    <value>Completed</value>
+  </data>
+  <data name="app_Requirement_Status_Evaluated" xml:space="preserve">
+    <value>Evaluated</value>
+  </data>
+  <data name="app_Requirement_Status_InProgress" xml:space="preserve">
+    <value>In Progress</value>
+  </data>
+  <data name="app_Requirement_Status_Obsolete" xml:space="preserve">
+    <value>Obsolete</value>
+  </data>
+  <data name="app_Requirement_Status_Planned" xml:space="preserve">
+    <value>Planned</value>
+  </data>
+  <data name="app_Requirement_Status_Rejected" xml:space="preserve">
+    <value>Rejected</value>
+  </data>
+  <data name="app_Requirement_Status_Requested" xml:space="preserve">
+    <value>Requested</value>
+  </data>
 </root>

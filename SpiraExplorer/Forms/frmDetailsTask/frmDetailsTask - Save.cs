@@ -22,7 +22,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 		private int _clientNumSaving;
 		private RemoteTask _TaskConcurrent;
 
-		/// <summary>Hit when the user wants to save the incident.</summary>
+		/// <summary>Hit when the user wants to save the requirement.</summary>
 		/// <param name="sender">The save button.</param>
 		/// <param name="e">RoutedEventArgs</param>
 		private void btnSave_Click(object sender, RoutedEventArgs e)
@@ -45,7 +45,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 
 					if (newTask != null)
 					{
-						//Create a client, and save incident and resolution..
+						//Create a client, and save requirement and resolution..
 						ImportExportClient clientSave = StaticFuncs.CreateClient(((SpiraProject)this._ArtifactDetails.ArtifactParentProject.ArtifactTag).ServerURL.ToString());
 						clientSave.Connection_Authenticate2Completed += new EventHandler<Connection_Authenticate2CompletedEventArgs>(clientSave_Connection_Authenticate2Completed);
 						clientSave.Connection_ConnectToProjectCompleted += new EventHandler<Connection_ConnectToProjectCompletedEventArgs>(clientSave_Connection_ConnectToProjectCompleted);
@@ -367,7 +367,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 		}
 
 		/// <summary>Returns whether the given Concurrent Incident can be safely merged with the user's values.</summary>
-		/// <param name="moddedTask">The concurrent incident.</param>
+		/// <param name="moddedTask">The concurrent requirement.</param>
 		private bool save_CheckIfConcurrencyCanBeMerged(RemoteTask moddedTask)
 		{
 			bool retValue = false;
@@ -649,7 +649,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			this.load_LoadItem();
 		}
 
-		/// <summary>Hit when the user wants to merge their changes with the concurrent incident.</summary>
+		/// <summary>Hit when the user wants to merge their changes with the concurrent requirement.</summary>
 		/// <param name="sender">btnConcurrencyMergeYes</param>
 		/// <param name="e">RoutedEventArgs</param>
 		private void btnConcurrencyMergeYes_Click(object sender, RoutedEventArgs e)
@@ -683,11 +683,11 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 		#endregion
 
 		/// <summary>Merges two RemoteIncidents into one for re-saving.</summary>
-		/// <param name="tskUserSaved">The user-saved incident to merge with the Concurrent incident.</param>
-		/// <param name="tskConcurrent">The concurrent incident to merge with the User incident.</param>
-		/// <param name="tskOriginal">The original unchanged incident used for reference.</param>
+		/// <param name="tskUserSaved">The user-saved requirement to merge with the Concurrent requirement.</param>
+		/// <param name="tskConcurrent">The concurrent requirement to merge with the User requirement.</param>
+		/// <param name="tskOriginal">The original unchanged requirement used for reference.</param>
 		/// <returns>A new RemoteIncident suitable for saving.</returns>
-		/// <remarks>This should only be called when it is known that there are no conflicting values between the User-Saved incident and the Concurrent incident.</remarks>
+		/// <remarks>This should only be called when it is known that there are no conflicting values between the User-Saved requirement and the Concurrent requirement.</remarks>
 		private RemoteTask save_MergeConcurrency(RemoteTask tskUserSaved, RemoteTask tskConcurrent, RemoteTask tskOriginal)
 		{
 			//If the field was not changed by the user (tskUserSaved == tskOriginal), then use the tskConcurrent. (Assuming that the
@@ -737,7 +737,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 				retTask.Text09 = ((retTask.Text09.TrimEquals(tskOriginal.Text09)) ? tskConcurrent.Text09 : tskUserSaved.Text09);
 				retTask.Text10 = ((retTask.Text10.TrimEquals(tskOriginal.Text10)) ? tskConcurrent.Text10 : tskUserSaved.Text10);
 
-				//Return our new incident.
+				//Return our new requirement.
 				return retTask;
 			}
 			catch (Exception ex)
