@@ -370,7 +370,9 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 					if (string.IsNullOrWhiteSpace(this._ReqDocumentsUrl))
 					{
 						this._ReqDocumentsUrl = e.Result;
-						this.load_IsReadyToGetMainData();
+						this._clientNumRunning++;
+						//TODO: This needs to be moved to when we get the requirement details.
+						this._client.System_GetArtifactUrlAsync(1, this._ArtifactDetails.ArtifactParentProject.ArtifactId, this._Requirement.RequirementId.Value, null, this._clientNum++);
 					}
 					else
 					{
