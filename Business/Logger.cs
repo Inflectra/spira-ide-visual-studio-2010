@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Reflection;
+using System.IO;
 
 namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business
 {
@@ -92,6 +94,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business
 			}
 
 			//Write intro and any prevailing error messages.
+			//TODO: Fix program name, etc.
 			Logger.LogMessage("**********" + Environment.NewLine + "* RemoteLaunch (" + Assembly.GetExecutingAssembly().GetName().Version.ToString() + ")" + Environment.NewLine + "**********", EventLogEntryType.Information);
 			if (createEx != null)
 			{
@@ -112,7 +115,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business
 			//Initialize if necessary.
 			if (Logger.Eventlog == null && string.IsNullOrWhiteSpace(Logger._logFile))
 			{
-				Logger log = new Logger(StaticFuncs.getCultureResource.GetString("strAddinProgName"));
+				Logger log = new Logger(StaticFuncs.getCultureResource.GetString("app_General_ApplicationShortName"));
 			}
 
 

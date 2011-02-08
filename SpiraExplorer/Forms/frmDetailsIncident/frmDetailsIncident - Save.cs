@@ -110,7 +110,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 					//Log message.
 					Logger.LogMessage(e.Error, "Adding Comment to Incident");
 					//Display error that the item saved, but adding the new resolution didn't.
-					MessageBox.Show(StaticFuncs.getCultureResource.GetString("app_Incident_AddCommentErrorMessage"), StaticFuncs.getCultureResource.GetString("app_Incident_UpdateError"), MessageBoxButton.OK, MessageBoxImage.Error);
+					MessageBox.Show(StaticFuncs.getCultureResource.GetString("app_General_AddCommentErrorMessage"), StaticFuncs.getCultureResource.GetString("app_Incident_UpdateError"), MessageBoxButton.OK, MessageBoxImage.Error);
 				}
 
 				//Regardless of what happens, we're disconnecting here.

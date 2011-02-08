@@ -9,6 +9,9 @@ using Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Controls;
 using System.Windows.Documents;
 using Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business.HTMLandXAML;
 using Microsoft.VisualStudio.Shell.Interop;
+using System.Windows.Shapes;
+using System.Windows.Media;
+using Microsoft.VisualStudio.Shell;
 
 namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 {
@@ -67,12 +70,15 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 				this._client.Release_RetrieveCompleted += new EventHandler<Release_RetrieveCompletedEventArgs>(_client_Release_RetrieveCompleted);
 				this._client.Project_RetrieveUserMembershipCompleted += new EventHandler<Project_RetrieveUserMembershipCompletedEventArgs>(_client_Project_RetrieveUserMembershipCompleted);
 				this._client.System_GetArtifactUrlCompleted += new EventHandler<System_GetArtifactUrlCompletedEventArgs>(_client_System_GetArtifactUrlCompleted);
+				this._client.Requirement_RetrieveByIdCompleted += new EventHandler<Requirement_RetrieveByIdCompletedEventArgs>(_client_Requirement_RetrieveByIdCompleted);
+				this._client.Requirement_RetrieveCommentsCompleted += new EventHandler<Requirement_RetrieveCommentsCompletedEventArgs>(_client_Requirement_RetrieveCommentsCompleted);
+				this._client.Task_RetrieveCompleted += new EventHandler<Task_RetrieveCompletedEventArgs>(_client_Task_RetrieveCompleted);
 				this._client.CustomProperty_RetrieveForArtifactTypeCompleted += new EventHandler<CustomProperty_RetrieveForArtifactTypeCompletedEventArgs>(_client_CustomProperty_RetrieveForArtifactTypeCompleted);
 
 				//Fire the connection off here.
 				this._clientNumRunning++;
-				this.barLoadingIncident.Maximum = 8;
-				this._client.Connection_Authenticate2Async(this._Project.UserName, this._Project.UserPass, StaticFuncs.getCultureResource.GetString("app_ReportName"));
+				this.barLoadingIncident.Maximum = 9;
+				this._client.Connection_Authenticate2Async(this._Project.UserName, this._Project.UserPass, StaticFuncs.getCultureResource.GetString("app_ReportName"), this._clientNum++);
 
 			}
 
@@ -146,22 +152,27 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			{
 				if (e.Error == null && e.Result)
 				{
-					this._clientNumRunning += 9;
+					this._clientNumRunning += 7;
 					//Here we need to fire off all data retrieval functions:
 					// - Project users.
 					this._client.Project_RetrieveUserMembershipAsync(this._clientNum++);
-					// - Incident Statuses, Types, Priorities, Severities
-					this._client.Incident_RetrievePrioritiesAsync(this._clientNum++);
-					this._client.Incident_RetrieveSeveritiesAsync(this._clientNum++);
-					this._client.Incident_RetrieveStatusesAsync(this._clientNum++);
-					this._client.Incident_RetrieveTypesAsync(this._clientNum++);
-					this._client.CustomProperty_RetrieveForArtifactTypeAsync(3, this._clientNum++);
+					// - Custom Properties
+					this._client.CustomProperty_RetrieveForArtifactTypeAsync(1, this._clientNum++);
 					// - Available Releases
 					this._client.Release_RetrieveAsync(true, this._clientNum++);
 					// - Resolutions / Comments
-					this._client.Incident_RetrieveResolutionsAsync(this.ArtifactDetail.ArtifactId, this._clientNum++);
+					this._client.Requirement_RetrieveCommentsAsync(this.ArtifactDetail.ArtifactId, this._clientNum++);
 					// - System URL
 					this._client.System_GetArtifactUrlAsync(-14, this._Project.ProjectID, -2, null, this._clientNum++);
+					// - Get the Requirement.
+					this._client.Requirement_RetrieveByIdAsync(this._ArtifactDetails.ArtifactId, this._clientNum++);
+					// - Get the linked tasks.
+					this._client.Task_RetrieveAsync(
+						new List<RemoteFilter> { new RemoteFilter() { IntValue = this._ArtifactDetails.ArtifactId, PropertyName = "RequirementId" } },
+						new RemoteSort() { PropertyName = "StartDate", SortAscending = true },
+						1,
+						999999,
+						this._clientNum++);
 				}
 				else
 				{
@@ -190,7 +201,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 				{
 					this._ProjUsers = e.Result;
 					//See if we're ready to get the actual data.
-					this.load_IsReadyToGetMainData();
+					this.load_IsReadyToDisplayData();
 				}
 				else
 				{
@@ -219,7 +230,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 				{
 					this._ProjReleases = e.Result;
 					//See if we're ready to get the actual data.
-					this.load_IsReadyToGetMainData();
+					this.load_IsReadyToDisplayData();
 				}
 				else
 				{
@@ -312,7 +323,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 					}
 
 					//See if we're ready to get the actual data.
-					this.load_IsReadyToGetMainData();
+					this.load_IsReadyToDisplayData();
 				}
 				else
 				{
@@ -342,7 +353,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 					this._IncDocuments = e.Result;
 					//We won't load them into display until the other information is displayed.
 
-					this.load_IsReadyToGetMainData();
+					this.load_IsReadyToDisplayData();
 				}
 				else
 				{
@@ -372,7 +383,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 						this._ReqDocumentsUrl = e.Result;
 						this._clientNumRunning++;
 						//TODO: This needs to be moved to when we get the requirement details.
-						this._client.System_GetArtifactUrlAsync(1, this._ArtifactDetails.ArtifactParentProject.ArtifactId, this._Requirement.RequirementId.Value, null, this._clientNum++);
+						this._client.System_GetArtifactUrlAsync(1, this._ArtifactDetails.ArtifactParentProject.ArtifactId, this._ArtifactDetails.ArtifactId, null, this._clientNum++);
 					}
 					else
 					{
@@ -391,6 +402,98 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			}
 		}
 
+		/// <summary>Hit when the client's finished getting the comments for the artifact.</summary>
+		/// <param name="sender">ImportExportClient</param>
+		/// <param name="e">Requirement_RetrieveCommentsCompletedEventArgs</param>
+		private void _client_Requirement_RetrieveCommentsCompleted(object sender, Requirement_RetrieveCommentsCompletedEventArgs e)
+		{
+			const string METHOD = "_client_Requirement_RetrieveCommentsCompleted()";
+			System.Diagnostics.Debug.WriteLine(CLASS + METHOD + " ENTER. Clients - Running: " + this._clientNumRunning.ToString() + ", Total: " + this._clientNum.ToString());
+
+			this._clientNumRunning--;
+			this.barLoadingIncident.Value++;
+
+			if (!e.Cancelled)
+			{
+				if (e.Error == null)
+				{
+					//Load the comments.
+					this.loadItem_PopulateDiscussion(e.Result);
+
+					//See if we're ready to get the actual data.
+					this.load_IsReadyToDisplayData();
+				}
+				else
+				{
+					Logger.LogMessage(e.Error);
+					this._client.Connection_DisconnectAsync();
+				}
+			}
+
+			System.Diagnostics.Debug.WriteLine(CLASS + METHOD + " EXIT. Clients - Running: " + this._clientNumRunning.ToString() + ", Total: " + this._clientNum.ToString());
+		}
+
+		/// <summary>Hit when the client is finished getting the requirement.</summary>
+		/// <param name="sender">ImportExportClient</param>
+		/// <param name="e">Requirement_RetrieveByIdCompletedEventArgs</param>
+		private void _client_Requirement_RetrieveByIdCompleted(object sender, Requirement_RetrieveByIdCompletedEventArgs e)
+		{
+			const string METHOD = "_client_Requirement_RetrieveByIdCompleted()";
+			System.Diagnostics.Debug.WriteLine(CLASS + METHOD + " ENTER. Clients - Running: " + this._clientNumRunning.ToString() + ", Total: " + this._clientNum.ToString());
+
+			this._clientNumRunning--;
+			this.barLoadingIncident.Value++;
+
+			if (!e.Cancelled)
+			{
+				if (e.Error == null)
+				{
+					//Load the requirement.
+					this._Requirement = e.Result;
+
+					//See if we're ready to get the actual data.
+					this.load_IsReadyToDisplayData();
+				}
+				else
+				{
+					Logger.LogMessage(e.Error);
+					this._client.Connection_DisconnectAsync();
+				}
+			}
+
+			System.Diagnostics.Debug.WriteLine(CLASS + METHOD + " EXIT. Clients - Running: " + this._clientNumRunning.ToString() + ", Total: " + this._clientNum.ToString());
+		}
+
+		/// <summary>Hit when the client is finished getting a list of associated tasks.</summary>
+		/// <param name="sender">ImportExportClient</param>
+		/// <param name="e">Task_RetrieveCompletedEventArgs</param>
+		private void _client_Task_RetrieveCompleted(object sender, Task_RetrieveCompletedEventArgs e)
+		{
+			const string METHOD = "_client_Release_RetrieveCompleted()";
+			System.Diagnostics.Debug.WriteLine(CLASS + METHOD + " ENTER. Clients - Running: " + this._clientNumRunning.ToString() + ", Total: " + this._clientNum.ToString());
+
+			this._clientNumRunning--;
+			this.barLoadingIncident.Value++;
+
+			if (!e.Cancelled)
+			{
+				if (e.Error == null)
+				{
+					//Load up the grid..
+					this.loadItem_PopulateLinkedTasks(e.Result);
+
+					//See if we're ready to get the actual data.
+					this.load_IsReadyToDisplayData();
+				}
+				else
+				{
+					Logger.LogMessage(e.Error);
+					this._client.Connection_DisconnectAsync();
+				}
+			}
+
+			System.Diagnostics.Debug.WriteLine(CLASS + METHOD + " EXIT. Clients - Running: " + this._clientNumRunning.ToString() + ", Total: " + this._clientNum.ToString());
+		}
 		#endregion
 
 		/// <summary>Checks to see if it's okay to start loading form data.
@@ -471,7 +574,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 
 		/// <summary>Loads the listed discussions into the discussion control.</summary>
 		/// <param name="Discussions">The list of COmments to add.</param>
-		private void loadItem_PopulateDiscussion(List<RemoteIncidentResolution> Discussions)
+		private void loadItem_PopulateDiscussion(List<RemoteComment> Discussions)
 		{
 			try
 			{
@@ -482,10 +585,10 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 					this.cntrlDiscussion.Children.Add(new cntlDiscussionFrame("No comments for this item.", ""));
 				else
 				{
-					foreach (Business.SpiraTeam_Client.RemoteIncidentResolution Resolution in Discussions)
+					foreach (RemoteComment Resolution in Discussions)
 					{
-						string header = Resolution.CreatorName + " [" + Resolution.CreationDate.ToShortDateString() + " " + Resolution.CreationDate.ToShortTimeString() + "]";
-						this.cntrlDiscussion.Children.Add(new cntlDiscussionFrame(header, Resolution.Resolution));
+						string header = Resolution.UserName + " [" + Resolution.CreationDate.Value.ToShortDateString() + " " + Resolution.CreationDate.Value.ToShortTimeString() + "]";
+						this.cntrlDiscussion.Children.Add(new cntlDiscussionFrame(header, Resolution.Text));
 					}
 				}
 
@@ -523,7 +626,160 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 				}
 			}
 		}
+
+		/// <summary>Loads the list of assigned tasks into the grid.</summary>
+		/// <param name="listTasks">The list of Tasks</param>
+		private void loadItem_PopulateLinkedTasks(List<RemoteTask> listTasks)
+		{
+			const string METHOD = "loadItem_PopulateLinkedTasks()";
+
+			//Remove existing rows.
+			try
+			{
+				int intChildTries = 0;
+				while (this.gridTasks.Children.Count > 7 && intChildTries < 10000)
+				{
+					this.gridTasks.Children.RemoveAt(7);
+					intChildTries++;
+				}
+
+				//Remove rows.
+				int intRowTries = 0;
+				while (this.gridTasks.RowDefinitions.Count > 1 && intRowTries < 10000)
+				{
+					this.gridTasks.RowDefinitions.RemoveAt(1);
+					intRowTries++;
+				}
+			}
+			catch (Exception ex)
+			{
+				Logger.LogMessage(ex, CLASS + METHOD + " Clearing Attachments Grid");
+			}
+
+			//Add new rows.
+			if (listTasks != null)
+			{
+				foreach (RemoteTask reqTask in listTasks)
+				{
+					int numAdding = this.gridTasks.RowDefinitions.Count;
+
+					//Create the TreeViewrtifact to put on the HyperLink.
+					TreeViewArtifact artProject = new TreeViewArtifact();
+					artProject.ArtifactId = this._ArtifactDetails.ArtifactParentProject.ArtifactId;
+					artProject.ArtifactIsFolder = this._ArtifactDetails.ArtifactParentProject.ArtifactIsFolder;
+					artProject.ArtifactIsFolderMine = this._ArtifactDetails.ArtifactParentProject.ArtifactIsFolderMine;
+					artProject.ArtifactIsNo = this._ArtifactDetails.ArtifactParentProject.ArtifactIsNo;
+					artProject.ArtifactName = this._ArtifactDetails.ArtifactParentProject.ArtifactName;
+					artProject.ArtifactTag = this._ArtifactDetails.ArtifactParentProject.ArtifactTag;
+					artProject.ArtifactType = TreeViewArtifact.ArtifactTypeEnum.Project;
+					artProject.Items = new List<object>();
+
+					TreeViewArtifact artTask = new TreeViewArtifact();
+					artTask.Parent = artProject;
+					artTask.ArtifactId = reqTask.TaskId.Value;
+					artTask.ArtifactName = reqTask.Name;
+					artTask.ArtifactTag = reqTask;
+					artTask.ArtifactType = TreeViewArtifact.ArtifactTypeEnum.Task;
+
+					artProject.Items.Add(artTask);
+
+					//Create textblocks..
+					// - Image
+					Image imgTaskIcon = StaticFuncs.getImage("imgTask", new Size(16, 16));
+
+					// - Link/Name
+					TextBlock txtTaskName = new TextBlock();
+					Hyperlink linkFile = new Hyperlink();
+					linkFile.Inlines.Add("[TK:" + reqTask.TaskId.ToString() + "] ");
+					linkFile.Inlines.Add(reqTask.Name);
+					linkFile.Tag = artTask;
+
+					linkFile.Click += new RoutedEventHandler(Hyperlink_OpenTask_Click);
+
+					txtTaskName.Inlines.Add(linkFile);
+
+					//Create ToolTip.
+					txtTaskName.ToolTip = new cntrlRichTextEditor() { IsReadOnly = true, IsToolbarVisible = false, HTMLText = reqTask.Description, Width = 200 };
+					txtTaskName.Style = (Style)this.FindResource("PaddedLabel");
+					txtTaskName.HorizontalAlignment = System.Windows.HorizontalAlignment.Left;
+
+					// - Task Progress
+					Grid gridProgress = new Grid();
+					gridProgress.MinWidth = 100;
+					ProgressBar barProgress = new ProgressBar();
+					barProgress.Minimum = 0;
+					barProgress.Maximum = 100;
+					barProgress.Value = reqTask.CompletionPercent;
+					barProgress.HorizontalAlignment = System.Windows.HorizontalAlignment.Stretch;
+					barProgress.VerticalAlignment = System.Windows.VerticalAlignment.Stretch;
+					barProgress.MaxHeight = 20;
+					barProgress.Margin = new Thickness(0, 2, 0, 2);
+					Grid.SetColumn(barProgress, 0);
+					Grid.SetRow(barProgress, 0);
+					gridProgress.Children.Add(barProgress);
+
+					TextBlock txtProgress = new TextBlock();
+					txtProgress.Text = reqTask.CompletionPercent.ToString() + "%";
+					txtProgress.Style = (Style)this.FindResource("PaddedLabel");
+					txtProgress.HorizontalAlignment = System.Windows.HorizontalAlignment.Center;
+					txtProgress.VerticalAlignment = System.Windows.VerticalAlignment.Center;
+					Grid.SetColumn(txtProgress, 0);
+					Grid.SetRow(txtProgress, 0);
+					gridProgress.Children.Add(txtProgress);
+
+					// - Status
+					TextBlock txbStatus = new TextBlock();
+					txbStatus.Text = reqTask.TaskStatusId.ToString() + " - " + reqTask.TaskStatusName;
+					txbStatus.Style = (Style)this.FindResource("PaddedLabel");
+
+					// - Importance
+					TextBlock txbImportance = new TextBlock();
+					txbImportance.Text = reqTask.TaskPriorityName;
+					txbImportance.Style = (Style)this.FindResource("PaddedLabel");
+
+					// - Owner
+					TextBlock txbOwner = new TextBlock();
+					txbOwner.Text = reqTask.OwnerName;
+					txbOwner.Style = (Style)this.FindResource("PaddedLabel");
+
+					//Create the row, and add the controls to it.
+					this.gridTasks.RowDefinitions.Add(new RowDefinition() { Height = GridLength.Auto });
+					Grid.SetColumn(imgTaskIcon, 0);
+					Grid.SetRow(imgTaskIcon, numAdding);
+					this.gridTasks.Children.Add(imgTaskIcon);
+					Grid.SetColumn(txtTaskName, 1);
+					Grid.SetRow(txtTaskName, numAdding);
+					this.gridTasks.Children.Add(txtTaskName);
+					Grid.SetColumn(gridProgress, 2);
+					Grid.SetRow(gridProgress, numAdding);
+					this.gridTasks.Children.Add(gridProgress);
+					Grid.SetColumn(txbStatus, 3);
+					Grid.SetRow(txbStatus, numAdding);
+					this.gridTasks.Children.Add(txbStatus);
+					Grid.SetColumn(txbImportance, 4);
+					Grid.SetRow(txbImportance, numAdding);
+					this.gridTasks.Children.Add(txbImportance);
+					Grid.SetColumn(txbOwner, 5);
+					Grid.SetRow(txbOwner, numAdding);
+					this.gridTasks.Children.Add(txbOwner);
+				}
+
+				//Now create the background rectangle..
+				Rectangle rectBackg = new Rectangle();
+				rectBackg.HorizontalAlignment = System.Windows.HorizontalAlignment.Stretch;
+				rectBackg.VerticalAlignment = System.Windows.VerticalAlignment.Stretch;
+				rectBackg.Margin = new Thickness(0);
+				rectBackg.Fill = this.rectTitleBar.Fill;
+				Grid.SetColumn(rectBackg, 0);
+				Grid.SetRow(rectBackg, 1);
+				Grid.SetColumnSpan(rectBackg, 7);
+				Grid.SetRowSpan(rectBackg, this.gridTasks.RowDefinitions.Count - 1);
+				this.gridTasks.Children.Insert(0, rectBackg);
+			}
+		}
 		#endregion
+
+
 
 
 
@@ -545,7 +801,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			{
 				#region Base Fields
 				// - Name & ID
-				this.cntrlIncidentName.Text = requirement.Name;
+				this.cntrlName.Text = requirement.Name;
 				this.lblToken.Text = this._ArtifactDetails.ArtifactIDDisplay;
 				this.cntrlResolution.HTMLText = "";
 

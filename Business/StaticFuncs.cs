@@ -171,6 +171,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business
 		/// <summary>Remove HTML tags from a string.</summary>
 		public static string StripTagsCharArray(string source)
 		{
+			if (source == null) source = "";
 			char[] array = new char[source.Length];
 			int arrayIndex = 0;
 			bool inside = false;
@@ -216,7 +217,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business
 				}
 				if (!string.IsNullOrWhiteSpace(Minutes) && Minutes.All<char>(char.IsNumber))
 				{
-					intMinutes= int.Parse(Minutes);
+					intMinutes = int.Parse(Minutes);
 				}
 
 				retInt = (intHours * 60) + intMinutes;

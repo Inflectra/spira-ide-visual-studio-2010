@@ -54,8 +54,8 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			this.lblDetectedBy.Text = StaticFuncs.getCultureResource.GetString("app_Task_OpenedBy") + ":";
 			this.lblOwnedBy.Text = StaticFuncs.getCultureResource.GetString("app_General_OwnedBy") + ":";
 			this.lblPriority.Text = StaticFuncs.getCultureResource.GetString("app_General_Priority") + ":";
-			this.lblDetectedIn.Text = StaticFuncs.getCultureResource.GetString("app_Task_Release") + ":";
-			this.lblRequirement.Text = StaticFuncs.getCultureResource.GetString("app_Task_Requirement") + ":";
+			this.lblDetectedIn.Text = StaticFuncs.getCultureResource.GetString("app_Global_AssociatedRelease") + ":";
+			this.lblRequirement.Text = StaticFuncs.getCultureResource.GetString("app_General_AssociatedRequirement") + ":";
 			this.lblLastModified.Text = StaticFuncs.getCultureResource.GetString("app_Task_LastModified") + ":";
 			this.lblDescription.Text = StaticFuncs.getCultureResource.GetString("app_General_Description") + ":";
 			this.lblExpanderComments.Text = StaticFuncs.getCultureResource.GetString("app_General_ExpanderResolution");

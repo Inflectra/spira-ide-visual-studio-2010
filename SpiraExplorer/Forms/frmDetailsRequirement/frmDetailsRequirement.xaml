@@ -437,7 +437,7 @@
 										<TextBlock Name="lblTxtToken" />
 									</TextBlock.ToolTip>
 								</TextBlock>
-								<TextBox Name="cntrlIncidentName" Width="Auto" Margin="3,3,0,3" VerticalAlignment="Center" TextChanged="_cntrl_TextChanged" Style="{StaticResource PaddedControl}" />
+								<TextBox Name="cntrlName" Width="Auto" Margin="3,3,0,3" VerticalAlignment="Center" TextChanged="_cntrl_TextChanged" Style="{StaticResource PaddedControl}" />
 							</DockPanel>
 							<!-- ROW1: Priority, Creator -->
 							<TextBlock  Name="lblImportance" Grid.Column="0" Grid.Row="1" Style="{StaticResource PaddedLabel}" />
@@ -508,6 +508,34 @@
 								</GroupBox>
 								<StackPanel Name="cntrlDiscussion" Orientation="Vertical" />
 							</StackPanel>
+						</Expander>
+						<!-- Assigned Tasks -->
+						<Expander IsExpanded="{Binding IsSelected, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListBoxItem}}}" Style="{DynamicResource ExpanderStyle1}">
+							<Expander.Header>
+								<TextBlock Name="lblExpanderTasks" VerticalAlignment="Center" />
+							</Expander.Header>
+							<!-- TODO: Generate Custom Field controls -->
+							<Grid Name="gridTasks" Margin="10">
+								<Grid.ColumnDefinitions>
+									<ColumnDefinition Width="Auto" />
+									<ColumnDefinition Width="Auto" />
+									<ColumnDefinition Width="Auto" />
+									<ColumnDefinition Width="Auto" />
+									<ColumnDefinition Width="Auto" />
+									<ColumnDefinition Width="Auto" />
+									<ColumnDefinition Width="*" />
+								</Grid.ColumnDefinitions>
+								<Grid.RowDefinitions>
+									<RowDefinition Height="Auto" />
+								</Grid.RowDefinitions>
+								<!-- Header Row -->
+								<Rectangle Grid.Column="0" Grid.ColumnSpan="7" Grid.Row="0" Fill="{DynamicResource {x:Static vsfx:VsBrushes.CommandBarMenuBackgroundGradientKey}}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0" Name="rectTitleBar" Panel.ZIndex="-100" />
+								<TextBlock Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="0" FontWeight="Bold" Text="Task Name" Style="{StaticResource PaddedLabel}" HorizontalAlignment="Left" Padding="0,3,0,3" />
+								<TextBlock Grid.Column="2" Grid.Row="0" FontWeight="Bold" Text="Progress" Style="{StaticResource PaddedLabel}" HorizontalAlignment="Center" Padding="0,3,0,3" />
+								<TextBlock Grid.Column="3" Grid.Row="0" FontWeight="Bold" Text="Status" Style="{StaticResource PaddedLabel}" HorizontalAlignment="Center" Padding="0,3,0,3" />
+								<TextBlock Grid.Column="4" Grid.Row="0" FontWeight="Bold" Text="Priority" Style="{StaticResource PaddedLabel}" HorizontalAlignment="Center" Padding="0,3,0,3" />
+								<TextBlock Grid.Column="5" Grid.Row="0" FontWeight="Bold" Text="Owner" Style="{StaticResource PaddedLabel}" HorizontalAlignment="Center" Padding="0,3,0,3" Panel.ZIndex="9999" />
+							</Grid>
 						</Expander>
 						<!-- Custom Properties -->
 						<Expander IsExpanded="{Binding IsSelected, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListBoxItem}}}" Style="{DynamicResource ExpanderStyle1}">

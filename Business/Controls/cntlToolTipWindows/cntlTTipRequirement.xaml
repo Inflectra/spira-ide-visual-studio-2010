@@ -37,14 +37,16 @@
 		<TextBlock Grid.Column="1" Grid.Row="1" Name="txtProject" Text="Project:" FontStyle="Italic" />
 		<TextBlock Grid.Column="1" Grid.Row="2" Name="txtOwner" Text="Owner:" FontStyle="Italic" />
 		<TextBlock Grid.Column="1" Grid.Row="4" Name="txtStatus" Text="Status:" FontStyle="Italic" />
-		<TextBlock Grid.Column="1" Grid.Row="5" Name="txtPlanned" Text="Planned Effort:" FontStyle="Italic" />
+		<TextBlock Grid.Column="1" Grid.Row="5" Name="txtImportance" Text="Importance:" FontStyle="Italic" />
+		<TextBlock Grid.Column="1" Grid.Row="6" Name="txtPlanned" Text="Planned Effort:" FontStyle="Italic" />
 		<TextBlock Grid.Column="1" Grid.Row="10" Name="txtAssRel" Text="Rel.:" FontStyle="Italic" />
 		<!-- Data Items -->
 		<TextBlock Grid.Column="3" Grid.Row="0"><Run Text="[RQ:" /><Run Name="dataArtifactId" /><Run Text="]" /></TextBlock>
 		<TextBlock Name="dataProjectName" Grid.Column="3" Grid.Row="1" />
 		<TextBlock Name="dataOwnerName" Grid.Column="3" Grid.Row="2" />
 		<TextBlock Name="dataStatusName" Grid.Column="3" Grid.Row="4" />
-		<TextBlock Name="dataPlannedEffort" Grid.Column="3" Grid.Row="5" />
+		<TextBlock Name="dataImportanceName" Grid.Column="3" Grid.Row="5" />
+		<TextBlock Name="dataPlannedEffort" Grid.Column="3" Grid.Row="6" />
 		<TextBlock Name="dataVer" Grid.Column="3" Grid.Row="10" />
 	</Grid>
 </UserControl>

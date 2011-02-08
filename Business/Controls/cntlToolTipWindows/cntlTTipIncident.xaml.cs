@@ -1,4 +1,5 @@
 ﻿using System.Windows.Controls;
+using System;
 
 namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business.Forms
 {
@@ -78,7 +79,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business.Forms
 		{
 			if (Minutes.HasValue)
 			{
-				return (Minutes / 60).ToString() + " " + StaticFuncs.getCultureResource.GetString("app_General_HoursAbbr");
+				return "~" + Math.Round(((decimal)Minutes / 60), 0).ToString() + " " + StaticFuncs.getCultureResource.GetString("app_General_HoursAbbr");
 			}
 			else
 				return "";

@@ -225,17 +225,9 @@
   <data name="imgWarningWPF" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\ico_Warning.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="mnuViewTreeBtn" xml:space="preserve">
-    <value>SpiraTeam Project Explorer</value>
-    <comment>Command button on the menu.</comment>
-  </data>
   <data name="mnuViewTreeTip" xml:space="preserve">
     <value>Open the SpiraTeam Project Explorer</value>
     <comment>Statusbar or Tooltip text for the command.</comment>
-  </data>
-  <data name="strAddinProgName" xml:space="preserve">
-    <value>SpiraTeamAddin</value>
-    <comment>Used for Addin short name.</comment>
   </data>
   <data name="strAssignProjectTitle" xml:space="preserve">
     <value>SpiraTeam Explorer Configuration</value>
@@ -261,17 +253,9 @@
     <value>SpiraTeam Project Explorer</value>
     <comment>String used for the ProjectTree ToolWindow </comment>
   </data>
-  <data name="strRequirements" xml:space="preserve">
-    <value>Requirements</value>
-    <comment>For the TreeView - Requirements</comment>
-  </data>
   <data name="strSettingSectionGeneral" xml:space="preserve">
     <value>General</value>
     <comment>The 'General' section name in the settings file.</comment>
-  </data>
-  <data name="strTasks" xml:space="preserve">
-    <value>Tasks</value>
-    <comment>For the TreeView - Tasks</comment>
   </data>
   <data name="icoLogo_XP" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Spira_XP.ico;System.Drawing.Icon, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -367,14 +351,11 @@ http://server/SpiraTeam/</value>
   <data name="app_General_ActEffort" xml:space="preserve">
     <value>Actual Effort</value>
   </data>
-  <data name="app_Task_AssociatedRelease" xml:space="preserve">
+  <data name="app_Global_AssociatedRelease" xml:space="preserve">
     <value>Assigned Release</value>
   </data>
-  <data name="app_Task_AssociatedRequirement" xml:space="preserve">
+  <data name="app_General_AssociatedRequirement" xml:space="preserve">
     <value>Assigned Requirement</value>
-  </data>
-  <data name="app_Task_RemainingEffort" xml:space="preserve">
-    <value>Remaining Effort</value>
   </data>
   <data name="app_General_CommunicationErrorMessage" xml:space="preserve">
     <value>An error occurred while communicating with the SpiraTeam server.</value>
@@ -543,11 +524,8 @@ Are you sure you want to continue?</value>
   <data name="app_General_AddNewComment" xml:space="preserve">
     <value>Add New Comment</value>
   </data>
-  <data name="app_Incident_AddCommentErrorMessage" xml:space="preserve">
-    <value>The incident was updated, but there was an error adding your comment.</value>
-  </data>
-  <data name="app_Incident_UpdateError" xml:space="preserve">
-    <value>Update Incident Error</value>
+  <data name="app_General_UpdateError" xml:space="preserve">
+    <value>Update Error</value>
   </data>
   <data name="app_General_No" xml:space="preserve">
     <value>_No</value>
@@ -624,12 +602,6 @@ Are you sure you want to continue?</value>
   <data name="app_Task_Refreshing" xml:space="preserve">
     <value>Refreshing Task Details, please wait...</value>
   </data>
-  <data name="app_Task_Release" xml:space="preserve">
-    <value>Assigned Release</value>
-  </data>
-  <data name="app_Task_Requirement" xml:space="preserve">
-    <value>Assigned Requirement</value>
-  </data>
   <data name="app_Task_Saving" xml:space="preserve">
     <value>Saving Task, please wait...</value>
   </data>
@@ -659,5 +631,32 @@ Are you sure you want to continue?</value>
   </data>
   <data name="app_Requirement_Status_Requested" xml:space="preserve">
     <value>Requested</value>
+  </data>
+  <data name="app_General_AddCommentErrorMessage" xml:space="preserve">
+    <value>The artifact was updated, but there was an error adding your comment.</value>
+  </data>
+  <data name="app_Requirement_CreatedBy" xml:space="preserve">
+    <value>Created By</value>
+  </data>
+  <data name="app_Requirement_Loading" xml:space="preserve">
+    <value>Loading Requirement, please wait...</value>
+  </data>
+  <data name="app_Requirement_Saving" xml:space="preserve">
+    <value>Saving Requirement, please wait...</value>
+  </data>
+  <data name="app_General_ApplicationShortName" xml:space="preserve">
+    <value>SpiraTeamAddin</value>
+  </data>
+  <data name="app_Requirement_AskMergeConcurrency" xml:space="preserve">
+    <value>The requirement you are trying to save has been modified by someone else but can be merged with the other changes. Do you want to merge your changed fields with the current version of the requirement, or do you wish to reload and lose all your changes?</value>
+  </data>
+  <data name="app_Requirement_NoMergeConcurrency" xml:space="preserve">
+    <value>The requirement you are trying to save has been modified by someone else and cannot be saved without data loss. Please refresh your requirement and make your changes again.</value>
+  </data>
+  <data name="app_Requirement_Refreshing" xml:space="preserve">
+    <value>Refreshing Requirement, please wait...</value>
+  </data>
+  <data name="app_Requirement_ExpanderTask" xml:space="preserve">
+    <value>Assigned Tasks</value>
   </data>
 </root>

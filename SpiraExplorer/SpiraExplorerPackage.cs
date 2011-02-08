@@ -197,7 +197,8 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010
 							break;
 
 						case TreeViewArtifact.ArtifactTypeEnum.Requirement:
-							//TODO: Create requirement detail screen.
+							frmDetailsRequirement detRequirement = new frmDetailsRequirement(Artifact, window);
+							detailContent = detRequirement;
 							break;
 
 						case TreeViewArtifact.ArtifactTypeEnum.Task:

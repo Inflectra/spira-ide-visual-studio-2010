@@ -1,4 +1,5 @@
 ﻿using System.Windows.Controls;
+using System;
 
 namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business.Forms
 {
@@ -54,7 +55,8 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business.Forms
 			this.dataArtifactId.Text = this.DataItem.ArtifactId.ToString();
 			this.dataProjectName.Text = this.DataItem.ArtifactParentProject.ArtifactName;
 			this.dataOwnerName.Text = ((dynamic)this.DataItem.ArtifactTag).OwnerName;
-			this.dataStatusName.Text = ((dynamic)this.DataItem.ArtifactTag).ImportanceName;
+			this.dataStatusName.Text = ((dynamic)this.DataItem.ArtifactTag).StatusName;
+			this.dataImportanceName.Text = ((dynamic)this.DataItem.ArtifactTag).ImportanceName;
 			this.dataPlannedEffort.Text = this.getTime(((dynamic)this.DataItem.ArtifactTag).PlannedEffort);
 			this.dataVer.Text = ((dynamic)this.DataItem.ArtifactTag).ReleaseVersionNumber + " " + this.getVersionIdNumber(((dynamic)this.DataItem.ArtifactTag).ReleaseId);
 		}
@@ -66,7 +68,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business.Forms
 		{
 			if (Minutes.HasValue)
 			{
-				return (Minutes / 60).ToString() + " " + StaticFuncs.getCultureResource.GetString("app_General_HoursAbbr");
+				return "~" + Math.Round(((decimal)Minutes / 60), 0).ToString() + " " + StaticFuncs.getCultureResource.GetString("app_General_HoursAbbr");
 			}
 			else
 				return "";

@@ -30,7 +30,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business.Forms
 			this.txtEndDate.Text = StaticFuncs.getCultureResource.GetString("app_General_EndDate") + ":";
 			this.tstProjEff.Text = StaticFuncs.getCultureResource.GetString("app_General_ProjEffort") + ":";
 			this.tstActEff.Text = StaticFuncs.getCultureResource.GetString("app_General_ActEffort") + ":";
-			this.tstRemEff.Text = StaticFuncs.getCultureResource.GetString("app_Task_RemainingEffort") + ":";
+			this.tstRemEff.Text = StaticFuncs.getCultureResource.GetString("app_General_RemEffort") + ":";
 		}
 
 		/// <summary>Creates a new instance of the control, setting the data item.</summary>
@@ -63,7 +63,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business.Forms
 			this.dataOwnerName.Text = ((dynamic)this.DataItem.ArtifactTag).OwnerName;
 			this.dataPriorityName.Text = ((dynamic)this.DataItem.ArtifactTag).TaskPriorityName;
 			this.dataRel.Text = ((dynamic)this.DataItem.ArtifactTag).ReleaseVersionNumber + " " + this.getIdNumber(((dynamic)this.DataItem.ArtifactTag).ReleaseId, "RL");
-			this.dataStatusPerName.Text = ((dynamic)this.DataItem.ArtifactTag).TaskStatusName + " " + this.getPercent(((dynamic)this.DataItem.ArtifactTag).ReleaseId);
+			this.dataStatusPerName.Text = ((dynamic)this.DataItem.ArtifactTag).TaskStatusName + " " + this.getPercent(((dynamic)this.DataItem.ArtifactTag).CompletionPercent);
 			this.dataStartDate.Text = this.getDate(((dynamic)this.DataItem.ArtifactTag).StartDate);
 			this.dataEndDate.Text = this.getDate(((dynamic)this.DataItem.ArtifactTag).EndDate);
 			this.dataPrjEffort.Text = this.getTime(((dynamic)this.DataItem.ArtifactTag).ProjectedEffort);
@@ -95,7 +95,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business.Forms
 		{
 			if (Minutes.HasValue)
 			{
-				return (Minutes / 60).ToString() + " " + StaticFuncs.getCultureResource.GetString("app_General_HoursAbbr");
+				return "~" + Math.Round(((decimal)Minutes / 60), 0).ToString() + " " + StaticFuncs.getCultureResource.GetString("app_General_HoursAbbr");
 			}
 			else
 				return "";

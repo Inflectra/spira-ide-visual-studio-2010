@@ -137,10 +137,15 @@
       <DependentUpon>wpfColorPickerDialog.xaml</DependentUpon>
     </Compile>
     <Compile Include="Forms\cntrlNumericTextBox.cs" />
-    <Compile Include="Forms\frmDetailsRequirement\frmDetailsRequirement - Load.cs" />
-    <Compile Include="Forms\frmDetailsRequirement\frmDetailsRequirement - Save.cs" />
+    <Compile Include="Forms\frmDetailsRequirement\frmDetailsRequirement - Load.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Forms\frmDetailsRequirement\frmDetailsRequirement - Save.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Forms\frmDetailsRequirement\frmDetailsRequirement.xaml.cs">
       <DependentUpon>frmDetailsRequirement.xaml</DependentUpon>
+      <SubType>Code</SubType>
     </Compile>
     <Compile Include="Forms\frmDetailsTask\frmDetailsTask - Load.cs" />
     <Compile Include="Forms\frmDetailsTask\frmDetailsTask - Save.cs">
@@ -254,8 +259,8 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Forms\frmDetailsRequirement\frmDetailsRequirement.xaml">
-      <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Forms\frmDetailsTask\frmDetailsTask.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -299,7 +304,7 @@
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v10.0\VSSDK\Microsoft.VsSDK.targets" />
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties BuildVersion_UseGlobalSettings="False" BuildVersion_UpdateAssemblyVersion="True" BuildVersion_UpdateFileVersion="True" BuildVersion_AssemblyInfoFilename="Properties\AssemblyInfo.cs" BuildVersion_BuildVersioningStyle="None.None.None.Increment" BuildVersion_IncrementBeforeBuild="False" />
+      <UserProperties BuildVersion_IncrementBeforeBuild="False" BuildVersion_BuildVersioningStyle="None.None.None.Increment" BuildVersion_AssemblyInfoFilename="Properties\AssemblyInfo.cs" BuildVersion_UpdateFileVersion="True" BuildVersion_UpdateAssemblyVersion="True" BuildVersion_UseGlobalSettings="False" />
     </VisualStudio>
   </ProjectExtensions>
   <PropertyGroup>

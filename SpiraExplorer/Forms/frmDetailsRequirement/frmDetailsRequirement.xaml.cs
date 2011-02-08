@@ -44,31 +44,30 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			this.toolTxtSave.Text = StaticFuncs.getCultureResource.GetString("app_General_Save");
 			this.toolTxtRefresh.Text = StaticFuncs.getCultureResource.GetString("app_General_Refresh");
 			this.toolTxtLoadWeb.Text = StaticFuncs.getCultureResource.GetString("app_General_ViewBrowser");
-			this.toolTxtTimer.Text = StaticFuncs.getCultureResource.GetString("app_General_StartTimer");
-			this.mnuTxtActions.Text = StaticFuncs.getCultureResource.GetString("app_Incident_StatusActions") + ":";
-			this.lblLoadingIncident.Text = StaticFuncs.getCultureResource.GetString("app_Incident_Loading");
-			this.lblSavingIncident.Text = StaticFuncs.getCultureResource.GetString("app_Incident_Saving");
+			this.lblLoadingIncident.Text = StaticFuncs.getCultureResource.GetString("app_Requirement_Loading");
+			this.lblSavingIncident.Text = StaticFuncs.getCultureResource.GetString("app_Requirement_Saving");
 			this.lblExpanderDetails.Text = StaticFuncs.getCultureResource.GetString("app_General_ExpanderDetails");
 			this.lblName.Text = StaticFuncs.getCultureResource.GetString("app_General_Name") + ":";
 			this.lblTxtToken.Text = StaticFuncs.getCultureResource.GetString("app_General_CopyToClipboard");
 			this.lblStatus.Text = StaticFuncs.getCultureResource.GetString("app_General_Status") + ":";
-			this.lblCreatedBy.Text = StaticFuncs.getCultureResource.GetString("app_Incident_DetectedBy") + ":";
+			this.lblCreatedBy.Text = StaticFuncs.getCultureResource.GetString("app_Requirement_CreatedBy") + ":";
 			this.lblOwnedBy.Text = StaticFuncs.getCultureResource.GetString("app_General_OwnedBy") + ":";
 			this.lblImportance.Text = StaticFuncs.getCultureResource.GetString("app_General_Priority") + ":";
-			this.lblRelease.Text = StaticFuncs.getCultureResource.GetString("app_Incident_DetectedRelease") + ":";
+			this.lblRelease.Text = StaticFuncs.getCultureResource.GetString("app_General_AssociatedRequirement") + ":";
 			this.lblDescription.Text = StaticFuncs.getCultureResource.GetString("app_General_Description") + ":";
 			this.lblExpanderResolution.Text = StaticFuncs.getCultureResource.GetString("app_General_ExpanderResolution");
 			this.lblPlnEffort.Text = StaticFuncs.getCultureResource.GetString("app_General_EstEffort") + ":";
 			this.lblHours.Text = StaticFuncs.getCultureResource.GetString("app_General_Hours");
 			this.lblMins.Text = StaticFuncs.getCultureResource.GetString("app_General_Minutes");
+			this.lblExpanderTasks.Text = StaticFuncs.getCultureResource.GetString("app_Requirement_ExpanderTask");
 			this.lblExpanderCustom.Text = StaticFuncs.getCultureResource.GetString("app_General_ExpanderCustom");
 			this.lblExpanderAttachments.Text = StaticFuncs.getCultureResource.GetString("app_General_Attachments");
 			this.lblAddNewResolution.Text = StaticFuncs.getCultureResource.GetString("app_General_AddNewComment") + ":";
 			this.btnConcurrencyMergeNo.Content = StaticFuncs.getCultureResource.GetString("app_General_Refresh");
 			this.btnConcurrencyMergeYes.Content = StaticFuncs.getCultureResource.GetString("app_General_Merge");
-			this.lblMergeConcurrency.Text = StaticFuncs.getCultureResource.GetString("app_Incident_AskMergeConcurrency");
+			this.lblMergeConcurrency.Text = StaticFuncs.getCultureResource.GetString("app_Requirement_AskMergeConcurrency");
 			this.btnConcurrencyRefresh.Content = StaticFuncs.getCultureResource.GetString("app_General_Refresh");
-			this.lblNoMergeConcurrency.Text = StaticFuncs.getCultureResource.GetString("app_Incident_NoMergeConcurrency");
+			this.lblNoMergeConcurrency.Text = StaticFuncs.getCultureResource.GetString("app_Requirement_NoMergeConcurrency");
 
 			//Load fixed-option dropdowns.
 			// -- Importance
@@ -99,7 +98,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			}
 			this.cntrlImportance.SelectedIndex = 0;
 			// -- Status
-			for (int i = 1; i <= 5; i++)
+			for (int i = 1; i <= 8; i++)
 			{
 				RequirementStatus newStatus = new RequirementStatus();
 				newStatus.StatusId = i;
@@ -273,11 +272,11 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			//Fire off the url.
 			try
 			{
-				System.Diagnostics.Process.Start(this._IncidentUrl);
+				System.Diagnostics.Process.Start(this._RequirementUrl);
 			}
 			catch (Exception ex)
 			{
-				Logger.LogMessage(ex, "Error launching URL: " + this._IncidentUrl);
+				Logger.LogMessage(ex, "Error launching URL: " + this._RequirementUrl);
 				MessageBox.Show(StaticFuncs.getCultureResource.GetString("app_General_ErrorLaunchingUrlMessage"), StaticFuncs.getCultureResource.GetString("app_General_Error"), MessageBoxButton.OK, MessageBoxImage.Error);
 			}
 		}
@@ -298,7 +297,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			if (isUserSure == MessageBoxResult.Yes)
 			{
 				//User is sure, change the label, and launch the refresh.
-				this.lblLoadingIncident.Text = StaticFuncs.getCultureResource.GetString("app_Incident_Refreshing");
+				this.lblLoadingIncident.Text = StaticFuncs.getCultureResource.GetString("app_Requirement_Refreshing");
 				this.load_LoadItem();
 			}
 		}
@@ -332,6 +331,22 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 					MessageBox.Show(StaticFuncs.getCultureResource.GetString("app_General_ErrorLaunchingUrlMessage"), StaticFuncs.getCultureResource.GetString("app_General_Error"), MessageBoxButton.OK, MessageBoxImage.Error);
 				}
 			}
+		}
+
+		/// <summary>Hit when the user wants to open up a related Task</summary>
+		/// <param name="sender">Hyperlink</param>
+		/// <param name="e">RoutedEventArgs</param>
+		private void Hyperlink_OpenTask_Click(object sender, RoutedEventArgs e)
+		{
+			Hyperlink link = sender as Hyperlink;
+			if (link != null)
+				{
+					TreeViewArtifact taskArt = link.Tag as TreeViewArtifact;
+					if (taskArt != null)
+					{
+						((SpiraExplorerPackage)this.ParentWindowPane.Package).OpenDetailsToolWindow(taskArt);
+					}
+				}
 		}
 
 		#endregion
@@ -419,7 +434,6 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			{
 				//See if they've made any changes..
 				this._ArtifactDetails = value;
-				this._ArtifactDetails.WorkTimerChanged += new EventHandler(_ArtifactDetails_WorkTimerChanged);
 				this._Project = value.ArtifactParentProject.ArtifactTag as SpiraProject;
 
 				//Set tab title.
@@ -510,37 +524,37 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 				Logger.LogMessage(ex, "Setting WindowChanged status.");
 			}
 		}
+
+		/// <summary>Class to hold the fixed Priority types.</summary>
+		private class RequirementPriority
+		{
+			public int? PriorityId
+			{
+				get;
+				set;
+			}
+
+			public string Name
+			{
+				get;
+				set;
+			}
+		}
+
+		/// <summary>Class to hold the fixed Status types.</summary>
+		private class RequirementStatus
+		{
+			public int? StatusId
+			{
+				get;
+				set;
+			}
+			public string Name
+			{
+				get;
+				set;
+			}
+		}
+
 	}
-
-	/// <summary>Class to hold the fixed Priority types.</summary>
-	private class RequirementPriority
-	{
-		public int? PriorityId
-		{
-			get;
-			set;
-		}
-
-		public string Name
-		{
-			get;
-			set;
-		}
-	}
-
-	/// <summary>Class to hold the fixed Status types.</summary>
-	private class RequirementStatus
-	{
-		public int? StatusId
-		{
-			get;
-			set;
-		}
-		public string Name
-		{
-			get;
-			set;
-		}
-	}
-
 }

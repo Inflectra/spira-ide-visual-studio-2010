@@ -231,7 +231,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 				// - No Solution
 				this._nodeNoSolution = new TreeViewArtifact();
 				this._nodeNoSolution.ArtifactName = "No solution open.";
-				this._nodeNoProjects.ArtifactIsNo = true;
+				this._nodeNoSolution.ArtifactIsNo = true;
 			}
 			catch (Exception ex)
 			{

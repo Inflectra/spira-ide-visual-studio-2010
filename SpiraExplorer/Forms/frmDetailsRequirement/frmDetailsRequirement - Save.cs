@@ -20,7 +20,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 		//Are we currently saving our data?
 		private bool _isSavingInformation = false;
 		private int _clientNumSaving;
-		private RemoteIncident _IncidentConcurrent;
+		private RemoteRequirement _RequirementConcurrent;
 
 		/// <summary>Hit when the user wants to save the task.</summary>
 		/// <param name="sender">The save button.</param>
@@ -35,22 +35,22 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 				this.barSavingIncident.Maximum = 0;
 				this.barSavingIncident.Minimum = -5;
 
-				if (this._isFieldChanged || this._isWkfChanged || this._isResChanged || this._isDescChanged)
+				if (this._isFieldChanged || this._isResChanged || this._isDescChanged)
 				{
 					//Set working flag.
 					this.IsSaving = true;
 
 					//Get the new values from the form..
-					RemoteIncident newIncident = this.save_GetFromFields();
+					RemoteRequirement newRequirement = this.save_GetFromFields();
 
-					if (newIncident != null && this.workflow_CheckRequiredFields())
+					if (newRequirement != null)
 					{
 						//Create a client, and save task and resolution..
 						ImportExportClient clientSave = StaticFuncs.CreateClient(((SpiraProject)this._ArtifactDetails.ArtifactParentProject.ArtifactTag).ServerURL.ToString());
 						clientSave.Connection_Authenticate2Completed += new EventHandler<Connection_Authenticate2CompletedEventArgs>(clientSave_Connection_Authenticate2Completed);
 						clientSave.Connection_ConnectToProjectCompleted += new EventHandler<Connection_ConnectToProjectCompletedEventArgs>(clientSave_Connection_ConnectToProjectCompleted);
-						clientSave.Incident_UpdateCompleted += new EventHandler<System.ComponentModel.AsyncCompletedEventArgs>(clientSave_Incident_UpdateCompleted);
-						clientSave.Incident_AddResolutionsCompleted += new EventHandler<Incident_AddResolutionsCompletedEventArgs>(clientSave_Incident_AddResolutionsCompleted);
+						clientSave.Requirement_UpdateCompleted += new EventHandler<System.ComponentModel.AsyncCompletedEventArgs>(clientSave_Requirement_UpdateCompleted);
+						clientSave.Requirement_CreateCommentCompleted += new EventHandler<Requirement_CreateCommentCompletedEventArgs>(clientSave_Requirement_CreateCommentCompleted);
 						clientSave.Connection_DisconnectCompleted += new EventHandler<System.ComponentModel.AsyncCompletedEventArgs>(clientSave_Connection_DisconnectCompleted);
 
 						//Fire off the connection.
@@ -94,9 +94,9 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 		/// <summary>Hit when we're finished adding a resolution.</summary>
 		/// <param name="sender">ImportExportClient</param>
 		/// <param name="e">Incident_AddResolutionsCompletedEventArgs</param>
-		private void clientSave_Incident_AddResolutionsCompleted(object sender, Incident_AddResolutionsCompletedEventArgs e)
+		private void clientSave_Requirement_CreateCommentCompleted(object sender, Requirement_CreateCommentCompletedEventArgs e)
 		{
-			const string METHOD = "clientSave_Incident_AddResolutionsCompleted()";
+			const string METHOD = "clientSave_Requirement_CreateCommentCompleted()";
 			Logger.LogTrace(CLASS + METHOD + " Enter: " + this._clientNumSaving.ToString() + " running.");
 
 			ImportExportClient client = (sender as ImportExportClient);
@@ -108,9 +108,9 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 				if (e.Error != null)
 				{
 					//Log message.
-					Logger.LogMessage(e.Error, "Adding Comment to Incident");
+					Logger.LogMessage(e.Error, "Adding Comment to Requirement");
 					//Display error that the item saved, but adding the new resolution didn't.
-					MessageBox.Show(StaticFuncs.getCultureResource.GetString("app_Incident_AddCommentErrorMessage"), StaticFuncs.getCultureResource.GetString("app_Incident_UpdateError"), MessageBoxButton.OK, MessageBoxImage.Error);
+					MessageBox.Show(StaticFuncs.getCultureResource.GetString("app_General_AddCommentErrorMessage"), StaticFuncs.getCultureResource.GetString("app_General_UpdateError"), MessageBoxButton.OK, MessageBoxImage.Error);
 				}
 
 				//Regardless of what happens, we're disconnecting here.
@@ -127,9 +127,9 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 		/// <summary>Hit when we're finished updating the main information.</summary>
 		/// <param name="sender">ImportExportClient</param>
 		/// <param name="e">AsyncCompletedEventArgs</param>
-		private void clientSave_Incident_UpdateCompleted(object sender, System.ComponentModel.AsyncCompletedEventArgs e)
+		private void clientSave_Requirement_UpdateCompleted(object sender, System.ComponentModel.AsyncCompletedEventArgs e)
 		{
-			const string METHOD = "clientSave_Incident_UpdateCompleted()";
+			const string METHOD = "clientSave_Requirement_UpdateCompleted()";
 			Logger.LogTrace(CLASS + METHOD + " Enter: " + this._clientNumSaving.ToString() + " running.");
 
 			ImportExportClient client = (sender as ImportExportClient);
@@ -144,14 +144,14 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 					if (this._isResChanged)
 					{
 						//We need to save a resolution.
-						RemoteIncidentResolution newRes = new RemoteIncidentResolution();
+						RemoteComment newRes = new RemoteComment();
 						newRes.CreationDate = DateTime.Now;
-						newRes.CreatorId = ((SpiraProject)this._ArtifactDetails.ArtifactParentProject.ArtifactTag).UserID;
-						newRes.IncidentId = this._ArtifactDetails.ArtifactId;
-						newRes.Resolution = this.cntrlResolution.HTMLText;
+						newRes.UserId = ((SpiraProject)this._ArtifactDetails.ArtifactParentProject.ArtifactTag).UserID;
+						newRes.ArtifactId = this._ArtifactDetails.ArtifactId;
+						newRes.Text = this.cntrlResolution.HTMLText;
 
 						this._clientNumSaving++;
-						client.Incident_AddResolutionsAsync(new List<RemoteIncidentResolution>() { newRes }, this._clientNum++);
+						client.Requirement_CreateCommentAsync(newRes, this._clientNum++);
 					}
 					else
 					{
@@ -169,11 +169,11 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 					//If we get a concurrency error, get the current data.
 					if (e.Error is FaultException<ServiceFaultMessage> && ((FaultException<ServiceFaultMessage>)e.Error).Detail.Type == "DataAccessConcurrencyException")
 					{
-						client.Incident_RetrieveByIdCompleted += new EventHandler<Incident_RetrieveByIdCompletedEventArgs>(clientSave_Incident_RetrieveByIdCompleted);
+						client.Requirement_RetrieveByIdCompleted += new EventHandler<Requirement_RetrieveByIdCompletedEventArgs>(client_Requirement_RetrieveByIdCompleted);
 
 						//Fire it off.
 						this._clientNumSaving++;
-						client.Incident_RetrieveByIdAsync(this._ArtifactDetails.ArtifactId, this._clientNum++);
+						client.Requirement_RetrieveByIdAsync(this._ArtifactDetails.ArtifactId, this._clientNum++);
 					}
 					else
 					{
@@ -192,12 +192,12 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			Logger.LogTrace(CLASS + METHOD + " Exit: " + this._clientNumSaving.ToString() + " left.");
 		}
 
-		/// <summary>Hit if we hit a concurrency issue, and have to comapre values.</summary>
+		/// <summary>Hit if we hit a concurrency issue, and have to compare values.</summary>
 		/// <param name="sender">ImportExportClient</param>
 		/// <param name="e">Incident_RetrieveByIdCompletedEventArgs</param>
-		private void clientSave_Incident_RetrieveByIdCompleted(object sender, Incident_RetrieveByIdCompletedEventArgs e)
+		private void client_Requirement_RetrieveByIdCompleted(object sender, Requirement_RetrieveByIdCompletedEventArgs e)
 		{
-			const string METHOD = "clientSave_Incident_RetrieveByIdCompleted()";
+			const string METHOD = "client_Requirement_RetrieveByIdCompleted()";
 			Logger.LogTrace(CLASS + METHOD + " Enter: " + this._clientNumSaving.ToString() + " running.");
 
 			ImportExportClient client = (sender as ImportExportClient);
@@ -211,7 +211,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 				{
 					//We got new information here. Let's see if it can be merged.
 					bool canBeMerged = this.save_CheckIfConcurrencyCanBeMerged(e.Result);
-					this._IncidentConcurrent = e.Result;
+					this._RequirementConcurrent = e.Result;
 
 					if (canBeMerged)
 					{
@@ -264,13 +264,13 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 					if (e.Result)
 					{
 						//Get the new RemoteIncident
-						RemoteIncident newIncident = this.save_GetFromFields();
+						RemoteRequirement newRequirement = this.save_GetFromFields();
 
-						if (newIncident != null)
+						if (newRequirement != null)
 						{
 							//Fire off our update calls.
 							this._clientNumSaving++;
-							client.Incident_UpdateAsync(newIncident, this._clientNum++);
+							client.Requirement_UpdateAsync(newRequirement, this._clientNum++);
 						}
 						else
 						{
@@ -359,7 +359,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			if (this._clientNumSaving == 0)
 			{
 				this.IsSaving = false;
-				this.lblLoadingIncident.Text = StaticFuncs.getCultureResource.GetString("app_Incident_Refreshing");
+				this.lblLoadingIncident.Text = StaticFuncs.getCultureResource.GetString("app_Requirement_Refreshing");
 				this.load_LoadItem();
 			}
 
@@ -368,14 +368,14 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 
 		/// <summary>Returns whether the given Concurrent Incident can be safely merged with the user's values.</summary>
 		/// <param name="moddedTask">The concurrent task.</param>
-		private bool save_CheckIfConcurrencyCanBeMerged(RemoteIncident moddedIncident)
+		private bool save_CheckIfConcurrencyCanBeMerged(RemoteRequirement moddedRequirement)
 		{
 			bool retValue = false;
 
 			//Get current values..
-			RemoteIncident userIncident = this.save_GetFromFields();
+			RemoteRequirement userRequirement = this.save_GetFromFields();
 
-			if (userIncident != null && moddedIncident != null)
+			if (userRequirement != null && moddedRequirement != null)
 			{
 				//Okay, check all fields. We want to see if a user-changed field (userTask) was also
 				//   changed by someone else. If it was, we return false (they cannot be merged). Otherwise,
@@ -387,123 +387,93 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 				//   field ID, _WorkflowFields is just used to get the count of fields to check against.
 				int fieldNum = 1;
 				bool fieldCheck = true;
-				while (fieldNum < 39 && fieldCheck == true)
+				while (fieldNum < 29 && fieldCheck == true)
 				{
 					switch (fieldNum)
 					{
 						case 1:
-							if (userIncident.ActualEffort != this._Requirement.ActualEffort) fieldCheck = (this._Requirement.ActualEffort == moddedIncident.ActualEffort);
+							if (userRequirement.AuthorId != this._Requirement.AuthorId) fieldCheck = (this._Requirement.AuthorId == moddedRequirement.AuthorId);
 							break;
 						case 2:
-							if (userIncident.ClosedDate != this._Requirement.ClosedDate) fieldCheck = (this._Requirement.ClosedDate == moddedIncident.ClosedDate);
+							if (StaticFuncs.StripTagsCharArray(userRequirement.Description).ToLowerInvariant().Trim() != StaticFuncs.StripTagsCharArray(this._Requirement.Description).ToLowerInvariant().Trim()) fieldCheck = (StaticFuncs.StripTagsCharArray(this._Requirement.Description).ToLowerInvariant().Trim() == StaticFuncs.StripTagsCharArray(moddedRequirement.Description).ToLowerInvariant().Trim());
 							break;
 						case 3:
-							if (userIncident.CreationDate != this._Requirement.CreationDate) fieldCheck = (this._Requirement.CreationDate == moddedIncident.CreationDate);
+							if (userRequirement.ImportanceId != this._Requirement.ImportanceId) fieldCheck = (this._Requirement.ImportanceId == moddedRequirement.ImportanceId);
 							break;
 						case 4:
-							if (StaticFuncs.StripTagsCharArray(userIncident.Description).ToLowerInvariant().Trim() != StaticFuncs.StripTagsCharArray(this._Requirement.Description).ToLowerInvariant().Trim()) fieldCheck = (StaticFuncs.StripTagsCharArray(this._Requirement.Description).ToLowerInvariant().Trim() == StaticFuncs.StripTagsCharArray(moddedIncident.Description).ToLowerInvariant().Trim());
+							if (userRequirement.List01 != this._Requirement.List01) fieldCheck = (this._Requirement.List01 == moddedRequirement.List01);
 							break;
 						case 5:
-							if (userIncident.DetectedReleaseId != this._Requirement.DetectedReleaseId) fieldCheck = (this._Requirement.DetectedReleaseId == moddedIncident.DetectedReleaseId);
+							if (userRequirement.List02 != this._Requirement.List02) fieldCheck = (this._Requirement.List02 == moddedRequirement.List02);
 							break;
 						case 6:
-							if (userIncident.EstimatedEffort != this._Requirement.EstimatedEffort) fieldCheck = (this._Requirement.EstimatedEffort == moddedIncident.EstimatedEffort);
+							if (userRequirement.List03 != this._Requirement.List03) fieldCheck = (this._Requirement.List03 == moddedRequirement.List03);
 							break;
 						case 7:
-							if (userIncident.IncidentStatusId != this._Requirement.IncidentStatusId) fieldCheck = (this._Requirement.IncidentStatusId == moddedIncident.IncidentStatusId);
+							if (userRequirement.List04 != this._Requirement.List04) fieldCheck = (this._Requirement.List04 == moddedRequirement.List04);
 							break;
 						case 8:
-							if (userIncident.IncidentTypeId != this._Requirement.IncidentTypeId) fieldCheck = (this._Requirement.IncidentTypeId == moddedIncident.IncidentTypeId);
+							if (userRequirement.List05 != this._Requirement.List05) fieldCheck = (this._Requirement.List05 == moddedRequirement.List05);
 							break;
 						case 9:
-							if (userIncident.List01 != this._Requirement.List01) fieldCheck = (this._Requirement.List01 == moddedIncident.List01);
+							if (userRequirement.List06 != this._Requirement.List06) fieldCheck = (this._Requirement.List06 == moddedRequirement.List06);
 							break;
 						case 10:
-							if (userIncident.List02 != this._Requirement.List02) fieldCheck = (this._Requirement.List02 == moddedIncident.List02);
+							if (userRequirement.List07 != this._Requirement.List07) fieldCheck = (this._Requirement.List07 == moddedRequirement.List07);
 							break;
 						case 11:
-							if (userIncident.List03 != this._Requirement.List03) fieldCheck = (this._Requirement.List03 == moddedIncident.List03);
+							if (userRequirement.List08 != this._Requirement.List08) fieldCheck = (this._Requirement.List08 == moddedRequirement.List08);
 							break;
 						case 12:
-							if (userIncident.List04 != this._Requirement.List04) fieldCheck = (this._Requirement.List04 == moddedIncident.List04);
+							if (userRequirement.List09 != this._Requirement.List09) fieldCheck = (this._Requirement.List09 == moddedRequirement.List09);
 							break;
 						case 13:
-							if (userIncident.List05 != this._Requirement.List05) fieldCheck = (this._Requirement.List05 == moddedIncident.List05);
+							if (userRequirement.List10 != this._Requirement.List10) fieldCheck = (this._Requirement.List10 == moddedRequirement.List10);
 							break;
 						case 14:
-							if (userIncident.List06 != this._Requirement.List06) fieldCheck = (this._Requirement.List06 == moddedIncident.List06);
+							if (userRequirement.Name.TrimEquals(this._Requirement.Name)) fieldCheck = (this._Requirement.Name.TrimEquals(moddedRequirement.Name));
 							break;
 						case 15:
-							if (userIncident.List07 != this._Requirement.List07) fieldCheck = (this._Requirement.List07 == moddedIncident.List07);
+							if (userRequirement.OwnerId != this._Requirement.OwnerId) fieldCheck = (this._Requirement.OwnerId == moddedRequirement.OwnerId);
 							break;
 						case 16:
-							if (userIncident.List08 != this._Requirement.List08) fieldCheck = (this._Requirement.List08 == moddedIncident.List08);
+							if (userRequirement.PlannedEffort != this._Requirement.PlannedEffort) fieldCheck = (this._Requirement.PlannedEffort == moddedRequirement.PlannedEffort);
 							break;
 						case 17:
-							if (userIncident.List09 != this._Requirement.List09) fieldCheck = (this._Requirement.List09 == moddedIncident.List09);
+							if (userRequirement.ReleaseId != this._Requirement.ReleaseId) fieldCheck = (this._Requirement.ReleaseId == moddedRequirement.ReleaseId);
 							break;
 						case 18:
-							if (userIncident.List10 != this._Requirement.List10) fieldCheck = (this._Requirement.List10 == moddedIncident.List10);
+							if (userRequirement.StatusId != this._Requirement.StatusId) fieldCheck = (this._Requirement.StatusId == moddedRequirement.StatusId);
 							break;
 						case 19:
-							if (userIncident.Name.TrimEquals(this._Requirement.Name)) fieldCheck = (this._Requirement.Name.TrimEquals(moddedIncident.Name));
+							if (userRequirement.Text01.TrimEquals(this._Requirement.Text01)) fieldCheck = (this._Requirement.Text01.TrimEquals(moddedRequirement.Text01));
 							break;
 						case 20:
-							if (userIncident.OpenerId != this._Requirement.OpenerId) fieldCheck = (this._Requirement.OpenerId == moddedIncident.OpenerId);
+							if (userRequirement.Text02.TrimEquals(this._Requirement.Text02)) fieldCheck = (this._Requirement.Text02.TrimEquals(moddedRequirement.Text02));
 							break;
 						case 21:
-							if (userIncident.OwnerId != this._Requirement.OwnerId) fieldCheck = (this._Requirement.OwnerId == moddedIncident.OwnerId);
+							if (userRequirement.Text03.TrimEquals(this._Requirement.Text03)) fieldCheck = (this._Requirement.Text03.TrimEquals(moddedRequirement.Text03));
 							break;
 						case 22:
-							if (userIncident.PriorityId != this._Requirement.PriorityId) fieldCheck = (this._Requirement.PriorityId == moddedIncident.PriorityId);
+							if (userRequirement.Text04.TrimEquals(this._Requirement.Text04)) fieldCheck = (this._Requirement.Text04.TrimEquals(moddedRequirement.Text04));
 							break;
 						case 23:
-							if (userIncident.RemainingEffort != this._Requirement.RemainingEffort) fieldCheck = (this._Requirement.RemainingEffort == moddedIncident.RemainingEffort);
+							if (userRequirement.Text05.TrimEquals(this._Requirement.Text05)) fieldCheck = (this._Requirement.Text05.TrimEquals(moddedRequirement.Text05));
 							break;
 						case 24:
-							if (userIncident.ResolvedReleaseId != this._Requirement.ResolvedReleaseId) fieldCheck = (this._Requirement.ResolvedReleaseId == moddedIncident.ResolvedReleaseId);
+							if (userRequirement.Text06.TrimEquals(this._Requirement.Text06)) fieldCheck = (this._Requirement.Text06.TrimEquals(moddedRequirement.Text06));
 							break;
 						case 25:
-							if (userIncident.SeverityId != this._Requirement.SeverityId) fieldCheck = (this._Requirement.SeverityId == moddedIncident.SeverityId);
+							if (userRequirement.Text07.TrimEquals(this._Requirement.Text07)) fieldCheck = (this._Requirement.Text07.TrimEquals(moddedRequirement.Text07));
 							break;
 						case 26:
-							if (userIncident.StartDate != this._Requirement.StartDate) fieldCheck = (this._Requirement.StartDate == moddedIncident.StartDate);
+							if (userRequirement.Text08.TrimEquals(this._Requirement.Text08)) fieldCheck = (this._Requirement.Text08.TrimEquals(moddedRequirement.Text08));
 							break;
 						case 27:
-							if (userIncident.TestRunStepId != this._Requirement.TestRunStepId) fieldCheck = (this._Requirement.TestRunStepId == moddedIncident.TestRunStepId);
+							if (userRequirement.Text09.TrimEquals(this._Requirement.Text09)) fieldCheck = (this._Requirement.Text09.TrimEquals(moddedRequirement.Text09));
 							break;
 						case 28:
-							if (userIncident.Text01.TrimEquals(this._Requirement.Text01)) fieldCheck = (this._Requirement.Text01.TrimEquals(moddedIncident.Text01));
-							break;
-						case 29:
-							if (userIncident.Text02.TrimEquals(this._Requirement.Text02)) fieldCheck = (this._Requirement.Text02.TrimEquals(moddedIncident.Text02));
-							break;
-						case 30:
-							if (userIncident.Text03.TrimEquals(this._Requirement.Text03)) fieldCheck = (this._Requirement.Text03.TrimEquals(moddedIncident.Text03));
-							break;
-						case 31:
-							if (userIncident.Text04.TrimEquals(this._Requirement.Text04)) fieldCheck = (this._Requirement.Text04.TrimEquals(moddedIncident.Text04));
-							break;
-						case 32:
-							if (userIncident.Text05.TrimEquals(this._Requirement.Text05)) fieldCheck = (this._Requirement.Text05.TrimEquals(moddedIncident.Text05));
-							break;
-						case 33:
-							if (userIncident.Text06.TrimEquals(this._Requirement.Text06)) fieldCheck = (this._Requirement.Text06.TrimEquals(moddedIncident.Text06));
-							break;
-						case 34:
-							if (userIncident.Text07.TrimEquals(this._Requirement.Text07)) fieldCheck = (this._Requirement.Text07.TrimEquals(moddedIncident.Text07));
-							break;
-						case 35:
-							if (userIncident.Text08.TrimEquals(this._Requirement.Text08)) fieldCheck = (this._Requirement.Text08.TrimEquals(moddedIncident.Text08));
-							break;
-						case 36:
-							if (userIncident.Text09.TrimEquals(this._Requirement.Text09)) fieldCheck = (this._Requirement.Text09.TrimEquals(moddedIncident.Text09));
-							break;
-						case 37:
-							if (userIncident.Text10.TrimEquals(this._Requirement.Text10)) fieldCheck = (this._Requirement.Text10.TrimEquals(moddedIncident.Text10));
-							break;
-						case 38:
-							if (userIncident.VerifiedReleaseId != this._Requirement.VerifiedReleaseId) fieldCheck = (this._Requirement.VerifiedReleaseId == moddedIncident.VerifiedReleaseId);
+							if (userRequirement.Text10.TrimEquals(this._Requirement.Text10)) fieldCheck = (this._Requirement.Text10.TrimEquals(moddedRequirement.Text10));
 							break;
 					}
 					fieldNum++;
@@ -515,43 +485,43 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 
 		/// <summary>Copies over our values from the form into an Incident object.</summary>
 		/// <returns>A new RemoteIncident, or Null if error.</returns>
-		private RemoteIncident save_GetFromFields()
+		private RemoteRequirement save_GetFromFields()
 		{
 			const string METHOD = "save_GetFromFields()";
 
-			RemoteIncident retIncident = null;
+			RemoteRequirement retRequirement = null;
 			try
 			{
-				retIncident = new RemoteIncident();
+				retRequirement = new RemoteRequirement();
 
 				//*Fixed fields..
-				retIncident.IncidentId = this._Requirement.IncidentId;
-				retIncident.ProjectId = this._Requirement.ProjectId;
-				retIncident.CreationDate = this._Requirement.CreationDate;
-				retIncident.LastUpdateDate = this._Requirement.LastUpdateDate;
+				retRequirement.CoverageCountBlocked = this._Requirement.CoverageCountBlocked;
+				retRequirement.CoverageCountCaution = this._Requirement.CoverageCountCaution;
+				retRequirement.CoverageCountFailed = this._Requirement.CoverageCountFailed;
+				retRequirement.CoverageCountPassed = this._Requirement.CoverageCountPassed;
+				retRequirement.CoverageCountTotal = this._Requirement.CoverageCountTotal;
+				retRequirement.CreationDate = this._Requirement.CreationDate;
+				retRequirement.IndentLevel = this._Requirement.IndentLevel;
+				retRequirement.LastUpdateDate = this._Requirement.LastUpdateDate;
+				retRequirement.ProjectId = this._Requirement.ProjectId;
+				retRequirement.RequirementId = this._Requirement.RequirementId;
+				retRequirement.Summary = this._Requirement.Summary;
+				retRequirement.TaskActualEffort = this._Requirement.TaskActualEffort;
+				retRequirement.TaskCount = this._Requirement.TaskCount;
+				retRequirement.TaskEstimatedEffort = this._Requirement.TaskEstimatedEffort;
 
 				//*Standard fields..
-				retIncident.Name = this.cntrlIncidentName.Text.Trim();
-				retIncident.IncidentTypeId = ((RemoteIncidentType)this.cntrlType.SelectedItem).IncidentTypeId;
-				retIncident.IncidentStatusId = ((this._IncSelectedStatus.HasValue) ? this._IncSelectedStatus.Value : this._IncCurrentStatus.Value);
-				retIncident.OpenerId = ((RemoteUser)this.cntrlDetectedBy.SelectedItem).UserId;
-				retIncident.OwnerId = ((RemoteUser)this.cntrlOwnedBy.SelectedItem).UserId;
-				retIncident.PriorityId = ((RemoteIncidentPriority)this.cntrlPriority.SelectedItem).PriorityId;
-				retIncident.SeverityId = ((RemoteIncidentSeverity)this.cntrlSeverity.SelectedItem).SeverityId;
-				retIncident.DetectedReleaseId = ((RemoteRelease)this.cntrlDetectedIn.SelectedItem).ReleaseId;
-				retIncident.ResolvedReleaseId = ((RemoteRelease)this.cntrlResolvedIn.SelectedItem).ReleaseId;
-				retIncident.VerifiedReleaseId = ((RemoteRelease)this.cntrlVerifiedIn.SelectedItem).ReleaseId;
+				retRequirement.AuthorId = ((RemoteUser)this.cntrlCreatedBy.SelectedItem).UserId;
 				if (this._isDescChanged)
-					retIncident.Description = this.cntrlDescription.HTMLText;
+					retRequirement.Description = this.cntrlDescription.HTMLText;
 				else
-					retIncident.Description = this._Requirement.Description;
-
-				//*Schedule fields..
-				retIncident.StartDate = this.cntrlStartDate.SelectedDate;
-				retIncident.ClosedDate = this.cntrlEndDate.SelectedDate;
-				retIncident.EstimatedEffort = StaticFuncs.GetMinutesFromValues(this.cntrlEstEffortH.Text, this.cntrlEstEffortM.Text);
-				retIncident.ActualEffort = StaticFuncs.GetMinutesFromValues(this.cntrlActEffortH.Text, this.cntrlActEffortM.Text);
-				retIncident.RemainingEffort = StaticFuncs.GetMinutesFromValues(this.cntrlRemEffortH.Text, this.cntrlRemEffortM.Text);
+					retRequirement.Description = this._Requirement.Description;
+				retRequirement.ImportanceId = ((RequirementPriority)this.cntrlImportance.SelectedItem).PriorityId;
+				retRequirement.Name = this.cntrlName.Text.Trim();
+				retRequirement.OwnerId = ((RemoteUser)this.cntrlOwnedBy.SelectedItem).UserId;
+				retRequirement.PlannedEffort = StaticFuncs.GetMinutesFromValues(this.cntrlPlnEffortH.Text, this.cntrlPlnEffortM.Text);
+				retRequirement.ReleaseId = ((RemoteRelease)this.cntrlRelease.SelectedItem).ReleaseId;
+				retRequirement.StatusId = ((RequirementStatus)this.cntrlStatus.SelectedItem).StatusId;
 
 				//Custom fields..
 				foreach (UIElement eleItem in this.gridCustomProperties.Children)
@@ -574,64 +544,64 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 							switch (prop.CustomPropertyName)
 							{
 								case "TEXT_01":
-									retIncident.Text01 = strSelectedText;
+									retRequirement.Text01 = strSelectedText;
 									break;
 								case "TEXT_02":
-									retIncident.Text02 = strSelectedText;
+									retRequirement.Text02 = strSelectedText;
 									break;
 								case "TEXT_03":
-									retIncident.Text03 = strSelectedText;
+									retRequirement.Text03 = strSelectedText;
 									break;
 								case "TEXT_04":
-									retIncident.Text04 = strSelectedText;
+									retRequirement.Text04 = strSelectedText;
 									break;
 								case "TEXT_05":
-									retIncident.Text05 = strSelectedText;
+									retRequirement.Text05 = strSelectedText;
 									break;
 								case "TEXT_06":
-									retIncident.Text06 = strSelectedText;
+									retRequirement.Text06 = strSelectedText;
 									break;
 								case "TEXT_07":
-									retIncident.Text07 = strSelectedText;
+									retRequirement.Text07 = strSelectedText;
 									break;
 								case "TEXT_08":
-									retIncident.Text08 = strSelectedText;
+									retRequirement.Text08 = strSelectedText;
 									break;
 								case "TEXT_09":
-									retIncident.Text09 = strSelectedText;
+									retRequirement.Text09 = strSelectedText;
 									break;
 								case "TEXT_10":
-									retIncident.Text10 = strSelectedText;
+									retRequirement.Text10 = strSelectedText;
 									break;
 								case "LIST_01":
-									retIncident.List01 = intSelectedList;
+									retRequirement.List01 = intSelectedList;
 									break;
 								case "LIST_02":
-									retIncident.List02 = intSelectedList;
+									retRequirement.List02 = intSelectedList;
 									break;
 								case "LIST_03":
-									retIncident.List03 = intSelectedList;
+									retRequirement.List03 = intSelectedList;
 									break;
 								case "LIST_04":
-									retIncident.List04 = intSelectedList;
+									retRequirement.List04 = intSelectedList;
 									break;
 								case "LIST_05":
-									retIncident.List05 = intSelectedList;
+									retRequirement.List05 = intSelectedList;
 									break;
 								case "LIST_06":
-									retIncident.List06 = intSelectedList;
+									retRequirement.List06 = intSelectedList;
 									break;
 								case "LIST_07":
-									retIncident.List07 = intSelectedList;
+									retRequirement.List07 = intSelectedList;
 									break;
 								case "LIST_08":
-									retIncident.List08 = intSelectedList;
+									retRequirement.List08 = intSelectedList;
 									break;
 								case "LIST_09":
-									retIncident.List09 = intSelectedList;
+									retRequirement.List09 = intSelectedList;
 									break;
 								case "LIST_10":
-									retIncident.List10 = intSelectedList;
+									retRequirement.List10 = intSelectedList;
 									break;
 							}
 						}
@@ -643,11 +613,11 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			{
 				//TODO: Log error here.
 
-				retIncident = null;
+				retRequirement = null;
 			}
 
 			//Return
-			return retIncident;
+			return retRequirement;
 		}
 
 		#region Concurrency Button Events
@@ -659,7 +629,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			//Hide the error panel, jump to loading..
 			this.display_SetOverlayWindow(this.panelError, System.Windows.Visibility.Collapsed);
 			this.display_SetOverlayWindow(this.panelStatus, System.Windows.Visibility.Visible);
-			this.lblLoadingIncident.Text = StaticFuncs.getCultureResource.GetString("app_Incident_Refreshing");
+			this.lblLoadingIncident.Text = StaticFuncs.getCultureResource.GetString("app_Requirement_Refreshing");
 
 			this.load_LoadItem();
 		}
@@ -683,10 +653,10 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 					this.barSavingIncident.Value--;
 
 					//Re-launch the saving..
-					RemoteIncident incMerged = this.save_MergeConcurrency(this.save_GetFromFields(), this._IncidentConcurrent, this._Requirement);
+					RemoteRequirement reqMerged = this.save_MergeConcurrency(this.save_GetFromFields(), this._RequirementConcurrent, this._Requirement);
 
 					this._clientNumSaving++;
-					client.Incident_UpdateAsync(incMerged, this._clientNum++);
+					client.Requirement_UpdateAsync(reqMerged, this._clientNum++);
 				}
 			}
 			catch (Exception ex)
@@ -697,67 +667,71 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 		}
 		#endregion
 
-		/// <summary>Merges two RemoteIncidents into one for re-saving.</summary>
-		/// <param name="tskUserSaved">The user-saved task to merge with the Concurrent task.</param>
-		/// <param name="tskConcurrent">The concurrent task to merge with the User task.</param>
-		/// <param name="tskOriginal">The original unchanged task used for reference.</param>
-		/// <returns>A new RemoteIncident suitable for saving.</returns>
-		/// <remarks>This should only be called when it is known that there are no conflicting values between the User-Saved task and the Concurrent task.</remarks>
-		private RemoteIncident save_MergeConcurrency(RemoteIncident incUserSaved, RemoteIncident incConcurrent, RemoteIncident incOriginal)
+		/// <summary>Merges two RemoteRequirements into one for re-saving.</summary>
+		/// <param name="reqUserSaved">The user-saved requirement to merge with the Concurrent requirement.</param>
+		/// <param name="reqConcurrent">The concurrent requirement to merge with the User requirement.</param>
+		/// <param name="reqOriginal">The original unchanged requirement used for reference.</param>
+		/// <returns>A new RemoteRequirement suitable for saving.</returns>
+		/// <remarks>This should only be called when it is known that there are no conflicting values between the User-Saved requirement and the Concurrent requirement.</remarks>
+		private RemoteRequirement save_MergeConcurrency(RemoteRequirement reqUserSaved, RemoteRequirement reqConcurrent, RemoteRequirement reqOriginal)
 		{
-			//If the field was not changed by the user (tskUserSaved == tskOriginal), then use the tskConcurrent. (Assuming that the
-			// tskConcurrent has a possible updated value.
-			//Otherwise, use the tskUserSaved value.
+			//If the field was not changed by the user (reqUserSaved == reqOriginal), then use the reqConcurrent. (Assuming that the
+			// reqConcurrent has a possible updated value.
+			//Otherwise, use the reqUserSaved value.
 			try
 			{
-				RemoteIncident retIncident = new RemoteIncident();
+				RemoteRequirement retRequirement = new RemoteRequirement();
 
-				retIncident.ActualEffort = ((incUserSaved.ActualEffort == incOriginal.ActualEffort) ? incConcurrent.ActualEffort : incUserSaved.ActualEffort);
-				retIncident.ClosedDate = ((incUserSaved.ClosedDate == incOriginal.ClosedDate) ? incConcurrent.ClosedDate : incUserSaved.ClosedDate);
-				retIncident.CreationDate = incOriginal.CreationDate;
-				string strDescUser = StaticFuncs.StripTagsCharArray(incUserSaved.Description);
-				string strDescOrig = StaticFuncs.StripTagsCharArray(incOriginal.Description);
-				retIncident.Description = ((strDescOrig.TrimEquals(strDescOrig)) ? incConcurrent.Description : incUserSaved.Description);
-				retIncident.DetectedReleaseId = ((incUserSaved.DetectedReleaseId == incOriginal.DetectedReleaseId) ? incConcurrent.DetectedReleaseId : incUserSaved.DetectedReleaseId);
-				retIncident.EstimatedEffort = ((incUserSaved.EstimatedEffort == incOriginal.EstimatedEffort) ? incConcurrent.EstimatedEffort : incUserSaved.EstimatedEffort);
-				retIncident.IncidentId = incOriginal.IncidentId;
-				retIncident.IncidentStatusId = ((incUserSaved.IncidentStatusId == incOriginal.IncidentStatusId) ? incConcurrent.IncidentStatusId : incUserSaved.IncidentStatusId);
-				retIncident.IncidentTypeId = ((incUserSaved.IncidentTypeId == incOriginal.IncidentTypeId) ? incConcurrent.IncidentTypeId : incUserSaved.IncidentTypeId);
-				retIncident.LastUpdateDate = incConcurrent.LastUpdateDate;
-				retIncident.List01 = ((incUserSaved.List01 == incOriginal.List01) ? incConcurrent.List01 : incUserSaved.List01);
-				retIncident.List02 = ((incUserSaved.List02 == incOriginal.List02) ? incConcurrent.List02 : incUserSaved.List02);
-				retIncident.List03 = ((incUserSaved.List03 == incOriginal.List03) ? incConcurrent.List03 : incUserSaved.List03);
-				retIncident.List04 = ((incUserSaved.List04 == incOriginal.List04) ? incConcurrent.List04 : incUserSaved.List04);
-				retIncident.List05 = ((incUserSaved.List05 == incOriginal.List05) ? incConcurrent.List05 : incUserSaved.List05);
-				retIncident.List06 = ((incUserSaved.List06 == incOriginal.List06) ? incConcurrent.List06 : incUserSaved.List06);
-				retIncident.List07 = ((incUserSaved.List07 == incOriginal.List07) ? incConcurrent.List07 : incUserSaved.List07);
-				retIncident.List08 = ((incUserSaved.List08 == incOriginal.List08) ? incConcurrent.List08 : incUserSaved.List08);
-				retIncident.List09 = ((incUserSaved.List09 == incOriginal.List09) ? incConcurrent.List09 : incUserSaved.List09);
-				retIncident.List10 = ((incUserSaved.List10 == incOriginal.List10) ? incConcurrent.List10 : incUserSaved.List10);
-				retIncident.Name = ((incUserSaved.Name.TrimEquals(incOriginal.Name)) ? incConcurrent.Name : incUserSaved.Name);
-				retIncident.OpenerId = ((incUserSaved.OpenerId == incOriginal.OpenerId) ? incConcurrent.OpenerId : incUserSaved.OpenerId);
-				retIncident.OwnerId = ((incUserSaved.OwnerId == incOriginal.OwnerId) ? incConcurrent.OwnerId : incUserSaved.OwnerId);
-				retIncident.PriorityId = ((incUserSaved.PriorityId == incOriginal.PriorityId) ? incConcurrent.PriorityId : incUserSaved.PriorityId);
-				retIncident.ProjectId = incOriginal.ProjectId;
-				retIncident.RemainingEffort = ((incUserSaved.RemainingEffort == incOriginal.RemainingEffort) ? incConcurrent.RemainingEffort : incUserSaved.RemainingEffort);
-				retIncident.ResolvedReleaseId = ((incUserSaved.ResolvedReleaseId == incOriginal.ResolvedReleaseId) ? incConcurrent.ResolvedReleaseId : incUserSaved.ResolvedReleaseId);
-				retIncident.SeverityId = ((incUserSaved.SeverityId == incOriginal.SeverityId) ? incConcurrent.SeverityId : incUserSaved.SeverityId);
-				retIncident.StartDate = ((incUserSaved.StartDate == incOriginal.StartDate) ? incConcurrent.StartDate : incUserSaved.StartDate);
-				retIncident.TestRunStepId = ((incUserSaved.TestRunStepId == incOriginal.TestRunStepId) ? incConcurrent.TestRunStepId : incUserSaved.TestRunStepId);
-				retIncident.Text01 = ((retIncident.Text01.TrimEquals(incOriginal.Text01)) ? incConcurrent.Text01 : incUserSaved.Text01);
-				retIncident.Text02 = ((retIncident.Text02.TrimEquals(incOriginal.Text02)) ? incConcurrent.Text02 : incUserSaved.Text02);
-				retIncident.Text03 = ((retIncident.Text03.TrimEquals(incOriginal.Text03)) ? incConcurrent.Text03 : incUserSaved.Text03);
-				retIncident.Text04 = ((retIncident.Text04.TrimEquals(incOriginal.Text04)) ? incConcurrent.Text04 : incUserSaved.Text04);
-				retIncident.Text05 = ((retIncident.Text05.TrimEquals(incOriginal.Text05)) ? incConcurrent.Text05 : incUserSaved.Text05);
-				retIncident.Text06 = ((retIncident.Text06.TrimEquals(incOriginal.Text06)) ? incConcurrent.Text06 : incUserSaved.Text06);
-				retIncident.Text07 = ((retIncident.Text07.TrimEquals(incOriginal.Text07)) ? incConcurrent.Text07 : incUserSaved.Text07);
-				retIncident.Text08 = ((retIncident.Text08.TrimEquals(incOriginal.Text01)) ? incConcurrent.Text08 : incUserSaved.Text08);
-				retIncident.Text09 = ((retIncident.Text09.TrimEquals(incOriginal.Text09)) ? incConcurrent.Text09 : incUserSaved.Text09);
-				retIncident.Text10 = ((retIncident.Text10.TrimEquals(incOriginal.Text10)) ? incConcurrent.Text10 : incUserSaved.Text10);
-				retIncident.VerifiedReleaseId = ((incUserSaved.VerifiedReleaseId == incOriginal.VerifiedReleaseId) ? incConcurrent.VerifiedReleaseId : incUserSaved.VerifiedReleaseId);
+				//Let do fixed fields first.
+				retRequirement.CoverageCountBlocked = reqConcurrent.CoverageCountBlocked;
+				retRequirement.CoverageCountCaution = reqConcurrent.CoverageCountCaution;
+				retRequirement.CoverageCountFailed = reqConcurrent.CoverageCountFailed;
+				retRequirement.CoverageCountPassed = reqConcurrent.CoverageCountPassed;
+				retRequirement.CoverageCountTotal = reqConcurrent.CoverageCountTotal;
+				retRequirement.CreationDate = reqConcurrent.CreationDate;
+				retRequirement.IndentLevel = reqConcurrent.IndentLevel;
+				retRequirement.LastUpdateDate = reqConcurrent.LastUpdateDate;
+				retRequirement.ProjectId = reqConcurrent.ProjectId;
+				retRequirement.RequirementId = reqConcurrent.RequirementId;
+				retRequirement.Summary = reqConcurrent.Summary;
+				retRequirement.TaskActualEffort = reqConcurrent.TaskActualEffort;
+				retRequirement.TaskCount = reqConcurrent.TaskCount;
+				retRequirement.TaskEstimatedEffort = reqConcurrent.TaskEstimatedEffort;
+
+				//Now the user fields..
+				retRequirement.AuthorId = ((reqUserSaved.AuthorId == reqOriginal.AuthorId) ? reqConcurrent.AuthorId : reqUserSaved.AuthorId);
+				string strDescUser = StaticFuncs.StripTagsCharArray(reqUserSaved.Description);
+				string strDescOrig = StaticFuncs.StripTagsCharArray(reqOriginal.Description);
+				retRequirement.Description = ((strDescOrig.TrimEquals(strDescOrig)) ? reqConcurrent.Description : reqUserSaved.Description);
+				retRequirement.ImportanceId = ((reqUserSaved.ImportanceId == reqOriginal.ImportanceId) ? reqConcurrent.ImportanceId : reqUserSaved.ImportanceId);
+				retRequirement.List01 = ((reqUserSaved.List01 == reqOriginal.List01) ? reqConcurrent.List01 : reqUserSaved.List01);
+				retRequirement.List02 = ((reqUserSaved.List02 == reqOriginal.List02) ? reqConcurrent.List02 : reqUserSaved.List02);
+				retRequirement.List03 = ((reqUserSaved.List03 == reqOriginal.List03) ? reqConcurrent.List03 : reqUserSaved.List03);
+				retRequirement.List04 = ((reqUserSaved.List04 == reqOriginal.List04) ? reqConcurrent.List04 : reqUserSaved.List04);
+				retRequirement.List05 = ((reqUserSaved.List05 == reqOriginal.List05) ? reqConcurrent.List05 : reqUserSaved.List05);
+				retRequirement.List06 = ((reqUserSaved.List06 == reqOriginal.List06) ? reqConcurrent.List06 : reqUserSaved.List06);
+				retRequirement.List07 = ((reqUserSaved.List07 == reqOriginal.List07) ? reqConcurrent.List07 : reqUserSaved.List07);
+				retRequirement.List08 = ((reqUserSaved.List08 == reqOriginal.List08) ? reqConcurrent.List08 : reqUserSaved.List08);
+				retRequirement.List09 = ((reqUserSaved.List09 == reqOriginal.List09) ? reqConcurrent.List09 : reqUserSaved.List09);
+				retRequirement.List10 = ((reqUserSaved.List10 == reqOriginal.List10) ? reqConcurrent.List10 : reqUserSaved.List10);
+				retRequirement.Name = ((reqUserSaved.Name == reqOriginal.Name) ? reqConcurrent.Name : reqUserSaved.Name);
+				retRequirement.OwnerId = ((reqUserSaved.OwnerId == reqOriginal.OwnerId) ? reqConcurrent.OwnerId : reqUserSaved.OwnerId);
+				retRequirement.PlannedEffort = ((reqUserSaved.PlannedEffort == reqOriginal.PlannedEffort) ? reqConcurrent.PlannedEffort : reqUserSaved.PlannedEffort);
+				retRequirement.ReleaseId = ((reqUserSaved.ReleaseId == reqOriginal.ReleaseId) ? reqConcurrent.ReleaseId : reqUserSaved.ReleaseId);
+				retRequirement.StatusId = ((reqUserSaved.StatusId == reqOriginal.StatusId) ? reqConcurrent.StatusId : reqUserSaved.StatusId);
+				retRequirement.Text01 = ((retRequirement.Text01.TrimEquals(reqOriginal.Text01)) ? reqConcurrent.Text01 : reqUserSaved.Text01);
+				retRequirement.Text02 = ((retRequirement.Text02.TrimEquals(reqOriginal.Text02)) ? reqConcurrent.Text02 : reqUserSaved.Text02);
+				retRequirement.Text03 = ((retRequirement.Text03.TrimEquals(reqOriginal.Text03)) ? reqConcurrent.Text03 : reqUserSaved.Text03);
+				retRequirement.Text04 = ((retRequirement.Text04.TrimEquals(reqOriginal.Text04)) ? reqConcurrent.Text04 : reqUserSaved.Text04);
+				retRequirement.Text05 = ((retRequirement.Text05.TrimEquals(reqOriginal.Text05)) ? reqConcurrent.Text05 : reqUserSaved.Text05);
+				retRequirement.Text06 = ((retRequirement.Text06.TrimEquals(reqOriginal.Text06)) ? reqConcurrent.Text06 : reqUserSaved.Text06);
+				retRequirement.Text07 = ((retRequirement.Text07.TrimEquals(reqOriginal.Text07)) ? reqConcurrent.Text07 : reqUserSaved.Text07);
+				retRequirement.Text08 = ((retRequirement.Text08.TrimEquals(reqOriginal.Text01)) ? reqConcurrent.Text08 : reqUserSaved.Text08);
+				retRequirement.Text09 = ((retRequirement.Text09.TrimEquals(reqOriginal.Text09)) ? reqConcurrent.Text09 : reqUserSaved.Text09);
+				retRequirement.Text10 = ((retRequirement.Text10.TrimEquals(reqOriginal.Text10)) ? reqConcurrent.Text10 : reqUserSaved.Text10);
 
 				//Return our new task.
-				return retIncident;
+				return retRequirement;
 			}
 			catch (Exception ex)
 			{
