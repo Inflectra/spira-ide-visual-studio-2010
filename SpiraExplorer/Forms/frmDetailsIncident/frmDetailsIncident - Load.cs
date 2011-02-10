@@ -50,7 +50,6 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			if (this.ArtifactDetail != null)
 			{
 				//Clear the loading flag & dirty flags
-				this.IsLoading = false;
 				this._isDescChanged = false;
 				this._isResChanged = false;
 				this._isFieldChanged = false;
