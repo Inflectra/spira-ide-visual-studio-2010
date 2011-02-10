@@ -46,6 +46,8 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			this.toolTxtLoadWeb.Text = StaticFuncs.getCultureResource.GetString("app_General_ViewBrowser");
 			this.lblLoadingIncident.Text = StaticFuncs.getCultureResource.GetString("app_Requirement_Loading");
 			this.lblSavingIncident.Text = StaticFuncs.getCultureResource.GetString("app_Requirement_Saving");
+			this.btnRetryLoad.Content = StaticFuncs.getCultureResource.GetString("app_General_ButtonRetry");
+			this.lblLoadingError.Text = StaticFuncs.getCultureResource.GetString("app_General_TalkingToServerErrorMessage");
 			this.lblExpanderDetails.Text = StaticFuncs.getCultureResource.GetString("app_General_ExpanderDetails");
 			this.lblName.Text = StaticFuncs.getCultureResource.GetString("app_General_Name") + ":";
 			this.lblTxtToken.Text = StaticFuncs.getCultureResource.GetString("app_General_CopyToClipboard");
@@ -445,7 +447,37 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			}
 		}
 
+		/// <summary>Whether or not this artifact has unsaved changes.</summary>
+		public bool IsUnsaved
+		{
+			get
+			{
+				return (this._isDescChanged || this._isFieldChanged || this._isResChanged);
+			}
+		}
+
+		/// <summary>Whether or not this details screen is currently hidden.</summary>
+		public bool IsHidden
+		{
+			get;
+			set;
+		}
 		#endregion
+
+		/// <summary>Shows the error panel, with the appropriate message.</summary>
+		/// <param name="Message">Optional Message to show.</param>
+		private void display_ShowErrorPanel(string Message = null)
+		{
+			if (!string.IsNullOrWhiteSpace(Message))
+				this.lblLoadingError.Text = Message;
+
+			//Display the error panel.
+			this.gridSavingConcurrencyMerge.Visibility = System.Windows.Visibility.Collapsed;
+			this.gridSavingConcurrencyNoMerge.Visibility = System.Windows.Visibility.Collapsed;
+			this.gridLoadingError.Visibility = System.Windows.Visibility.Visible;
+			this.display_SetOverlayWindow(this.panelStatus, System.Windows.Visibility.Collapsed);
+			this.display_SetOverlayWindow(this.panelError, System.Windows.Visibility.Visible);
+		}
 
 		/// <summary>Use to show or hide the Status Window.</summary>
 		/// <param name="visiblity">The visibility of the window.</param>
@@ -554,6 +586,12 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 				get;
 				set;
 			}
+		}
+
+		/// <summary>Got a save command from an external source.</summary>
+		public void ExternalSave()
+		{
+			this.btnSave_Click(this.btnSave, null);
 		}
 
 	}

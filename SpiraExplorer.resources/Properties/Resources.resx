@@ -665,4 +665,19 @@ Are you sure you want to continue?</value>
   <data name="app_Global_SaveChangesMessage" xml:space="preserve">
     <value>Do you wish to save the changes you made to the artifact?</value>
   </data>
+  <data name="app_General_ButtonRetry" xml:space="preserve">
+    <value>_Retry</value>
+  </data>
+  <data name="app_General_TalkingToServerErrorMessage" xml:space="preserve">
+    <value>There was an error communicating with the server.</value>
+  </data>
+  <data name="app_General_TalkingToServerErrorMessageDetails" xml:space="preserve">
+    <value>Details of the error are:</value>
+  </data>
+  <data name="app_General_InvalidUsernameOrPassword" xml:space="preserve">
+    <value>Invalid Username or Password</value>
+  </data>
+  <data name="app_General_InvalidProject" xml:space="preserve">
+    <value>Could not access project.</value>
+  </data>
 </root>

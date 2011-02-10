@@ -51,6 +51,8 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			this.lblLoadingIncident.Text = StaticFuncs.getCultureResource.GetString("app_Incident_Loading");
 			this.lblSavingIncident.Text = StaticFuncs.getCultureResource.GetString("app_Incident_Saving");
 			this.lblExpanderDetails.Text = StaticFuncs.getCultureResource.GetString("app_General_ExpanderDetails");
+			this.btnRetryLoad.Content = StaticFuncs.getCultureResource.GetString("app_General_ButtonRetry");
+			this.lblLoadingError.Text = StaticFuncs.getCultureResource.GetString("app_General_TalkingToServerErrorMessage");
 			this.lblName.Text = StaticFuncs.getCultureResource.GetString("app_General_Name") + ":";
 			this.lblTxtToken.Text = StaticFuncs.getCultureResource.GetString("app_General_CopyToClipboard");
 			this.lblType.Text = StaticFuncs.getCultureResource.GetString("app_Incident_Type") + ":";
@@ -109,6 +111,14 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 		#endregion
 
 		#region Control Event Handlers
+
+		/// <summary>Hit when the worktimer is changed from another source.</summary>
+		/// <param name="sender">TreeViewArtifact</param>
+		/// <param name="e">EventArgs</param>
+		private void _ArtifactDetails_WorkTimerChanged(object sender, EventArgs e)
+		{
+			this.btnStartStopTimer.IsChecked = this._ArtifactDetails.IsTimed;
+		}
 
 		/// <summary>Hit when the Type or Status dropdown is changed. Have to reload workflow and update fields.</summary>
 		/// <param name="sender">cntrlType / cntrlStatus</param>
@@ -601,14 +611,6 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			}
 		}
 
-		/// <summary>Hit when the worktimer is changed from another source.</summary>
-		/// <param name="sender">TreeViewArtifact</param>
-		/// <param name="e">EventArgs</param>
-		private void _ArtifactDetails_WorkTimerChanged(object sender, EventArgs e)
-		{
-			this.btnStartStopTimer.IsChecked = this._ArtifactDetails.IsTimed;
-		}
-
 		/// <summary>Whether or not this artifact has unsaved changes.</summary>
 		public bool IsUnsaved
 		{
@@ -671,6 +673,21 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			}
 		}
 
+		/// <summary>Shows the error panel, with the appropriate message.</summary>
+		/// <param name="Message">Optional Message to show.</param>
+		private void display_ShowErrorPanel(string Message = null)
+		{
+			if (!string.IsNullOrWhiteSpace(Message))
+				this.lblLoadingError.Text = Message;
+
+			//Display the error panel.
+			this.gridSavingConcurrencyMerge.Visibility = System.Windows.Visibility.Collapsed;
+			this.gridSavingConcurrencyNoMerge.Visibility = System.Windows.Visibility.Collapsed;
+			this.gridLoadingError.Visibility = System.Windows.Visibility.Visible;
+			this.display_SetOverlayWindow(this.panelStatus, System.Windows.Visibility.Collapsed);
+			this.display_SetOverlayWindow(this.panelError, System.Windows.Visibility.Visible);
+		}
+
 		/// <summary>Sets whether the window has changed or not.</summary>
 		/// <param name="IsChanged">True for if fields are changed, false if not.</param>
 		private void display_SetWindowChanged(bool IsChanged = true)
@@ -709,5 +726,6 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 		{
 			this.btnSave_Click(this.btnSave, null);
 		}
+
 	}
 }

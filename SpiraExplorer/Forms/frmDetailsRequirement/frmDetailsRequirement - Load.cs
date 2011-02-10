@@ -125,10 +125,25 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 					if (e.Error != null)
 					{
 						Logger.LogMessage(e.Error);
+
+						//Display the error panel.
+						this.display_ShowErrorPanel(
+							StaticFuncs.getCultureResource.GetString("app_General_TalkingToServerErrorMessage") +
+							Environment.NewLine +
+							StaticFuncs.getCultureResource.GetString("app_General_TalkingToServerErrorMessageDetails") +
+							Environment.NewLine +
+							e.Error.Message.Truncate(250, Extensions.TruncateOptionsEnum.AllowLastWordToGoOverMaxLength & Extensions.TruncateOptionsEnum.FinishWord & Extensions.TruncateOptionsEnum.IncludeEllipsis));
 					}
 					else
 					{
 						Logger.LogMessage("Could not log in!");
+						//Display the error panel.
+						this.display_ShowErrorPanel(
+							StaticFuncs.getCultureResource.GetString("app_General_TalkingToServerErrorMessage") +
+							Environment.NewLine +
+							StaticFuncs.getCultureResource.GetString("app_General_TalkingToServerErrorMessageDetails") +
+							Environment.NewLine +
+							StaticFuncs.getCultureResource.GetString("app_General_InvalidUsernameOrPassword"));
 					}
 					this._client.Connection_DisconnectAsync();
 				}
@@ -176,8 +191,30 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 				}
 				else
 				{
-					Logger.LogMessage(e.Error);
-					this._client.Connection_DisconnectAsync();
+					if (e.Error != null)
+					{
+						Logger.LogMessage(e.Error);
+						this._client.Connection_DisconnectAsync();
+
+						//Display the error panel.
+						this.display_ShowErrorPanel(
+							StaticFuncs.getCultureResource.GetString("app_General_TalkingToServerErrorMessage") +
+							Environment.NewLine +
+							StaticFuncs.getCultureResource.GetString("app_General_TalkingToServerErrorMessageDetails") +
+							Environment.NewLine +
+							e.Error.Message.Truncate(250, Extensions.TruncateOptionsEnum.AllowLastWordToGoOverMaxLength & Extensions.TruncateOptionsEnum.FinishWord & Extensions.TruncateOptionsEnum.IncludeEllipsis));
+					}
+					else
+					{
+						Logger.LogMessage("Could not access project!");
+						//Display the error panel.
+						this.display_ShowErrorPanel(
+							StaticFuncs.getCultureResource.GetString("app_General_TalkingToServerErrorMessage") +
+							Environment.NewLine +
+							StaticFuncs.getCultureResource.GetString("app_General_TalkingToServerErrorMessageDetails") +
+							Environment.NewLine +
+							StaticFuncs.getCultureResource.GetString("app_General_InvalidProject"));
+					}
 				}
 			}
 
@@ -207,6 +244,14 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 				{
 					Logger.LogMessage(e.Error);
 					this._client.Connection_DisconnectAsync();
+
+					//Display the error panel.
+					this.display_ShowErrorPanel(
+						StaticFuncs.getCultureResource.GetString("app_General_TalkingToServerErrorMessage") +
+						Environment.NewLine +
+						StaticFuncs.getCultureResource.GetString("app_General_TalkingToServerErrorMessageDetails") +
+						Environment.NewLine +
+						e.Error.Message.Truncate(250, Extensions.TruncateOptionsEnum.AllowLastWordToGoOverMaxLength & Extensions.TruncateOptionsEnum.FinishWord & Extensions.TruncateOptionsEnum.IncludeEllipsis));
 				}
 			}
 
@@ -236,6 +281,14 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 				{
 					Logger.LogMessage(e.Error);
 					this._client.Connection_DisconnectAsync();
+
+					//Display the error panel.
+					this.display_ShowErrorPanel(
+						StaticFuncs.getCultureResource.GetString("app_General_TalkingToServerErrorMessage") +
+						Environment.NewLine +
+						StaticFuncs.getCultureResource.GetString("app_General_TalkingToServerErrorMessageDetails") +
+						Environment.NewLine +
+						e.Error.Message.Truncate(250, Extensions.TruncateOptionsEnum.AllowLastWordToGoOverMaxLength & Extensions.TruncateOptionsEnum.FinishWord & Extensions.TruncateOptionsEnum.IncludeEllipsis));
 				}
 			}
 
@@ -328,6 +381,15 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 				else
 				{
 					Logger.LogMessage(e.Error);
+					this._client.Connection_DisconnectAsync();
+
+					//Display the error panel.
+					this.display_ShowErrorPanel(
+						StaticFuncs.getCultureResource.GetString("app_General_TalkingToServerErrorMessage") +
+						Environment.NewLine +
+						StaticFuncs.getCultureResource.GetString("app_General_TalkingToServerErrorMessageDetails") +
+						Environment.NewLine +
+						e.Error.Message.Truncate(250, Extensions.TruncateOptionsEnum.AllowLastWordToGoOverMaxLength & Extensions.TruncateOptionsEnum.FinishWord & Extensions.TruncateOptionsEnum.IncludeEllipsis));
 				}
 			}
 
@@ -427,6 +489,14 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 				{
 					Logger.LogMessage(e.Error);
 					this._client.Connection_DisconnectAsync();
+
+					//Display the error panel.
+					this.display_ShowErrorPanel(
+						StaticFuncs.getCultureResource.GetString("app_General_TalkingToServerErrorMessage") +
+						Environment.NewLine +
+						StaticFuncs.getCultureResource.GetString("app_General_TalkingToServerErrorMessageDetails") +
+						Environment.NewLine +
+						e.Error.Message.Truncate(250, Extensions.TruncateOptionsEnum.AllowLastWordToGoOverMaxLength & Extensions.TruncateOptionsEnum.FinishWord & Extensions.TruncateOptionsEnum.IncludeEllipsis));
 				}
 			}
 
@@ -458,6 +528,14 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 				{
 					Logger.LogMessage(e.Error);
 					this._client.Connection_DisconnectAsync();
+
+					//Display the error panel.
+					this.display_ShowErrorPanel(
+						StaticFuncs.getCultureResource.GetString("app_General_TalkingToServerErrorMessage") +
+						Environment.NewLine +
+						StaticFuncs.getCultureResource.GetString("app_General_TalkingToServerErrorMessageDetails") +
+						Environment.NewLine +
+						e.Error.Message.Truncate(250, Extensions.TruncateOptionsEnum.AllowLastWordToGoOverMaxLength & Extensions.TruncateOptionsEnum.FinishWord & Extensions.TruncateOptionsEnum.IncludeEllipsis));
 				}
 			}
 
@@ -489,6 +567,14 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 				{
 					Logger.LogMessage(e.Error);
 					this._client.Connection_DisconnectAsync();
+
+					//Display the error panel.
+					this.display_ShowErrorPanel(
+						StaticFuncs.getCultureResource.GetString("app_General_TalkingToServerErrorMessage") +
+						Environment.NewLine +
+						StaticFuncs.getCultureResource.GetString("app_General_TalkingToServerErrorMessageDetails") +
+						Environment.NewLine +
+						e.Error.Message.Truncate(250, Extensions.TruncateOptionsEnum.AllowLastWordToGoOverMaxLength & Extensions.TruncateOptionsEnum.FinishWord & Extensions.TruncateOptionsEnum.IncludeEllipsis));
 				}
 			}
 
@@ -1019,5 +1105,18 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			}
 		}
 
+		/// <summary>Hit when the user does not want to save, and is forced to refresh the loaded data.</summary>
+		/// <param name="sender">btnConcurrencyMergeNo, btnConcurrencyRefresh</param>
+		/// <param name="e">RoutedEventArgs</param>
+		private void btnRetryLoad_Click(object sender, RoutedEventArgs e)
+		{
+			//Hide the error panel, jump to loading..
+			this.display_SetOverlayWindow(this.panelError, System.Windows.Visibility.Collapsed);
+			this.display_SetOverlayWindow(this.panelSaving, System.Windows.Visibility.Collapsed);
+			this.display_SetOverlayWindow(this.panelStatus, System.Windows.Visibility.Visible);
+			this.lblLoadingIncident.Text = StaticFuncs.getCultureResource.GetString("app_Requirement_Loading");
+
+			this.load_LoadItem();
+		}
 	}
 }
