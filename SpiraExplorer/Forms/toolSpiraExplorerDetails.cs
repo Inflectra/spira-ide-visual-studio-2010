@@ -1,5 +1,7 @@
 ﻿using Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Controls;
 using Microsoft.VisualStudio.Shell;
+using System.Windows;
+using Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business;
 
 namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 {
@@ -49,7 +51,69 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 		/// <summary>Hit when the window is attempted to be closed.</summary>
 		protected override void OnClose()
 		{
-			//TODO: Inform window we're closing.
+			try
+			{
+				if (((dynamic)((dynamic)this.FormControl).Content).IsUnsaved)
+				{
+					//Show message asking if they want to save.
+					MessageBoxResult saveChanges = MessageBoxResult.No;
+					saveChanges = MessageBox.Show(
+						StaticFuncs.getCultureResource.GetString("app_Global_SaveChangesMessage"),
+						StaticFuncs.getCultureResource.GetString("app_Global_SaveChanges"),
+						MessageBoxButton.YesNo,
+						MessageBoxImage.Question,
+						MessageBoxResult.No);
+
+					if (saveChanges == MessageBoxResult.Yes)
+					{
+						((dynamic)((dynamic)this.FormControl).Content).ExternalSave();
+					}
+				}
+			}
+			catch
+			{ }
+		}
+
+		/// <summary>Whether or not the contents have unsaved changes.</summary>
+		public bool IsChanged
+		{
+			get
+			{
+				try
+				{
+					//Regardless of the content, get whether it's changed or not.
+					return (bool)((dynamic)((dynamic)this.FormControl).Content).IsUnsaved;
+				}
+				catch
+				{
+					return false;
+				}
+			}
+		}
+
+		/// <summary>Returns whether this specific item has been opened already or not.</summary>
+		public bool IsHidden
+		{
+			get
+			{
+				try
+				{
+					return (bool)((dynamic)((dynamic)this.FormControl).Content).IsHidden;
+				}
+				catch
+				{
+					return true;
+				}
+			}
+		}
+
+		/// <summary>Whether or not the content has been set yet.</summary>
+		public bool IsContentSet
+		{
+			get
+			{
+				return (((dynamic)this.FormControl).Content != null);
+			}
 		}
 	}
 }

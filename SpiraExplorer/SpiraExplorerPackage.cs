@@ -187,36 +187,46 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010
 
 				if (window != null)
 				{
-					//Generate the details screen.
-					object detailContent = null;
-					switch (Artifact.ArtifactType)
+					//If the window is hidden and is not in an unsaved state, reload window contents.
+					//   If window is not hidden, simply bring it to foreground.
+					//   If window is not created, load window contents.
+					//   If window is hidden and in an unsaved state, simply bring it to foreground.
+
+					//See if we need to reset the content.
+					if (!window.IsContentSet || (window.IsHidden && !window.IsChanged))
 					{
-						case TreeViewArtifact.ArtifactTypeEnum.Incident:
-							frmDetailsIncident detIncident = new frmDetailsIncident(Artifact, window);
-							detailContent = detIncident;
-							break;
+						//Generate the details screen.
+						object detailContent = null;
+						switch (Artifact.ArtifactType)
+						{
+							case TreeViewArtifact.ArtifactTypeEnum.Incident:
+								frmDetailsIncident detIncident = new frmDetailsIncident(Artifact, window);
+								detailContent = detIncident;
+								break;
 
-						case TreeViewArtifact.ArtifactTypeEnum.Requirement:
-							frmDetailsRequirement detRequirement = new frmDetailsRequirement(Artifact, window);
-							detailContent = detRequirement;
-							break;
+							case TreeViewArtifact.ArtifactTypeEnum.Requirement:
+								frmDetailsRequirement detRequirement = new frmDetailsRequirement(Artifact, window);
+								detailContent = detRequirement;
+								break;
 
-						case TreeViewArtifact.ArtifactTypeEnum.Task:
-							frmDetailsTask detTask= new frmDetailsTask(Artifact, window);
-							detailContent = detTask;
-							break;
+							case TreeViewArtifact.ArtifactTypeEnum.Task:
+								frmDetailsTask detTask = new frmDetailsTask(Artifact, window);
+								detailContent = detTask;
+								break;
+						}
+						//Set toolwindow's content.
+						if (detailContent != null)
+						{
+							((cntrlDetailsForm)window.FormControl).Content = detailContent;
+
+						}
 					}
 
-					//Set toolwindow's content.
-					if (detailContent != null)
-					{
-						((cntrlDetailsForm)window.FormControl).Content = detailContent;
-
-						//Get the frame.
-						IVsWindowFrame windowFrame = (IVsWindowFrame)window.Frame;
-						windowFrame.SetProperty((int)__VSFPROPID.VSFPROPID_FrameMode, VSFRAMEMODE.VSFM_MdiChild);
-						Microsoft.VisualStudio.ErrorHandler.ThrowOnFailure(windowFrame.Show());
-					}
+					//Get the frame.
+					IVsWindowFrame windowFrame = (IVsWindowFrame)window.Frame;
+					windowFrame.SetProperty((int)__VSFPROPID.VSFPROPID_FrameMode, VSFRAMEMODE.VSFM_MdiChild);
+					Microsoft.VisualStudio.ErrorHandler.ThrowOnFailure(windowFrame.Show());
+					((dynamic)((cntrlDetailsForm)window.FormControl).Content).IsHidden = false;
 				}
 				else
 				{

@@ -659,4 +659,10 @@ Are you sure you want to continue?</value>
   <data name="app_Requirement_ExpanderTask" xml:space="preserve">
     <value>Assigned Tasks</value>
   </data>
+  <data name="app_Global_SaveChanges" xml:space="preserve">
+    <value>Save Changes?</value>
+  </data>
+  <data name="app_Global_SaveChangesMessage" xml:space="preserve">
+    <value>Do you wish to save the changes you made to the artifact?</value>
+  </data>
 </root>

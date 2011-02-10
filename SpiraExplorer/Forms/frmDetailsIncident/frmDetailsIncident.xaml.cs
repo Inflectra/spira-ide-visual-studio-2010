@@ -608,6 +608,22 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 		{
 			this.btnStartStopTimer.IsChecked = this._ArtifactDetails.IsTimed;
 		}
+
+		/// <summary>Whether or not this artifact has unsaved changes.</summary>
+		public bool IsUnsaved
+		{
+			get
+			{
+				return (this._isDescChanged || this._isFieldChanged || this._isResChanged || this._isWkfChanged);
+			}
+		}
+
+		/// <summary>Whether or not this details screen is currently hidden.</summary>
+		public bool IsHidden
+		{
+			get;
+			set;
+		}
 		#endregion
 
 		/// <summary>Use to show or hide the Status Window.</summary>
@@ -686,6 +702,12 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			{
 				Logger.LogMessage(ex, "Setting WindowChanged status.");
 			}
+		}
+
+		/// <summary>Got a save command from an external source.</summary>
+		public void ExternalSave()
+		{
+			this.btnSave_Click(this.btnSave, null);
 		}
 	}
 }
