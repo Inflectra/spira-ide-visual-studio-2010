@@ -11,6 +11,7 @@ using System.Windows.Controls.Primitives;
 using System.Collections.Generic;
 using System.Linq;
 using System.ServiceModel;
+using Inflectra.Global;
 
 namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 {

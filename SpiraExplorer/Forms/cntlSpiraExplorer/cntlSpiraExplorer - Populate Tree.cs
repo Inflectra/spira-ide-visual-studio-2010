@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
+using Inflectra.Global;
 using Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business;
 using Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business.SpiraTeam_Client;
 using Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Properties;

@@ -4,14 +4,15 @@ using System.ComponentModel.Design;
 using System.Diagnostics;
 using System.Globalization;
 using System.Runtime.InteropServices;
+using System.Windows;
 using EnvDTE;
+using Inflectra.Global;
 using Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business;
 using Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Controls;
 using Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms;
 using Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Properties;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
-using System.Windows;
 
 namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010
 {

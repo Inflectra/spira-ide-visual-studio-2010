@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Net;
 using System.Security.Cryptography.X509Certificates;
 using System.ServiceModel;
+using Inflectra.Global;
 using Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business.SpiraTeam_Client;
 
 namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business

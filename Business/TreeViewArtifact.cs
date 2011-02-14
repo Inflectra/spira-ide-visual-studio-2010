@@ -3,9 +3,8 @@ using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using Inflectra.Global;
 using Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business.Forms;
-using System.Windows.Input;
-using Microsoft.VisualStudio.Shell;
 
 namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business
 {

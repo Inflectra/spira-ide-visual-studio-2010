@@ -5,6 +5,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using Inflectra.Global;
 using Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business;
 using Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business.SpiraTeam_Client;
 
@@ -223,7 +224,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 					this.btnConnect_Click(null, null);
 					//Just act like they canceled the service, then set error flag.
 					this.barProg.Foreground = (Brush)new System.Windows.Media.BrushConverter().ConvertFrom(StaticFuncs.getCultureResource.GetString("app_Colors_StyledBarError"));
-					this.barProg.Value = 1;
+					this.barProg.Value = 1; 
 					this.txtStatus.Text = "Error connecting.";
 					this.txtStatus.ToolTip = ex.Message;
 				}

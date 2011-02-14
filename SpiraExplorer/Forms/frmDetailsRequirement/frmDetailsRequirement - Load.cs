@@ -3,15 +3,12 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Documents;
+using System.Windows.Shapes;
+using Inflectra.Global;
 using Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business;
 using Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business.SpiraTeam_Client;
 using Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Controls;
-using System.Windows.Documents;
-using Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business.HTMLandXAML;
-using Microsoft.VisualStudio.Shell.Interop;
-using System.Windows.Shapes;
-using System.Windows.Media;
-using Microsoft.VisualStudio.Shell;
 
 namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 {
@@ -131,7 +128,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 							Environment.NewLine +
 							StaticFuncs.getCultureResource.GetString("app_General_TalkingToServerErrorMessageDetails") +
 							Environment.NewLine +
-							e.Error.Message.Truncate(250, Extensions.TruncateOptionsEnum.AllowLastWordToGoOverMaxLength & Extensions.TruncateOptionsEnum.FinishWord & Extensions.TruncateOptionsEnum.IncludeEllipsis));
+							e.Error.Message.Truncate(250, Strings.TruncateOptionsEnum.AllowLastWordToGoOverMaxLength & Strings.TruncateOptionsEnum.FinishWord & Strings.TruncateOptionsEnum.IncludeEllipsis));
 					}
 					else
 					{
@@ -201,7 +198,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 							Environment.NewLine +
 							StaticFuncs.getCultureResource.GetString("app_General_TalkingToServerErrorMessageDetails") +
 							Environment.NewLine +
-							e.Error.Message.Truncate(250, Extensions.TruncateOptionsEnum.AllowLastWordToGoOverMaxLength & Extensions.TruncateOptionsEnum.FinishWord & Extensions.TruncateOptionsEnum.IncludeEllipsis));
+							e.Error.Message.Truncate(250, Strings.TruncateOptionsEnum.AllowLastWordToGoOverMaxLength & Strings.TruncateOptionsEnum.FinishWord & Strings.TruncateOptionsEnum.IncludeEllipsis));
 					}
 					else
 					{
@@ -250,7 +247,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 						Environment.NewLine +
 						StaticFuncs.getCultureResource.GetString("app_General_TalkingToServerErrorMessageDetails") +
 						Environment.NewLine +
-						e.Error.Message.Truncate(250, Extensions.TruncateOptionsEnum.AllowLastWordToGoOverMaxLength & Extensions.TruncateOptionsEnum.FinishWord & Extensions.TruncateOptionsEnum.IncludeEllipsis));
+						e.Error.Message.Truncate(250, Strings.TruncateOptionsEnum.AllowLastWordToGoOverMaxLength & Strings.TruncateOptionsEnum.FinishWord & Strings.TruncateOptionsEnum.IncludeEllipsis));
 				}
 			}
 
@@ -287,7 +284,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 						Environment.NewLine +
 						StaticFuncs.getCultureResource.GetString("app_General_TalkingToServerErrorMessageDetails") +
 						Environment.NewLine +
-						e.Error.Message.Truncate(250, Extensions.TruncateOptionsEnum.AllowLastWordToGoOverMaxLength & Extensions.TruncateOptionsEnum.FinishWord & Extensions.TruncateOptionsEnum.IncludeEllipsis));
+						e.Error.Message.Truncate(250, Strings.TruncateOptionsEnum.AllowLastWordToGoOverMaxLength & Strings.TruncateOptionsEnum.FinishWord & Strings.TruncateOptionsEnum.IncludeEllipsis));
 				}
 			}
 
@@ -388,7 +385,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 						Environment.NewLine +
 						StaticFuncs.getCultureResource.GetString("app_General_TalkingToServerErrorMessageDetails") +
 						Environment.NewLine +
-						e.Error.Message.Truncate(250, Extensions.TruncateOptionsEnum.AllowLastWordToGoOverMaxLength & Extensions.TruncateOptionsEnum.FinishWord & Extensions.TruncateOptionsEnum.IncludeEllipsis));
+						e.Error.Message.Truncate(250, Strings.TruncateOptionsEnum.AllowLastWordToGoOverMaxLength & Strings.TruncateOptionsEnum.FinishWord & Strings.TruncateOptionsEnum.IncludeEllipsis));
 				}
 			}
 
@@ -495,7 +492,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 						Environment.NewLine +
 						StaticFuncs.getCultureResource.GetString("app_General_TalkingToServerErrorMessageDetails") +
 						Environment.NewLine +
-						e.Error.Message.Truncate(250, Extensions.TruncateOptionsEnum.AllowLastWordToGoOverMaxLength & Extensions.TruncateOptionsEnum.FinishWord & Extensions.TruncateOptionsEnum.IncludeEllipsis));
+						e.Error.Message.Truncate(250, Strings.TruncateOptionsEnum.AllowLastWordToGoOverMaxLength & Strings.TruncateOptionsEnum.FinishWord & Strings.TruncateOptionsEnum.IncludeEllipsis));
 				}
 			}
 
@@ -534,7 +531,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 						Environment.NewLine +
 						StaticFuncs.getCultureResource.GetString("app_General_TalkingToServerErrorMessageDetails") +
 						Environment.NewLine +
-						e.Error.Message.Truncate(250, Extensions.TruncateOptionsEnum.AllowLastWordToGoOverMaxLength & Extensions.TruncateOptionsEnum.FinishWord & Extensions.TruncateOptionsEnum.IncludeEllipsis));
+						e.Error.Message.Truncate(250, Strings.TruncateOptionsEnum.AllowLastWordToGoOverMaxLength & Strings.TruncateOptionsEnum.FinishWord & Strings.TruncateOptionsEnum.IncludeEllipsis));
 				}
 			}
 
@@ -573,7 +570,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 						Environment.NewLine +
 						StaticFuncs.getCultureResource.GetString("app_General_TalkingToServerErrorMessageDetails") +
 						Environment.NewLine +
-						e.Error.Message.Truncate(250, Extensions.TruncateOptionsEnum.AllowLastWordToGoOverMaxLength & Extensions.TruncateOptionsEnum.FinishWord & Extensions.TruncateOptionsEnum.IncludeEllipsis));
+						e.Error.Message.Truncate(250, Strings.TruncateOptionsEnum.AllowLastWordToGoOverMaxLength & Strings.TruncateOptionsEnum.FinishWord & Strings.TruncateOptionsEnum.IncludeEllipsis));
 				}
 			}
 
@@ -858,7 +855,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 				Grid.SetColumn(rectBackg, 0);
 				Grid.SetRow(rectBackg, 1);
 				Grid.SetColumnSpan(rectBackg, 7);
-				Grid.SetRowSpan(rectBackg, this.gridTasks.RowDefinitions.Count - 1);
+				Grid.SetRowSpan(rectBackg, this.gridTasks.RowDefinitions.Count);
 				this.gridTasks.Children.Insert(0, rectBackg);
 			}
 		}

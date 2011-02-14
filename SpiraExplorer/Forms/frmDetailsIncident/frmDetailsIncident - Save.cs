@@ -5,6 +5,7 @@ using System.Windows.Media.Animation;
 using Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business;
 using Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business.SpiraTeam_Client;
 using Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Controls;
+using Inflectra.Global;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using System.Windows.Controls.Primitives;

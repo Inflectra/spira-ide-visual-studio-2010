@@ -7,6 +7,7 @@ using System.Windows.Documents;
 using System.Windows.Markup;
 using System.Windows.Media.Imaging;
 using System.Xml;
+using Inflectra.Global;
 using Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business;
 using Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Properties;
 

@@ -1,14 +1,11 @@
 ﻿using System;
-using System.Windows;
+using System.Collections.Generic;
+using System.Windows; 
 using System.Windows.Controls;
-using System.Windows.Media.Animation;
+using Inflectra.Global;
 using Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business;
 using Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business.SpiraTeam_Client;
 using Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Controls;
-using Microsoft.VisualStudio.Shell;
-using Microsoft.VisualStudio.Shell.Interop;
-using System.Windows.Controls.Primitives;
-using System.Collections.Generic;
 
 namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 {

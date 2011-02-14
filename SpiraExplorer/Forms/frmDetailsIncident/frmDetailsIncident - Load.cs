@@ -3,12 +3,11 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Documents;
+using Inflectra.Global;
 using Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business;
 using Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business.SpiraTeam_Client;
 using Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Controls;
-using System.Windows.Documents;
-using Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business.HTMLandXAML;
-using Microsoft.VisualStudio.Shell.Interop;
 
 namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 {
@@ -145,7 +144,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 							Environment.NewLine +
 							StaticFuncs.getCultureResource.GetString("app_General_TalkingToServerErrorMessageDetails") +
 							Environment.NewLine +
-							e.Error.Message.Truncate(250, Extensions.TruncateOptionsEnum.AllowLastWordToGoOverMaxLength & Extensions.TruncateOptionsEnum.FinishWord & Extensions.TruncateOptionsEnum.IncludeEllipsis));
+							e.Error.Message.Truncate(250, Strings.TruncateOptionsEnum.AllowLastWordToGoOverMaxLength & Strings.TruncateOptionsEnum.FinishWord & Strings.TruncateOptionsEnum.IncludeEllipsis));
 					}
 					else
 					{
@@ -209,7 +208,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 							Environment.NewLine +
 							StaticFuncs.getCultureResource.GetString("app_General_TalkingToServerErrorMessageDetails") +
 							Environment.NewLine +
-							e.Error.Message.Truncate(250, Extensions.TruncateOptionsEnum.AllowLastWordToGoOverMaxLength & Extensions.TruncateOptionsEnum.FinishWord & Extensions.TruncateOptionsEnum.IncludeEllipsis));
+							e.Error.Message.Truncate(250, Strings.TruncateOptionsEnum.AllowLastWordToGoOverMaxLength & Strings.TruncateOptionsEnum.FinishWord & Strings.TruncateOptionsEnum.IncludeEllipsis));
 					}
 					else
 					{
@@ -259,7 +258,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 						Environment.NewLine +
 						StaticFuncs.getCultureResource.GetString("app_General_TalkingToServerErrorMessageDetails") +
 						Environment.NewLine +
-						e.Error.Message.Truncate(250, Extensions.TruncateOptionsEnum.AllowLastWordToGoOverMaxLength & Extensions.TruncateOptionsEnum.FinishWord & Extensions.TruncateOptionsEnum.IncludeEllipsis));
+						e.Error.Message.Truncate(250, Strings.TruncateOptionsEnum.AllowLastWordToGoOverMaxLength & Strings.TruncateOptionsEnum.FinishWord & Strings.TruncateOptionsEnum.IncludeEllipsis));
 				}
 			}
 
@@ -296,7 +295,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 						Environment.NewLine +
 						StaticFuncs.getCultureResource.GetString("app_General_TalkingToServerErrorMessageDetails") +
 						Environment.NewLine +
-						e.Error.Message.Truncate(250, Extensions.TruncateOptionsEnum.AllowLastWordToGoOverMaxLength & Extensions.TruncateOptionsEnum.FinishWord & Extensions.TruncateOptionsEnum.IncludeEllipsis));
+						e.Error.Message.Truncate(250, Strings.TruncateOptionsEnum.AllowLastWordToGoOverMaxLength & Strings.TruncateOptionsEnum.FinishWord & Strings.TruncateOptionsEnum.IncludeEllipsis));
 				}
 			}
 
@@ -333,7 +332,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 						Environment.NewLine +
 						StaticFuncs.getCultureResource.GetString("app_General_TalkingToServerErrorMessageDetails") +
 						Environment.NewLine +
-						e.Error.Message.Truncate(250, Extensions.TruncateOptionsEnum.AllowLastWordToGoOverMaxLength & Extensions.TruncateOptionsEnum.FinishWord & Extensions.TruncateOptionsEnum.IncludeEllipsis));
+						e.Error.Message.Truncate(250, Strings.TruncateOptionsEnum.AllowLastWordToGoOverMaxLength & Strings.TruncateOptionsEnum.FinishWord & Strings.TruncateOptionsEnum.IncludeEllipsis));
 				}
 			}
 
@@ -370,7 +369,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 						Environment.NewLine +
 						StaticFuncs.getCultureResource.GetString("app_General_TalkingToServerErrorMessageDetails") +
 						Environment.NewLine +
-						e.Error.Message.Truncate(250, Extensions.TruncateOptionsEnum.AllowLastWordToGoOverMaxLength & Extensions.TruncateOptionsEnum.FinishWord & Extensions.TruncateOptionsEnum.IncludeEllipsis));
+						e.Error.Message.Truncate(250, Strings.TruncateOptionsEnum.AllowLastWordToGoOverMaxLength & Strings.TruncateOptionsEnum.FinishWord & Strings.TruncateOptionsEnum.IncludeEllipsis));
 				}
 			}
 
@@ -405,7 +404,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 					Environment.NewLine +
 					StaticFuncs.getCultureResource.GetString("app_General_TalkingToServerErrorMessageDetails") +
 					Environment.NewLine +
-					e.Error.Message.Truncate(250, Extensions.TruncateOptionsEnum.AllowLastWordToGoOverMaxLength & Extensions.TruncateOptionsEnum.FinishWord & Extensions.TruncateOptionsEnum.IncludeEllipsis));
+					e.Error.Message.Truncate(250, Strings.TruncateOptionsEnum.AllowLastWordToGoOverMaxLength & Strings.TruncateOptionsEnum.FinishWord & Strings.TruncateOptionsEnum.IncludeEllipsis));
 			}
 
 			System.Diagnostics.Debug.WriteLine(CLASS + METHOD + " EXIT. Clients - Running: " + this._clientNumRunning.ToString() + ", Total: " + this._clientNum.ToString());
@@ -441,7 +440,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 						Environment.NewLine +
 						StaticFuncs.getCultureResource.GetString("app_General_TalkingToServerErrorMessageDetails") +
 						Environment.NewLine +
-						e.Error.Message.Truncate(250, Extensions.TruncateOptionsEnum.AllowLastWordToGoOverMaxLength & Extensions.TruncateOptionsEnum.FinishWord & Extensions.TruncateOptionsEnum.IncludeEllipsis));
+						e.Error.Message.Truncate(250, Strings.TruncateOptionsEnum.AllowLastWordToGoOverMaxLength & Strings.TruncateOptionsEnum.FinishWord & Strings.TruncateOptionsEnum.IncludeEllipsis));
 				}
 			}
 
@@ -479,7 +478,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 						Environment.NewLine +
 						StaticFuncs.getCultureResource.GetString("app_General_TalkingToServerErrorMessageDetails") +
 						Environment.NewLine +
-						e.Error.Message.Truncate(250, Extensions.TruncateOptionsEnum.AllowLastWordToGoOverMaxLength & Extensions.TruncateOptionsEnum.FinishWord & Extensions.TruncateOptionsEnum.IncludeEllipsis));
+						e.Error.Message.Truncate(250, Strings.TruncateOptionsEnum.AllowLastWordToGoOverMaxLength & Strings.TruncateOptionsEnum.FinishWord & Strings.TruncateOptionsEnum.IncludeEllipsis));
 				}
 			}
 
@@ -526,7 +525,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 						Environment.NewLine +
 						StaticFuncs.getCultureResource.GetString("app_General_TalkingToServerErrorMessageDetails") +
 						Environment.NewLine +
-						e.Error.Message.Truncate(250, Extensions.TruncateOptionsEnum.AllowLastWordToGoOverMaxLength & Extensions.TruncateOptionsEnum.FinishWord & Extensions.TruncateOptionsEnum.IncludeEllipsis));
+						e.Error.Message.Truncate(250, Strings.TruncateOptionsEnum.AllowLastWordToGoOverMaxLength & Strings.TruncateOptionsEnum.FinishWord & Strings.TruncateOptionsEnum.IncludeEllipsis));
 				}
 			}
 
@@ -564,7 +563,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 						Environment.NewLine +
 						StaticFuncs.getCultureResource.GetString("app_General_TalkingToServerErrorMessageDetails") +
 						Environment.NewLine +
-						e.Error.Message.Truncate(250, Extensions.TruncateOptionsEnum.AllowLastWordToGoOverMaxLength & Extensions.TruncateOptionsEnum.FinishWord & Extensions.TruncateOptionsEnum.IncludeEllipsis));
+						e.Error.Message.Truncate(250, Strings.TruncateOptionsEnum.AllowLastWordToGoOverMaxLength & Strings.TruncateOptionsEnum.FinishWord & Strings.TruncateOptionsEnum.IncludeEllipsis));
 				}
 			}
 
@@ -602,7 +601,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 						Environment.NewLine +
 						StaticFuncs.getCultureResource.GetString("app_General_TalkingToServerErrorMessageDetails") +
 						Environment.NewLine +
-						e.Error.Message.Truncate(250, Extensions.TruncateOptionsEnum.AllowLastWordToGoOverMaxLength & Extensions.TruncateOptionsEnum.FinishWord & Extensions.TruncateOptionsEnum.IncludeEllipsis));
+						e.Error.Message.Truncate(250, Strings.TruncateOptionsEnum.AllowLastWordToGoOverMaxLength & Strings.TruncateOptionsEnum.FinishWord & Strings.TruncateOptionsEnum.IncludeEllipsis));
 				}
 			}
 
@@ -743,7 +742,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 						Environment.NewLine +
 						StaticFuncs.getCultureResource.GetString("app_General_TalkingToServerErrorMessageDetails") +
 						Environment.NewLine +
-						e.Error.Message.Truncate(250, Extensions.TruncateOptionsEnum.AllowLastWordToGoOverMaxLength & Extensions.TruncateOptionsEnum.FinishWord & Extensions.TruncateOptionsEnum.IncludeEllipsis));
+						e.Error.Message.Truncate(250, Strings.TruncateOptionsEnum.AllowLastWordToGoOverMaxLength & Strings.TruncateOptionsEnum.FinishWord & Strings.TruncateOptionsEnum.IncludeEllipsis));
 				}
 			}
 
