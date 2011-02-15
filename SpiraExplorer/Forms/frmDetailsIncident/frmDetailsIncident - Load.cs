@@ -1395,7 +1395,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 						Grid.SetColumnSpan(rectBackg, 7);
 						Grid.SetRowSpan(rectBackg, this.gridAttachments.RowDefinitions.Count);
 						Panel.SetZIndex(rectBackg, -100);
-						this.gridAttachments.Children.Insert(7, rectBackg);
+						this.gridAttachments.Children.Insert(6, rectBackg);
 					}
 					#endregion
 
