@@ -85,31 +85,31 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 		private Dictionary<int, WorkflowField.WorkflowStatusEnum> workflow_LoadFieldStatus(List<RemoteWorkflowIncidentFields> workflowFields)
 		{
 			try
-			{ 
-			Dictionary<int, WorkflowField.WorkflowStatusEnum> retList = new Dictionary<int, WorkflowField.WorkflowStatusEnum>();
-
-			//Copy over all fields, first.
-			foreach (KeyValuePair<int, WorkflowField> kvpField in this._WorkflowFields)
 			{
-				retList.Add(kvpField.Key, WorkflowField.WorkflowStatusEnum.Disabled);
-			}
+				Dictionary<int, WorkflowField.WorkflowStatusEnum> retList = new Dictionary<int, WorkflowField.WorkflowStatusEnum>();
 
-			//Now update the ones that need it.
-			foreach (RemoteWorkflowIncidentFields wkfField in workflowFields)
-			{
-				if ((int)retList[wkfField.FieldId] < wkfField.FieldStateId)
+				//Copy over all fields, first.
+				foreach (KeyValuePair<int, WorkflowField> kvpField in this._WorkflowFields)
 				{
-					retList[wkfField.FieldId] = (WorkflowField.WorkflowStatusEnum)wkfField.FieldStateId;
+					retList.Add(kvpField.Key, WorkflowField.WorkflowStatusEnum.Disabled);
 				}
-			}
 
-			return retList;
+				//Now update the ones that need it.
+				foreach (RemoteWorkflowIncidentFields wkfField in workflowFields)
+				{
+					if ((int)retList[wkfField.FieldId] < wkfField.FieldStateId)
+					{
+						retList[wkfField.FieldId] = (WorkflowField.WorkflowStatusEnum)wkfField.FieldStateId;
+					}
+				}
+
+				return retList;
 			}
 			catch (Exception ex)
 			{
 				Logger.LogMessage(ex, "workflow_LoadFieldStatus()");
 				MessageBox.Show(StaticFuncs.getCultureResource.GetString("app_General_UnexpectedError"), StaticFuncs.getCultureResource.GetString("app_General_ApplicationShortName"), MessageBoxButton.OK, MessageBoxImage.Error);
-				return  new Dictionary<int, WorkflowField.WorkflowStatusEnum> ;
+				return new Dictionary<int, WorkflowField.WorkflowStatusEnum>();
 			}
 		}
 
