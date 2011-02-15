@@ -680,4 +680,7 @@ Are you sure you want to continue?</value>
   <data name="app_General_InvalidProject" xml:space="preserve">
     <value>Could not access project.</value>
   </data>
+  <data name="app_General_UnexpectedError" xml:space="preserve">
+    <value>There was an unexpected error in the Addin. it is recommended that you save all your work and restart Visual Studio.</value>
+  </data>
 </root>

@@ -41,46 +41,55 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 		/// <returns>Boolean on whether of not load was started successfully.</returns>
 		private bool load_LoadItem()
 		{
-			bool retValue = false;
-			if (this.ArtifactDetail != null)
+			try
 			{
-				//Clear the loading flag & dirty flags
-				this._isDescChanged = false;
-				this._isResChanged = false;
-				this._isFieldChanged = false;
-				this.btnSave.IsEnabled = false;
+				bool retValue = false;
+				if (this.ArtifactDetail != null)
+				{
+					//Clear the loading flag & dirty flags
+					this._isDescChanged = false;
+					this._isResChanged = false;
+					this._isFieldChanged = false;
+					this.btnSave.IsEnabled = false;
 
-				//Set flag, reset vars..
-				this.IsLoading = true;
-				this.barLoadingTask.Value = 0;
-				this._TskDocumentsUrl = null;
-				this._TaskUrl = null;
+					//Set flag, reset vars..
+					this.IsLoading = true;
+					this.barLoadingTask.Value = 0;
+					this._TskDocumentsUrl = null;
+					this._TaskUrl = null;
 
-				//Create a client.
-				this._client = null;
-				this._client = StaticFuncs.CreateClient(((SpiraProject)this.ArtifactDetail.ArtifactParentProject.ArtifactTag).ServerURL.ToString());
+					//Create a client.
+					this._client = null;
+					this._client = StaticFuncs.CreateClient(((SpiraProject)this.ArtifactDetail.ArtifactParentProject.ArtifactTag).ServerURL.ToString());
 
-				//Set client events.
-				this._client.Connection_Authenticate2Completed += new EventHandler<Connection_Authenticate2CompletedEventArgs>(_client_Connection_Authenticate2Completed);
-				this._client.Connection_ConnectToProjectCompleted += new EventHandler<Connection_ConnectToProjectCompletedEventArgs>(_client_Connection_ConnectToProjectCompleted);
-				this._client.Connection_DisconnectCompleted += new EventHandler<System.ComponentModel.AsyncCompletedEventArgs>(_client_Connection_DisconnectCompleted);
-				this._client.Task_RetrieveByIdCompleted += new EventHandler<Task_RetrieveByIdCompletedEventArgs>(_client_Task_RetrieveByIdCompleted);
-				this._client.Task_RetrieveCommentsCompleted += new EventHandler<Task_RetrieveCommentsCompletedEventArgs>(_client_Task_RetrieveCommentsCompleted);
-				this._client.Requirement_RetrieveByIdCompleted += new EventHandler<Requirement_RetrieveByIdCompletedEventArgs>(_client_Requirement_RetrieveByIdCompleted);
-				this._client.Document_RetrieveForArtifactCompleted += new EventHandler<Document_RetrieveForArtifactCompletedEventArgs>(_client_Document_RetrieveForArtifactCompleted);
-				this._client.Release_RetrieveCompleted += new EventHandler<Release_RetrieveCompletedEventArgs>(_client_Release_RetrieveCompleted);
-				this._client.Project_RetrieveUserMembershipCompleted += new EventHandler<Project_RetrieveUserMembershipCompletedEventArgs>(_client_Project_RetrieveUserMembershipCompleted);
-				this._client.System_GetArtifactUrlCompleted += new EventHandler<System_GetArtifactUrlCompletedEventArgs>(_client_System_GetArtifactUrlCompleted);
-				this._client.CustomProperty_RetrieveForArtifactTypeCompleted += new EventHandler<CustomProperty_RetrieveForArtifactTypeCompletedEventArgs>(_client_CustomProperty_RetrieveForArtifactTypeCompleted);
+					//Set client events.
+					this._client.Connection_Authenticate2Completed += new EventHandler<Connection_Authenticate2CompletedEventArgs>(_client_Connection_Authenticate2Completed);
+					this._client.Connection_ConnectToProjectCompleted += new EventHandler<Connection_ConnectToProjectCompletedEventArgs>(_client_Connection_ConnectToProjectCompleted);
+					this._client.Connection_DisconnectCompleted += new EventHandler<System.ComponentModel.AsyncCompletedEventArgs>(_client_Connection_DisconnectCompleted);
+					this._client.Task_RetrieveByIdCompleted += new EventHandler<Task_RetrieveByIdCompletedEventArgs>(_client_Task_RetrieveByIdCompleted);
+					this._client.Task_RetrieveCommentsCompleted += new EventHandler<Task_RetrieveCommentsCompletedEventArgs>(_client_Task_RetrieveCommentsCompleted);
+					this._client.Requirement_RetrieveByIdCompleted += new EventHandler<Requirement_RetrieveByIdCompletedEventArgs>(_client_Requirement_RetrieveByIdCompleted);
+					this._client.Document_RetrieveForArtifactCompleted += new EventHandler<Document_RetrieveForArtifactCompletedEventArgs>(_client_Document_RetrieveForArtifactCompleted);
+					this._client.Release_RetrieveCompleted += new EventHandler<Release_RetrieveCompletedEventArgs>(_client_Release_RetrieveCompleted);
+					this._client.Project_RetrieveUserMembershipCompleted += new EventHandler<Project_RetrieveUserMembershipCompletedEventArgs>(_client_Project_RetrieveUserMembershipCompleted);
+					this._client.System_GetArtifactUrlCompleted += new EventHandler<System_GetArtifactUrlCompletedEventArgs>(_client_System_GetArtifactUrlCompleted);
+					this._client.CustomProperty_RetrieveForArtifactTypeCompleted += new EventHandler<CustomProperty_RetrieveForArtifactTypeCompletedEventArgs>(_client_CustomProperty_RetrieveForArtifactTypeCompleted);
 
-				//Fire the connection off here.
-				this._clientNumRunning++;
-				this.barLoadingTask.Maximum = 10;
-				this._client.Connection_Authenticate2Async(this._Project.UserName, this._Project.UserPass, StaticFuncs.getCultureResource.GetString("app_ReportName"));
+					//Fire the connection off here.
+					this._clientNumRunning++;
+					this.barLoadingTask.Maximum = 10;
+					this._client.Connection_Authenticate2Async(this._Project.UserName, this._Project.UserPass, StaticFuncs.getCultureResource.GetString("app_ReportName"));
 
+				}
+
+				return retValue;
 			}
-
-			return retValue;
+			catch (Exception ex)
+			{
+				Logger.LogMessage(ex, "load_LoadItem()");
+				MessageBox.Show(StaticFuncs.getCultureResource.GetString("app_General_UnexpectedError"), StaticFuncs.getCultureResource.GetString("app_General_ApplicationShortName"), MessageBoxButton.OK, MessageBoxImage.Error);
+				return false;
+			}
 		}
 
 		#region Client Events
@@ -89,14 +98,23 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 		/// <param name="e">AsyncCompletedEventArgs</param>
 		private void _client_Connection_DisconnectCompleted(object sender, AsyncCompletedEventArgs e)
 		{
-			const string METHOD = "_client_Connection_DisconnectCompleted()";
-			System.Diagnostics.Debug.WriteLine(CLASS + METHOD + " ENTER. Clients - Running: " + this._clientNumRunning.ToString() + ", Total: " + this._clientNum.ToString());
+			try
+			{
+				const string METHOD = "_client_Connection_DisconnectCompleted()";
+				System.Diagnostics.Debug.WriteLine(CLASS + METHOD + " ENTER. Clients - Running: " + this._clientNumRunning.ToString() + ", Total: " + this._clientNum.ToString());
 
-			this._clientNumRunning = 0;
-			this._clientNum = 0;
-			this._client = null;
+				this._clientNumRunning = 0;
+				this._clientNum = 0;
+				this._client = null;
 
-			System.Diagnostics.Debug.WriteLine(CLASS + METHOD + " EXIT. Clients - Running: " + this._clientNumRunning.ToString() + ", Total: " + this._clientNum.ToString());
+				System.Diagnostics.Debug.WriteLine(CLASS + METHOD + " EXIT. Clients - Running: " + this._clientNumRunning.ToString() + ", Total: " + this._clientNum.ToString());
+			}
+			catch (Exception ex)
+			{
+				Logger.LogMessage(ex, "_client_Connection_DisconnectCompleted()");
+				MessageBox.Show(StaticFuncs.getCultureResource.GetString("app_General_UnexpectedError"), StaticFuncs.getCultureResource.GetString("app_General_ApplicationShortName"), MessageBoxButton.OK, MessageBoxImage.Error);
+			}
+
 		}
 
 		/// <summary>Hit when we've successfully connected to the server.</summary>
@@ -104,50 +122,58 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 		/// <param name="e">Connection_Authenticate2CompletedEventArgs</param>
 		private void _client_Connection_Authenticate2Completed(object sender, Connection_Authenticate2CompletedEventArgs e)
 		{
-			const string METHOD = "_client_Connection_Authenticate2Completed()";
-			System.Diagnostics.Debug.WriteLine(CLASS + METHOD + " ENTER. Clients - Running: " + this._clientNumRunning.ToString() + ", Total: " + this._clientNum.ToString());
-
-			this._clientNumRunning--;
-			this.barLoadingTask.Value++;
-
-			if (!e.Cancelled)
+			try
 			{
-				if (e.Error == null && e.Result)
-				{
-					//Connect to our project.
-					this._client.Connection_ConnectToProjectAsync(((SpiraProject)this._ArtifactDetails.ArtifactParentProject.ArtifactTag).ProjectID, this._clientNum++);
-					this._clientNumRunning++;
-				}
-				else
-				{
-					if (e.Error != null)
-					{
-						Logger.LogMessage(e.Error);
+				const string METHOD = "_client_Connection_Authenticate2Completed()";
+				System.Diagnostics.Debug.WriteLine(CLASS + METHOD + " ENTER. Clients - Running: " + this._clientNumRunning.ToString() + ", Total: " + this._clientNum.ToString());
 
-						//Display the error panel.
-						this.display_ShowErrorPanel(
-							StaticFuncs.getCultureResource.GetString("app_General_TalkingToServerErrorMessage") +
-							Environment.NewLine +
-							StaticFuncs.getCultureResource.GetString("app_General_TalkingToServerErrorMessageDetails") +
-							Environment.NewLine +
-							e.Error.Message.Truncate(250, Strings.TruncateOptionsEnum.AllowLastWordToGoOverMaxLength & Strings.TruncateOptionsEnum.FinishWord & Strings.TruncateOptionsEnum.IncludeEllipsis));
+				this._clientNumRunning--;
+				this.barLoadingTask.Value++;
+
+				if (!e.Cancelled)
+				{
+					if (e.Error == null && e.Result)
+					{
+						//Connect to our project.
+						this._client.Connection_ConnectToProjectAsync(((SpiraProject)this._ArtifactDetails.ArtifactParentProject.ArtifactTag).ProjectID, this._clientNum++);
+						this._clientNumRunning++;
 					}
 					else
 					{
-						Logger.LogMessage("Could not log in!");
-						//Display the error panel.
-						this.display_ShowErrorPanel(
-							StaticFuncs.getCultureResource.GetString("app_General_TalkingToServerErrorMessage") +
-							Environment.NewLine +
-							StaticFuncs.getCultureResource.GetString("app_General_TalkingToServerErrorMessageDetails") +
-							Environment.NewLine +
-							StaticFuncs.getCultureResource.GetString("app_General_InvalidUsernameOrPassword"));
-					}
-					this._client.Connection_DisconnectAsync();
-				}
-			}
+						if (e.Error != null)
+						{
+							Logger.LogMessage(e.Error);
 
-			System.Diagnostics.Debug.WriteLine(CLASS + METHOD + " EXIT. Clients - Running: " + this._clientNumRunning.ToString() + ", Total: " + this._clientNum.ToString());
+							//Display the error panel.
+							this.display_ShowErrorPanel(
+								StaticFuncs.getCultureResource.GetString("app_General_TalkingToServerErrorMessage") +
+								Environment.NewLine +
+								StaticFuncs.getCultureResource.GetString("app_General_TalkingToServerErrorMessageDetails") +
+								Environment.NewLine +
+								e.Error.Message.Truncate(250, Strings.TruncateOptionsEnum.AllowLastWordToGoOverMaxLength & Strings.TruncateOptionsEnum.FinishWord & Strings.TruncateOptionsEnum.IncludeEllipsis));
+						}
+						else
+						{
+							Logger.LogMessage("Could not log in!");
+							//Display the error panel.
+							this.display_ShowErrorPanel(
+								StaticFuncs.getCultureResource.GetString("app_General_TalkingToServerErrorMessage") +
+								Environment.NewLine +
+								StaticFuncs.getCultureResource.GetString("app_General_TalkingToServerErrorMessageDetails") +
+								Environment.NewLine +
+								StaticFuncs.getCultureResource.GetString("app_General_InvalidUsernameOrPassword"));
+						}
+						this._client.Connection_DisconnectAsync();
+					}
+				}
+
+				System.Diagnostics.Debug.WriteLine(CLASS + METHOD + " EXIT. Clients - Running: " + this._clientNumRunning.ToString() + ", Total: " + this._clientNum.ToString());
+			}
+			catch (Exception ex)
+			{
+				Logger.LogMessage(ex, "_client_Connection_Authenticate2Completed()");
+				MessageBox.Show(StaticFuncs.getCultureResource.GetString("app_General_UnexpectedError"), StaticFuncs.getCultureResource.GetString("app_General_ApplicationShortName"), MessageBoxButton.OK, MessageBoxImage.Error);
+			}
 		}
 
 		/// <summary>Hit when we've completed connecting to the project. </summary>
@@ -155,38 +181,98 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 		/// <param name="e">Connection_ConnectToProjectCompletedEventArgs</param>
 		private void _client_Connection_ConnectToProjectCompleted(object sender, Connection_ConnectToProjectCompletedEventArgs e)
 		{
-			const string METHOD = "_client_Connection_ConnectToProjectCompleted()";
-			System.Diagnostics.Debug.WriteLine(CLASS + METHOD + " ENTER. Clients - Running: " + this._clientNumRunning.ToString() + ", Total: " + this._clientNum.ToString());
-
-			this._clientNumRunning--;
-			this.barLoadingTask.Value++;
-
-			if (!e.Cancelled)
+			try
 			{
-				if (e.Error == null && e.Result)
+				const string METHOD = "_client_Connection_ConnectToProjectCompleted()";
+				System.Diagnostics.Debug.WriteLine(CLASS + METHOD + " ENTER. Clients - Running: " + this._clientNumRunning.ToString() + ", Total: " + this._clientNum.ToString());
+
+				this._clientNumRunning--;
+				this.barLoadingTask.Value++;
+
+				if (!e.Cancelled)
 				{
-					this._clientNumRunning += 7;
-					//Here we need to fire off all data retrieval functions:
-					// - The Task.
-					this._client.Task_RetrieveByIdAsync(this._ArtifactDetails.ArtifactId, this._clientNum++);
-					// - Task's Documents
-					this._client.Document_RetrieveForArtifactAsync(6, this._ArtifactDetails.ArtifactId, new List<RemoteFilter>(), new RemoteSort());
-					// - Project users.
-					this._client.Project_RetrieveUserMembershipAsync(this._clientNum++);
-					// - Task Custom Properties
-					this._client.CustomProperty_RetrieveForArtifactTypeAsync(6, this._clientNum++);
-					// - Available Releases
-					this._client.Release_RetrieveAsync(true, this._clientNum++);
-					// - Resolutions / Comments
-					this._client.Task_RetrieveCommentsAsync(this._ArtifactDetails.ArtifactId, this._clientNum++);
-					// - System URL
-					this._client.System_GetArtifactUrlAsync(-14, this._Project.ProjectID, -2, null, this._clientNum++);
+					if (e.Error == null && e.Result)
+					{
+						this._clientNumRunning += 7;
+						//Here we need to fire off all data retrieval functions:
+						// - The Task.
+						this._client.Task_RetrieveByIdAsync(this._ArtifactDetails.ArtifactId, this._clientNum++);
+						// - Task's Documents
+						this._client.Document_RetrieveForArtifactAsync(6, this._ArtifactDetails.ArtifactId, new List<RemoteFilter>(), new RemoteSort());
+						// - Project users.
+						this._client.Project_RetrieveUserMembershipAsync(this._clientNum++);
+						// - Task Custom Properties
+						this._client.CustomProperty_RetrieveForArtifactTypeAsync(6, this._clientNum++);
+						// - Available Releases
+						this._client.Release_RetrieveAsync(true, this._clientNum++);
+						// - Resolutions / Comments
+						this._client.Task_RetrieveCommentsAsync(this._ArtifactDetails.ArtifactId, this._clientNum++);
+						// - System URL
+						this._client.System_GetArtifactUrlAsync(-14, this._Project.ProjectID, -2, null, this._clientNum++);
+					}
+					else
+					{
+						if (e.Error != null)
+						{
+							Logger.LogMessage(e.Error);
+
+							//Display the error panel.
+							this.display_ShowErrorPanel(
+								StaticFuncs.getCultureResource.GetString("app_General_TalkingToServerErrorMessage") +
+								Environment.NewLine +
+								StaticFuncs.getCultureResource.GetString("app_General_TalkingToServerErrorMessageDetails") +
+								Environment.NewLine +
+								e.Error.Message.Truncate(250, Strings.TruncateOptionsEnum.AllowLastWordToGoOverMaxLength & Strings.TruncateOptionsEnum.FinishWord & Strings.TruncateOptionsEnum.IncludeEllipsis));
+						}
+						else
+						{
+							Logger.LogMessage("Could not log in!");
+							//Display the error panel.
+							this.display_ShowErrorPanel(
+								StaticFuncs.getCultureResource.GetString("app_General_TalkingToServerErrorMessage") +
+								Environment.NewLine +
+								StaticFuncs.getCultureResource.GetString("app_General_TalkingToServerErrorMessageDetails") +
+								Environment.NewLine +
+								StaticFuncs.getCultureResource.GetString("app_General_InvalidProject"));
+						}
+						this._client.Connection_DisconnectAsync();
+					}
 				}
-				else
+
+				System.Diagnostics.Debug.WriteLine(CLASS + METHOD + " EXIT. Clients - Running: " + this._clientNumRunning.ToString() + ", Total: " + this._clientNum.ToString());
+			}
+			catch (Exception ex)
+			{
+				Logger.LogMessage(ex, "_client_Connection_ConnectToProjectCompleted()");
+				MessageBox.Show(StaticFuncs.getCultureResource.GetString("app_General_UnexpectedError"), StaticFuncs.getCultureResource.GetString("app_General_ApplicationShortName"), MessageBoxButton.OK, MessageBoxImage.Error);
+			}
+		}
+
+		/// <summary>Hit when we're finished getting our project users.</summary>
+		/// <param name="sender">ImportExportClient</param>
+		/// <param name="e">Project_RetrieveUserMembershipCompletedEventArgs</param>
+		private void _client_Project_RetrieveUserMembershipCompleted(object sender, Project_RetrieveUserMembershipCompletedEventArgs e)
+		{
+			try
+			{
+				const string METHOD = "_client_Project_RetrieveUserMembershipCompleted()";
+				System.Diagnostics.Debug.WriteLine(CLASS + METHOD + " ENTER. Clients - Running: " + this._clientNumRunning.ToString() + ", Total: " + this._clientNum.ToString());
+
+				this._clientNumRunning--;
+				this.barLoadingTask.Value++;
+
+				if (!e.Cancelled)
 				{
-					if (e.Error != null)
+					if (e.Error == null)
+					{
+						this._ProjUsers = e.Result;
+						//See if we're ready to get the actual data.
+						this.load_IsReadyToDisplayData();
+					}
+					else
 					{
 						Logger.LogMessage(e.Error);
+						this._client.Connection_DisconnectAsync();
 
 						//Display the error panel.
 						this.display_ShowErrorPanel(
@@ -196,59 +282,15 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 							Environment.NewLine +
 							e.Error.Message.Truncate(250, Strings.TruncateOptionsEnum.AllowLastWordToGoOverMaxLength & Strings.TruncateOptionsEnum.FinishWord & Strings.TruncateOptionsEnum.IncludeEllipsis));
 					}
-					else
-					{
-						Logger.LogMessage("Could not log in!");
-						//Display the error panel.
-						this.display_ShowErrorPanel(
-							StaticFuncs.getCultureResource.GetString("app_General_TalkingToServerErrorMessage") +
-							Environment.NewLine +
-							StaticFuncs.getCultureResource.GetString("app_General_TalkingToServerErrorMessageDetails") +
-							Environment.NewLine +
-							StaticFuncs.getCultureResource.GetString("app_General_InvalidProject"));
-					}
-					this._client.Connection_DisconnectAsync();
 				}
+
+				System.Diagnostics.Debug.WriteLine(CLASS + METHOD + " EXIT. Clients - Running: " + this._clientNumRunning.ToString() + ", Total: " + this._clientNum.ToString());
 			}
-
-			System.Diagnostics.Debug.WriteLine(CLASS + METHOD + " EXIT. Clients - Running: " + this._clientNumRunning.ToString() + ", Total: " + this._clientNum.ToString());
-		}
-
-		/// <summary>Hit when we're finished getting our project users.</summary>
-		/// <param name="sender">ImportExportClient</param>
-		/// <param name="e">Project_RetrieveUserMembershipCompletedEventArgs</param>
-		private void _client_Project_RetrieveUserMembershipCompleted(object sender, Project_RetrieveUserMembershipCompletedEventArgs e)
-		{
-			const string METHOD = "_client_Project_RetrieveUserMembershipCompleted()";
-			System.Diagnostics.Debug.WriteLine(CLASS + METHOD + " ENTER. Clients - Running: " + this._clientNumRunning.ToString() + ", Total: " + this._clientNum.ToString());
-
-			this._clientNumRunning--;
-			this.barLoadingTask.Value++;
-
-			if (!e.Cancelled)
+			catch (Exception ex)
 			{
-				if (e.Error == null)
-				{
-					this._ProjUsers = e.Result;
-					//See if we're ready to get the actual data.
-					this.load_IsReadyToDisplayData();
-				}
-				else
-				{
-					Logger.LogMessage(e.Error);
-					this._client.Connection_DisconnectAsync();
-
-					//Display the error panel.
-					this.display_ShowErrorPanel(
-						StaticFuncs.getCultureResource.GetString("app_General_TalkingToServerErrorMessage") +
-						Environment.NewLine +
-						StaticFuncs.getCultureResource.GetString("app_General_TalkingToServerErrorMessageDetails") +
-						Environment.NewLine +
-						e.Error.Message.Truncate(250, Strings.TruncateOptionsEnum.AllowLastWordToGoOverMaxLength & Strings.TruncateOptionsEnum.FinishWord & Strings.TruncateOptionsEnum.IncludeEllipsis));
-				}
+				Logger.LogMessage(ex, "_client_Project_RetrieveUserMembershipCompleted()");
+				MessageBox.Show(StaticFuncs.getCultureResource.GetString("app_General_UnexpectedError"), StaticFuncs.getCultureResource.GetString("app_General_ApplicationShortName"), MessageBoxButton.OK, MessageBoxImage.Error);
 			}
-
-			System.Diagnostics.Debug.WriteLine(CLASS + METHOD + " EXIT. Clients - Running: " + this._clientNumRunning.ToString() + ", Total: " + this._clientNum.ToString());
 		}
 
 		/// <summary>Hit when we're finished getting our project releases.</summary>
@@ -256,36 +298,44 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 		/// <param name="e">Release_RetrieveCompletedEventArgs</param>
 		private void _client_Release_RetrieveCompleted(object sender, Release_RetrieveCompletedEventArgs e)
 		{
-			const string METHOD = "_client_Release_RetrieveCompleted()";
-			System.Diagnostics.Debug.WriteLine(CLASS + METHOD + " ENTER. Clients - Running: " + this._clientNumRunning.ToString() + ", Total: " + this._clientNum.ToString());
-
-			this._clientNumRunning--;
-			this.barLoadingTask.Value++;
-
-			if (!e.Cancelled)
+			try
 			{
-				if (e.Error == null)
-				{
-					this._ProjReleases = e.Result;
-					//See if we're ready to get the actual data.
-					this.load_IsReadyToDisplayData();
-				}
-				else
-				{
-					Logger.LogMessage(e.Error);
-					this._client.Connection_DisconnectAsync();
+				const string METHOD = "_client_Release_RetrieveCompleted()";
+				System.Diagnostics.Debug.WriteLine(CLASS + METHOD + " ENTER. Clients - Running: " + this._clientNumRunning.ToString() + ", Total: " + this._clientNum.ToString());
 
-					//Display the error panel.
-					this.display_ShowErrorPanel(
-						StaticFuncs.getCultureResource.GetString("app_General_TalkingToServerErrorMessage") +
-						Environment.NewLine +
-						StaticFuncs.getCultureResource.GetString("app_General_TalkingToServerErrorMessageDetails") +
-						Environment.NewLine +
-						e.Error.Message.Truncate(250, Strings.TruncateOptionsEnum.AllowLastWordToGoOverMaxLength & Strings.TruncateOptionsEnum.FinishWord & Strings.TruncateOptionsEnum.IncludeEllipsis));
+				this._clientNumRunning--;
+				this.barLoadingTask.Value++;
+
+				if (!e.Cancelled)
+				{
+					if (e.Error == null)
+					{
+						this._ProjReleases = e.Result;
+						//See if we're ready to get the actual data.
+						this.load_IsReadyToDisplayData();
+					}
+					else
+					{
+						Logger.LogMessage(e.Error);
+						this._client.Connection_DisconnectAsync();
+
+						//Display the error panel.
+						this.display_ShowErrorPanel(
+							StaticFuncs.getCultureResource.GetString("app_General_TalkingToServerErrorMessage") +
+							Environment.NewLine +
+							StaticFuncs.getCultureResource.GetString("app_General_TalkingToServerErrorMessageDetails") +
+							Environment.NewLine +
+							e.Error.Message.Truncate(250, Strings.TruncateOptionsEnum.AllowLastWordToGoOverMaxLength & Strings.TruncateOptionsEnum.FinishWord & Strings.TruncateOptionsEnum.IncludeEllipsis));
+					}
 				}
+
+				System.Diagnostics.Debug.WriteLine(CLASS + METHOD + " EXIT. Clients - Running: " + this._clientNumRunning.ToString() + ", Total: " + this._clientNum.ToString());
 			}
-
-			System.Diagnostics.Debug.WriteLine(CLASS + METHOD + " EXIT. Clients - Running: " + this._clientNumRunning.ToString() + ", Total: " + this._clientNum.ToString());
+			catch (Exception ex)
+			{
+				Logger.LogMessage(ex, "_client_Release_RetrieveCompleted()");
+				MessageBox.Show(StaticFuncs.getCultureResource.GetString("app_General_UnexpectedError"), StaticFuncs.getCultureResource.GetString("app_General_ApplicationShortName"), MessageBoxButton.OK, MessageBoxImage.Error);
+			}
 		}
 
 		/// <summary>Hit when the client finishes getting the custom field values.</summary>
@@ -293,100 +343,108 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 		/// <param name="e">CustomProperty_RetrieveForArtifactTypeCompletedEventArgs</param>
 		private void _client_CustomProperty_RetrieveForArtifactTypeCompleted(object sender, CustomProperty_RetrieveForArtifactTypeCompletedEventArgs e)
 		{
-			const string METHOD = "_client_CustomProperty_RetrieveForArtifactTypeCompleted()";
-			System.Diagnostics.Debug.WriteLine(CLASS + METHOD + " ENTER. Clients - Running: " + this._clientNumRunning.ToString() + ", Total: " + this._clientNum.ToString());
-
-			this._clientNumRunning--;
-			this.barLoadingTask.Value++;
-
-			if (!e.Cancelled)
+			try
 			{
-				if (e.Error == null)
-				{
-					//Here create the grid to hold the data.
-					this.gridCustomProperties.Children.Clear();
-					this.gridCustomProperties.RowDefinitions.Clear();
-					for (int i = 0; i < Math.Ceiling(e.Result.Count / 2D); i++)
-						this.gridCustomProperties.RowDefinitions.Add(new RowDefinition() { Height = GridLength.Auto });
+				const string METHOD = "_client_CustomProperty_RetrieveForArtifactTypeCompleted()";
+				System.Diagnostics.Debug.WriteLine(CLASS + METHOD + " ENTER. Clients - Running: " + this._clientNumRunning.ToString() + ", Total: " + this._clientNum.ToString());
 
-					//Here, create the contols..
-					bool IsOnFirst = true;
-					for (int j = 0; j < e.Result.Count; j++)
+				this._clientNumRunning--;
+				this.barLoadingTask.Value++;
+
+				if (!e.Cancelled)
+				{
+					if (e.Error == null)
 					{
-						//** The label first.
-						TextBlock lblCustProp = new TextBlock();
-						lblCustProp.Text = e.Result[j].Alias + ":";
-						lblCustProp.Style = (Style)this.FindResource("PaddedLabel");
-						lblCustProp.VerticalAlignment = System.Windows.VerticalAlignment.Top;
+						//Here create the grid to hold the data.
+						this.gridCustomProperties.Children.Clear();
+						this.gridCustomProperties.RowDefinitions.Clear();
+						for (int i = 0; i < Math.Ceiling(e.Result.Count / 2D); i++)
+							this.gridCustomProperties.RowDefinitions.Add(new RowDefinition() { Height = GridLength.Auto });
 
-						//Add it to the row/column.
-						Grid.SetColumn(lblCustProp, ((IsOnFirst) ? 0 : 3));
-						Grid.SetRow(lblCustProp, (int)Math.Floor(j / 2D));
-						//Add it to the grid.
-						this.gridCustomProperties.Children.Add(lblCustProp);
-
-						//** Now the control.
-						Control custControl = null;
-						if (e.Result[j].CustomPropertyTypeId == 1) //Text field.
+						//Here, create the contols..
+						bool IsOnFirst = true;
+						for (int j = 0; j < e.Result.Count; j++)
 						{
-							TextBox txtControl = new TextBox();
-							txtControl.AcceptsReturn = true;
-							txtControl.AcceptsTab = true;
-							txtControl.MaxLines = 2;
-							txtControl.MinLines = 2;
-							txtControl.TextChanged += new TextChangedEventHandler(_cntrl_TextChanged);
-							custControl = txtControl;
-						}
-						else if (e.Result[j].CustomPropertyTypeId == 2) //List field.
-						{
-							ComboBox lsbControl = new ComboBox();
-							lsbControl.SelectedValuePath = "Key";
-							lsbControl.DisplayMemberPath = "Value";
-							lsbControl.SelectionChanged += new SelectionChangedEventHandler(_cntrl_TextChanged);
+							//** The label first.
+							TextBlock lblCustProp = new TextBlock();
+							lblCustProp.Text = e.Result[j].Alias + ":";
+							lblCustProp.Style = (Style)this.FindResource("PaddedLabel");
+							lblCustProp.VerticalAlignment = System.Windows.VerticalAlignment.Top;
 
-							//Load selectable items.
-							lsbControl.Items.Add(new KeyValuePair<int, string>(-1, ""));
-							foreach (RemoteCustomListValue list in e.Result[j].CustomList.Values)
+							//Add it to the row/column.
+							Grid.SetColumn(lblCustProp, ((IsOnFirst) ? 0 : 3));
+							Grid.SetRow(lblCustProp, (int)Math.Floor(j / 2D));
+							//Add it to the grid.
+							this.gridCustomProperties.Children.Add(lblCustProp);
+
+							//** Now the control.
+							Control custControl = null;
+							if (e.Result[j].CustomPropertyTypeId == 1) //Text field.
 							{
-								KeyValuePair<int, string> item = new KeyValuePair<int, string>(list.CustomPropertyValueId.Value, list.Name);
-								lsbControl.Items.Add(item);
+								TextBox txtControl = new TextBox();
+								txtControl.AcceptsReturn = true;
+								txtControl.AcceptsTab = true;
+								txtControl.MaxLines = 2;
+								txtControl.MinLines = 2;
+								txtControl.TextChanged += new TextChangedEventHandler(_cntrl_TextChanged);
+								custControl = txtControl;
 							}
+							else if (e.Result[j].CustomPropertyTypeId == 2) //List field.
+							{
+								ComboBox lsbControl = new ComboBox();
+								lsbControl.SelectedValuePath = "Key";
+								lsbControl.DisplayMemberPath = "Value";
+								lsbControl.SelectionChanged += new SelectionChangedEventHandler(_cntrl_TextChanged);
 
-							custControl = lsbControl;
+								//Load selectable items.
+								lsbControl.Items.Add(new KeyValuePair<int, string>(-1, ""));
+								foreach (RemoteCustomListValue list in e.Result[j].CustomList.Values)
+								{
+									KeyValuePair<int, string> item = new KeyValuePair<int, string>(list.CustomPropertyValueId.Value, list.Name);
+									lsbControl.Items.Add(item);
+								}
+
+								custControl = lsbControl;
+							}
+							custControl.Style = (Style)this.FindResource("PaddedControl");
+							custControl.Tag = e.Result[j];
+							custControl.HorizontalAlignment = System.Windows.HorizontalAlignment.Stretch;
+							custControl.VerticalAlignment = System.Windows.VerticalAlignment.Top;
+							//Add it to the row/column.
+							Grid.SetColumn(custControl, ((IsOnFirst) ? 1 : 4));
+							Grid.SetRow(custControl, (int)Math.Floor(j / 2D));
+							//Add it to the grid.
+							this.gridCustomProperties.Children.Add(custControl);
+
+							//Flip the IsOnFirst..
+							IsOnFirst = !IsOnFirst;
 						}
-						custControl.Style = (Style)this.FindResource("PaddedControl");
-						custControl.Tag = e.Result[j];
-						custControl.HorizontalAlignment = System.Windows.HorizontalAlignment.Stretch;
-						custControl.VerticalAlignment = System.Windows.VerticalAlignment.Top;
-						//Add it to the row/column.
-						Grid.SetColumn(custControl, ((IsOnFirst) ? 1 : 4));
-						Grid.SetRow(custControl, (int)Math.Floor(j / 2D));
-						//Add it to the grid.
-						this.gridCustomProperties.Children.Add(custControl);
 
-						//Flip the IsOnFirst..
-						IsOnFirst = !IsOnFirst;
+						//See if we're ready to get the actual data.
+						this.load_IsReadyToDisplayData();
 					}
+					else
+					{
+						Logger.LogMessage(e.Error);
+						this._client.Connection_DisconnectAsync();
 
-					//See if we're ready to get the actual data.
-					this.load_IsReadyToDisplayData();
+						//Display the error panel.
+						this.display_ShowErrorPanel(
+							StaticFuncs.getCultureResource.GetString("app_General_TalkingToServerErrorMessage") +
+							Environment.NewLine +
+							StaticFuncs.getCultureResource.GetString("app_General_TalkingToServerErrorMessageDetails") +
+							Environment.NewLine +
+							e.Error.Message.Truncate(250, Strings.TruncateOptionsEnum.AllowLastWordToGoOverMaxLength & Strings.TruncateOptionsEnum.FinishWord & Strings.TruncateOptionsEnum.IncludeEllipsis));
+					}
 				}
-				else
-				{
-					Logger.LogMessage(e.Error);
-					this._client.Connection_DisconnectAsync();
 
-					//Display the error panel.
-					this.display_ShowErrorPanel(
-						StaticFuncs.getCultureResource.GetString("app_General_TalkingToServerErrorMessage") +
-						Environment.NewLine +
-						StaticFuncs.getCultureResource.GetString("app_General_TalkingToServerErrorMessageDetails") +
-						Environment.NewLine +
-						e.Error.Message.Truncate(250, Strings.TruncateOptionsEnum.AllowLastWordToGoOverMaxLength & Strings.TruncateOptionsEnum.FinishWord & Strings.TruncateOptionsEnum.IncludeEllipsis));
-				}
+				System.Diagnostics.Debug.WriteLine(CLASS + METHOD + " EXIT. Clients - Running: " + this._clientNumRunning.ToString() + ", Total: " + this._clientNum.ToString());
 			}
-
-			System.Diagnostics.Debug.WriteLine(CLASS + METHOD + " EXIT. Clients - Running: " + this._clientNumRunning.ToString() + ", Total: " + this._clientNum.ToString());
+			catch (Exception ex)
+			{
+				Logger.LogMessage(ex, "_client_CustomProperty_RetrieveForArtifactTypeCompleted()");
+				MessageBox.Show(StaticFuncs.getCultureResource.GetString("app_General_UnexpectedError"), StaticFuncs.getCultureResource.GetString("app_General_ApplicationShortName"), MessageBoxButton.OK, MessageBoxImage.Error);
+			}
 		}
 
 		/// <summary>Hit when we're finished getting the attached documents for the artifact.</summary>
@@ -394,28 +452,36 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 		/// <param name="e">Document_RetrieveForArtifactCompletedEventArgs</param>
 		private void _client_Document_RetrieveForArtifactCompleted(object sender, Document_RetrieveForArtifactCompletedEventArgs e)
 		{
-			const string METHOD = "_client_Document_RetrieveForArtifactCompleted()";
-			System.Diagnostics.Debug.WriteLine(CLASS + METHOD + " ENTER. Clients - Running: " + this._clientNumRunning.ToString() + ", Total: " + this._clientNum.ToString());
-
-			this._clientNumRunning--;
-			this.barLoadingTask.Value++;
-
-			if (!e.Cancelled)
+			try
 			{
-				if (e.Error == null)
-				{
-					//Get the results into our variable.
-					this._IncDocuments = e.Result;
-					//We won't load them into display until the other information is displayed.
+				const string METHOD = "_client_Document_RetrieveForArtifactCompleted()";
+				System.Diagnostics.Debug.WriteLine(CLASS + METHOD + " ENTER. Clients - Running: " + this._clientNumRunning.ToString() + ", Total: " + this._clientNum.ToString());
 
-					this.load_IsReadyToDisplayData();
-				}
-				else
+				this._clientNumRunning--;
+				this.barLoadingTask.Value++;
+
+				if (!e.Cancelled)
 				{
-					Logger.LogMessage(e.Error);
+					if (e.Error == null)
+					{
+						//Get the results into our variable.
+						this._IncDocuments = e.Result;
+						//We won't load them into display until the other information is displayed.
+
+						this.load_IsReadyToDisplayData();
+					}
+					else
+					{
+						Logger.LogMessage(e.Error);
+					}
 				}
+				System.Diagnostics.Debug.WriteLine(CLASS + METHOD + " EXIT. Clients - Running: " + this._clientNumRunning.ToString() + ", Total: " + this._clientNum.ToString());
 			}
-			System.Diagnostics.Debug.WriteLine(CLASS + METHOD + " EXIT. Clients - Running: " + this._clientNumRunning.ToString() + ", Total: " + this._clientNum.ToString());
+			catch (Exception ex)
+			{
+				Logger.LogMessage(ex, "_client_Document_RetrieveForArtifactCompleted()");
+				MessageBox.Show(StaticFuncs.getCultureResource.GetString("app_General_UnexpectedError"), StaticFuncs.getCultureResource.GetString("app_General_ApplicationShortName"), MessageBoxButton.OK, MessageBoxImage.Error);
+			}
 		}
 
 		/// <summary>Hit when the client returns with our needed URL</summary>
@@ -423,38 +489,46 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 		/// <param name="e">System_GetArtifactUrlCompletedEventArgs</param>
 		private void _client_System_GetArtifactUrlCompleted(object sender, System_GetArtifactUrlCompletedEventArgs e)
 		{
-			const string METHOD = "_client_System_GetArtifactUrlCompleted()";
-			System.Diagnostics.Debug.WriteLine(CLASS + METHOD + " ENTER. Clients - Running: " + this._clientNumRunning.ToString() + ", Total: " + this._clientNum.ToString());
-
-			this._clientNumRunning--;
-			this.barLoadingTask.Value++;
-
-			if (!e.Cancelled)
+			try
 			{
-				if (e.Error == null)
-				{
-					if (string.IsNullOrWhiteSpace(this._TskDocumentsUrl))
-					{
-						this._TskDocumentsUrl = e.Result;
-						this._clientNumRunning++;
+				const string METHOD = "_client_System_GetArtifactUrlCompleted()";
+				System.Diagnostics.Debug.WriteLine(CLASS + METHOD + " ENTER. Clients - Running: " + this._clientNumRunning.ToString() + ", Total: " + this._clientNum.ToString());
 
-						//Get the other link now.
-						this._client.System_GetArtifactUrlAsync(6, this._ArtifactDetails.ArtifactParentProject.ArtifactId, this._ArtifactDetails.ArtifactId, null, this._clientNum++);
+				this._clientNumRunning--;
+				this.barLoadingTask.Value++;
+
+				if (!e.Cancelled)
+				{
+					if (e.Error == null)
+					{
+						if (string.IsNullOrWhiteSpace(this._TskDocumentsUrl))
+						{
+							this._TskDocumentsUrl = e.Result;
+							this._clientNumRunning++;
+
+							//Get the other link now.
+							this._client.System_GetArtifactUrlAsync(6, this._ArtifactDetails.ArtifactParentProject.ArtifactId, this._ArtifactDetails.ArtifactId, null, this._clientNum++);
+						}
+						else
+						{
+							this._TaskUrl = e.Result.Replace("~", this._Project.ServerURL.ToString());
+						}
+						this.load_IsReadyToDisplayData();
+
 					}
 					else
 					{
-						this._TaskUrl = e.Result.Replace("~", this._Project.ServerURL.ToString());
+						Logger.LogMessage(e.Error);
+						this._TskDocumentsUrl = "--none--";
 					}
-					this.load_IsReadyToDisplayData();
 
+					System.Diagnostics.Debug.WriteLine(CLASS + METHOD + " EXIT. Clients - Running: " + this._clientNumRunning.ToString() + ", Total: " + this._clientNum.ToString());
 				}
-				else
-				{
-					Logger.LogMessage(e.Error);
-					this._TskDocumentsUrl = "--none--";
-				}
-
-				System.Diagnostics.Debug.WriteLine(CLASS + METHOD + " EXIT. Clients - Running: " + this._clientNumRunning.ToString() + ", Total: " + this._clientNum.ToString());
+			}
+			catch (Exception ex)
+			{
+				Logger.LogMessage(ex, "_client_System_GetArtifactUrlCompleted()");
+				MessageBox.Show(StaticFuncs.getCultureResource.GetString("app_General_UnexpectedError"), StaticFuncs.getCultureResource.GetString("app_General_ApplicationShortName"), MessageBoxButton.OK, MessageBoxImage.Error);
 			}
 		}
 
@@ -463,37 +537,45 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 		/// <param name="e">Task_RetrieveCommentsCompletedEventArgs</param>
 		private void _client_Task_RetrieveCommentsCompleted(object sender, Task_RetrieveCommentsCompletedEventArgs e)
 		{
-			const string METHOD = "_client_Task_RetrieveCommentsCompleted()";
-			System.Diagnostics.Debug.WriteLine(CLASS + METHOD + " ENTER. Clients - Running: " + this._clientNumRunning.ToString() + ", Total: " + this._clientNum.ToString());
-
-			this._clientNumRunning--;
-			this.barLoadingTask.Value++;
-
-			if (!e.Cancelled)
+			try
 			{
-				if (e.Error == null)
-				{
-					this.loadItem_PopulateDiscussion(e.Result);
+				const string METHOD = "_client_Task_RetrieveCommentsCompleted()";
+				System.Diagnostics.Debug.WriteLine(CLASS + METHOD + " ENTER. Clients - Running: " + this._clientNumRunning.ToString() + ", Total: " + this._clientNum.ToString());
 
-					//See if we're ready to get the actual data.
-					this.load_IsReadyToDisplayData();
-				}
-				else
-				{
-					Logger.LogMessage(e.Error);
-					this._client.Connection_DisconnectAsync();
+				this._clientNumRunning--;
+				this.barLoadingTask.Value++;
 
-					//Display the error panel.
-					this.display_ShowErrorPanel(
-						StaticFuncs.getCultureResource.GetString("app_General_TalkingToServerErrorMessage") +
-						Environment.NewLine +
-						StaticFuncs.getCultureResource.GetString("app_General_TalkingToServerErrorMessageDetails") +
-						Environment.NewLine +
-						e.Error.Message.Truncate(250, Strings.TruncateOptionsEnum.AllowLastWordToGoOverMaxLength & Strings.TruncateOptionsEnum.FinishWord & Strings.TruncateOptionsEnum.IncludeEllipsis));
+				if (!e.Cancelled)
+				{
+					if (e.Error == null)
+					{
+						this.loadItem_PopulateDiscussion(e.Result);
+
+						//See if we're ready to get the actual data.
+						this.load_IsReadyToDisplayData();
+					}
+					else
+					{
+						Logger.LogMessage(e.Error);
+						this._client.Connection_DisconnectAsync();
+
+						//Display the error panel.
+						this.display_ShowErrorPanel(
+							StaticFuncs.getCultureResource.GetString("app_General_TalkingToServerErrorMessage") +
+							Environment.NewLine +
+							StaticFuncs.getCultureResource.GetString("app_General_TalkingToServerErrorMessageDetails") +
+							Environment.NewLine +
+							e.Error.Message.Truncate(250, Strings.TruncateOptionsEnum.AllowLastWordToGoOverMaxLength & Strings.TruncateOptionsEnum.FinishWord & Strings.TruncateOptionsEnum.IncludeEllipsis));
+					}
 				}
+
+				System.Diagnostics.Debug.WriteLine(CLASS + METHOD + " EXIT. Clients - Running: " + this._clientNumRunning.ToString() + ", Total: " + this._clientNum.ToString());
 			}
-
-			System.Diagnostics.Debug.WriteLine(CLASS + METHOD + " EXIT. Clients - Running: " + this._clientNumRunning.ToString() + ", Total: " + this._clientNum.ToString());
+			catch (Exception ex)
+			{
+				Logger.LogMessage(ex, "_client_Task_RetrieveCommentsCompleted()");
+				MessageBox.Show(StaticFuncs.getCultureResource.GetString("app_General_UnexpectedError"), StaticFuncs.getCultureResource.GetString("app_General_ApplicationShortName"), MessageBoxButton.OK, MessageBoxImage.Error);
+			}
 		}
 
 		/// <summary>Hit when the client finished getting out task information.</summary>
@@ -501,48 +583,56 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 		/// <param name="e">Task_RetrieveByIdCompletedEventArgs</param>
 		private void _client_Task_RetrieveByIdCompleted(object sender, Task_RetrieveByIdCompletedEventArgs e)
 		{
-			const string METHOD = "_client_Task_RetrieveByIdCompleted()";
-			System.Diagnostics.Debug.WriteLine(CLASS + METHOD + " ENTER. Clients - Running: " + this._clientNumRunning.ToString() + ", Total: " + this._clientNum.ToString());
-
-			this._clientNumRunning--;
-			this.barLoadingTask.Value++;
-
-			if (!e.Cancelled)
+			try
 			{
-				if (e.Error == null)
-				{
-					this._Task = e.Result;
+				const string METHOD = "_client_Task_RetrieveByIdCompleted()";
+				System.Diagnostics.Debug.WriteLine(CLASS + METHOD + " ENTER. Clients - Running: " + this._clientNumRunning.ToString() + ", Total: " + this._clientNum.ToString());
 
-					//Fire off the last one, to get the requirement details.
-					if (e.Result.RequirementId.HasValue)
+				this._clientNumRunning--;
+				this.barLoadingTask.Value++;
+
+				if (!e.Cancelled)
+				{
+					if (e.Error == null)
 					{
-						this._clientNumRunning++;
-						this._client.Requirement_RetrieveByIdAsync(e.Result.RequirementId.Value, this._clientNum++);
+						this._Task = e.Result;
+
+						//Fire off the last one, to get the requirement details.
+						if (e.Result.RequirementId.HasValue)
+						{
+							this._clientNumRunning++;
+							this._client.Requirement_RetrieveByIdAsync(e.Result.RequirementId.Value, this._clientNum++);
+						}
+						else
+						{
+							this.imgReqLink.Visibility = System.Windows.Visibility.Collapsed;
+						}
+
+						//See if we're ready to get the actual data.
+						this.load_IsReadyToDisplayData();
 					}
 					else
 					{
-						this.imgReqLink.Visibility = System.Windows.Visibility.Collapsed;
+						Logger.LogMessage(e.Error);
+						this._client.Connection_DisconnectAsync();
+
+						//Display the error panel.
+						this.display_ShowErrorPanel(
+							StaticFuncs.getCultureResource.GetString("app_General_TalkingToServerErrorMessage") +
+							Environment.NewLine +
+							StaticFuncs.getCultureResource.GetString("app_General_TalkingToServerErrorMessageDetails") +
+							Environment.NewLine +
+							e.Error.Message.Truncate(250, Strings.TruncateOptionsEnum.AllowLastWordToGoOverMaxLength & Strings.TruncateOptionsEnum.FinishWord & Strings.TruncateOptionsEnum.IncludeEllipsis));
 					}
-
-					//See if we're ready to get the actual data.
-					this.load_IsReadyToDisplayData();
 				}
-				else
-				{
-					Logger.LogMessage(e.Error);
-					this._client.Connection_DisconnectAsync();
 
-					//Display the error panel.
-					this.display_ShowErrorPanel(
-						StaticFuncs.getCultureResource.GetString("app_General_TalkingToServerErrorMessage") +
-						Environment.NewLine +
-						StaticFuncs.getCultureResource.GetString("app_General_TalkingToServerErrorMessageDetails") +
-						Environment.NewLine +
-						e.Error.Message.Truncate(250, Strings.TruncateOptionsEnum.AllowLastWordToGoOverMaxLength & Strings.TruncateOptionsEnum.FinishWord & Strings.TruncateOptionsEnum.IncludeEllipsis));
-				}
+				System.Diagnostics.Debug.WriteLine(CLASS + METHOD + " EXIT. Clients - Running: " + this._clientNumRunning.ToString() + ", Total: " + this._clientNum.ToString());
 			}
-
-			System.Diagnostics.Debug.WriteLine(CLASS + METHOD + " EXIT. Clients - Running: " + this._clientNumRunning.ToString() + ", Total: " + this._clientNum.ToString());
+			catch (Exception ex)
+			{
+				Logger.LogMessage(ex, "_client_Task_RetrieveByIdCompleted()");
+				MessageBox.Show(StaticFuncs.getCultureResource.GetString("app_General_UnexpectedError"), StaticFuncs.getCultureResource.GetString("app_General_ApplicationShortName"), MessageBoxButton.OK, MessageBoxImage.Error);
+			}
 		}
 
 		/// <summary>Hit if there's a requirement assigned to the task.</summary>
@@ -550,30 +640,38 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 		/// <param name="e">Requirement_RetrieveByIdCompletedEventArgs</param>
 		private void _client_Requirement_RetrieveByIdCompleted(object sender, Requirement_RetrieveByIdCompletedEventArgs e)
 		{
-			const string METHOD = "_client_Requirement_RetrieveByIdCompleted()";
-			System.Diagnostics.Debug.WriteLine(CLASS + METHOD + " ENTER. Clients - Running: " + this._clientNumRunning.ToString() + ", Total: " + this._clientNum.ToString());
-
-			this._clientNumRunning--;
-			this.barLoadingTask.Value++;
-
-			if (!e.Cancelled)
+			try
 			{
-				if (e.Error == null)
-				{
-					//Populate the fields..
-					this.txtRequirement.Text = e.Result.Name;
-					this.txtRequirementID.Text = "[RQ:" + e.Result.RequirementId.ToString() + "]";
-					this.imgReqLink.Visibility = System.Windows.Visibility.Visible;
-				}
-				else
-				{
-					//Not a major error.
-					Logger.LogMessage(e.Error, "Pulling requirement data for task.");
-					this.imgReqLink.Visibility = System.Windows.Visibility.Collapsed;
-				}
+				const string METHOD = "_client_Requirement_RetrieveByIdCompleted()";
+				System.Diagnostics.Debug.WriteLine(CLASS + METHOD + " ENTER. Clients - Running: " + this._clientNumRunning.ToString() + ", Total: " + this._clientNum.ToString());
 
-				//See if the rest of the data can be displayed.
-				this.load_IsReadyToDisplayData();
+				this._clientNumRunning--;
+				this.barLoadingTask.Value++;
+
+				if (!e.Cancelled)
+				{
+					if (e.Error == null)
+					{
+						//Populate the fields..
+						this.txtRequirement.Text = e.Result.Name;
+						this.txtRequirementID.Text = "[RQ:" + e.Result.RequirementId.ToString() + "]";
+						this.imgReqLink.Visibility = System.Windows.Visibility.Visible;
+					}
+					else
+					{
+						//Not a major error.
+						Logger.LogMessage(e.Error, "Pulling requirement data for task.");
+						this.imgReqLink.Visibility = System.Windows.Visibility.Collapsed;
+					}
+
+					//See if the rest of the data can be displayed.
+					this.load_IsReadyToDisplayData();
+				}
+			}
+			catch (Exception ex)
+			{
+				Logger.LogMessage(ex, "_client_Requirement_RetrieveByIdCompleted()");
+				MessageBox.Show(StaticFuncs.getCultureResource.GetString("app_General_UnexpectedError"), StaticFuncs.getCultureResource.GetString("app_General_ApplicationShortName"), MessageBoxButton.OK, MessageBoxImage.Error);
 			}
 		}
 
@@ -584,14 +682,22 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 		/// </summary>
 		private void load_IsReadyToDisplayData()
 		{
-			Logger.LogTrace("load_IsReadyToDisplayData: Clients Running " + this._clientNumRunning.ToString());
-
-			if (this._clientNumRunning == 0)
+			try
 			{
-				this.loadItem_DisplayInformation(this._Task);
+				Logger.LogTrace("load_IsReadyToDisplayData: Clients Running " + this._clientNumRunning.ToString());
 
-				//Turn off loading screen..
-				this.IsLoading = false;
+				if (this._clientNumRunning == 0)
+				{
+					this.loadItem_DisplayInformation(this._Task);
+
+					//Turn off loading screen..
+					this.IsLoading = false;
+				}
+			}
+			catch (Exception ex)
+			{
+				Logger.LogMessage(ex, "load_IsReadyToDisplayData()");
+				MessageBox.Show(StaticFuncs.getCultureResource.GetString("app_General_UnexpectedError"), StaticFuncs.getCultureResource.GetString("app_General_ApplicationShortName"), MessageBoxButton.OK, MessageBoxImage.Error);
 			}
 		}
 
@@ -622,7 +728,8 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			}
 			catch (Exception ex)
 			{
-				//Connect.logEventMessage("wpfDetailsIncident::loadItem_PopulateUser", ex, System.Diagnostics.EventLogEntryType.Error);
+				Logger.LogMessage(ex, "loadItem_PopulateUser()");
+				MessageBox.Show(StaticFuncs.getCultureResource.GetString("app_General_UnexpectedError"), StaticFuncs.getCultureResource.GetString("app_General_ApplicationShortName"), MessageBoxButton.OK, MessageBoxImage.Error);
 			}
 		}
 
@@ -651,7 +758,8 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			}
 			catch (Exception ex)
 			{
-				//Connect.logEventMessage("wpfDetailsIncident::loadItem_PopulateReleaseControl", ex, System.Diagnostics.EventLogEntryType.Error);
+				Logger.LogMessage(ex, "loadItem_PopulateReleaseControl()");
+				MessageBox.Show(StaticFuncs.getCultureResource.GetString("app_General_UnexpectedError"), StaticFuncs.getCultureResource.GetString("app_General_ApplicationShortName"), MessageBoxButton.OK, MessageBoxImage.Error);
 			}
 		}
 
@@ -680,7 +788,8 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			}
 			catch (Exception ex)
 			{
-				Logger.LogMessage(ex, "Populating Task Comments");
+				Logger.LogMessage(ex, "loadItem_PopulateDiscussion()");
+				MessageBox.Show(StaticFuncs.getCultureResource.GetString("app_General_UnexpectedError"), StaticFuncs.getCultureResource.GetString("app_General_ApplicationShortName"), MessageBoxButton.OK, MessageBoxImage.Error);
 			}
 		}
 
@@ -688,12 +797,20 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 		/// <param name="PriorityId">Integer of the selected priority.</param>
 		private void loadItem_SelectPriority(int? PriorityId)
 		{
-			foreach (TaskPriority availPri in this.cntrlPriority.Items)
+			try
 			{
-				if (availPri.PriorityId == PriorityId)
+				foreach (TaskPriority availPri in this.cntrlPriority.Items)
 				{
-					this.cntrlPriority.SelectedItem = availPri;
+					if (availPri.PriorityId == PriorityId)
+					{
+						this.cntrlPriority.SelectedItem = availPri;
+					}
 				}
+			}
+			catch (Exception ex)
+			{
+				Logger.LogMessage(ex, "loadItem_SelectPriority()");
+				MessageBox.Show(StaticFuncs.getCultureResource.GetString("app_General_UnexpectedError"), StaticFuncs.getCultureResource.GetString("app_General_ApplicationShortName"), MessageBoxButton.OK, MessageBoxImage.Error);
 			}
 		}
 
@@ -701,12 +818,20 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 		/// <param name="PriorityId">Integer of the selected status.</param>
 		private void loadItem_SelectStatus(int? StatusId)
 		{
-			foreach (TaskStatus availSta in this.cntrlStatus.Items)
+			try
 			{
-				if (availSta.StatusId == StatusId)
+				foreach (TaskStatus availSta in this.cntrlStatus.Items)
 				{
-					this.cntrlStatus.SelectedItem = availSta;
+					if (availSta.StatusId == StatusId)
+					{
+						this.cntrlStatus.SelectedItem = availSta;
+					}
 				}
+			}
+			catch (Exception ex)
+			{
+				Logger.LogMessage(ex, "loadItem_SelectStatus()");
+				MessageBox.Show(StaticFuncs.getCultureResource.GetString("app_General_UnexpectedError"), StaticFuncs.getCultureResource.GetString("app_General_ApplicationShortName"), MessageBoxButton.OK, MessageBoxImage.Error);
 			}
 		}
 		#endregion
@@ -999,7 +1124,8 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			}
 			catch (Exception ex)
 			{
-				Logger.LogMessage(ex, CLASS + METHOD);
+				Logger.LogMessage(ex, METHOD);
+				MessageBox.Show(StaticFuncs.getCultureResource.GetString("app_General_UnexpectedError"), StaticFuncs.getCultureResource.GetString("app_General_ApplicationShortName"), MessageBoxButton.OK, MessageBoxImage.Error);
 			}
 		}
 
@@ -1008,14 +1134,21 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 		/// <param name="e">RoutedEventArgs</param>
 		private void btnRetryLoad_Click(object sender, RoutedEventArgs e)
 		{
-			//Hide the error panel, jump to loading..
-			this.display_SetOverlayWindow(this.panelError, System.Windows.Visibility.Collapsed);
-			this.display_SetOverlayWindow(this.panelSaving, System.Windows.Visibility.Collapsed);
-			this.display_SetOverlayWindow(this.panelStatus, System.Windows.Visibility.Visible);
-			this.lblLoadingTask.Text = StaticFuncs.getCultureResource.GetString("app_Task_Loading");
+			try
+			{
+				//Hide the error panel, jump to loading..
+				this.display_SetOverlayWindow(this.panelError, System.Windows.Visibility.Collapsed);
+				this.display_SetOverlayWindow(this.panelSaving, System.Windows.Visibility.Collapsed);
+				this.display_SetOverlayWindow(this.panelStatus, System.Windows.Visibility.Visible);
+				this.lblLoadingTask.Text = StaticFuncs.getCultureResource.GetString("app_Task_Loading");
 
-			this.load_LoadItem();
+				this.load_LoadItem();
+			}
+			catch (Exception ex)
+			{
+				Logger.LogMessage(ex, "btnRetryLoad_Click()");
+				MessageBox.Show(StaticFuncs.getCultureResource.GetString("app_General_UnexpectedError"), StaticFuncs.getCultureResource.GetString("app_General_ApplicationShortName"), MessageBoxButton.OK, MessageBoxImage.Error);
+			}
 		}
-
 	}
 }

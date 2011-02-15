@@ -2,6 +2,8 @@
 using Microsoft.VisualStudio.Shell;
 using System.Windows;
 using Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business;
+using System;
+using Inflectra.Global;
 
 namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 {
@@ -17,22 +19,34 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 	//[Guid("76C22C24-36B6-4C0C-BF60-FFCB65D1B05B")]
 	public class toolSpiraExplorerDetails : ToolWindowPane
 	{
-		/// <summary>
-		/// Standard constructor for the tool window.
-		/// </summary>
+		/// <summary>Standard constructor for the tool window.</summary>
 		public toolSpiraExplorerDetails() :
 			base(null)
 		{
-
-			base.Caption = "";
-			base.Content = new cntrlDetailsForm();
-
+			try
+			{
+				base.Caption = "";
+				base.Content = new cntrlDetailsForm();
+			}
+			catch (Exception ex)
+			{
+				Logger.LogMessage(ex, "toolSpiraExplorerDetails()");
+				MessageBox.Show(StaticFuncs.getCultureResource.GetString("app_General_UnexpectedError"), StaticFuncs.getCultureResource.GetString("app_General_ApplicationShortName"), MessageBoxButton.OK, MessageBoxImage.Error);
+			}
 		}
 
 		public toolSpiraExplorerDetails(object ContentControl)
 			: this()
 		{
-			this.FormControl = ContentControl;
+			try
+			{
+				this.FormControl = ContentControl;
+			}
+			catch (Exception ex)
+			{
+				Logger.LogMessage(ex, "ShowToolWindow()");
+				MessageBox.Show(StaticFuncs.getCultureResource.GetString("app_General_UnexpectedError"), StaticFuncs.getCultureResource.GetString("app_General_ApplicationShortName"), MessageBoxButton.OK, MessageBoxImage.Error);
+			}
 		}
 
 		/// <summary>The contents of the tool window.</summary>

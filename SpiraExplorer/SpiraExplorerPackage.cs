@@ -30,7 +30,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010
 	[InstalledProductRegistration("#110", "#112", "1.0", IconResourceID = 400)] // This attribute is used to register the information needed to show the this package in the Help/About dialog of Visual Studio.
 	[ProvideMenuResource("Menus.ctmenu", 1)] // This attribute is needed to let the shell know that this package exposes some menus.
 	[ProvideToolWindow(typeof(toolSpiraExplorer), MultiInstances = false, Window = "3ae79031-e1bc-11d0-8f78-00a0c9110057")] // This attribute registers a tool window exposed by this package.
-	[ProvideToolWindow(typeof(toolSpiraExplorerDetails), MultiInstances = true, Window = "76C22C24-36B6-4C0C-BF60-FFCB65D1B05B")] // This attribute registers a tool window exposed by this package.
+	[ProvideToolWindow(typeof(toolSpiraExplorerDetails), MultiInstances = true, Window = "76C22C24-36B6-4C0C-BF60-FFCB65D1B05B", Transient = false)] // This attribute registers a tool window exposed by this package.
 	[Guid(GuidList.guidSpiraExplorerPkgString)]
 	public sealed class SpiraExplorerPackage : Package
 	{
@@ -67,44 +67,60 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010
 		/// <summary>This function is called when the user clicks the menu item that shows the tool window. See the Initialize method to see how the menu item is associated to this function using the OleMenuCommandService service and the MenuCommand class.</summary>
 		private void ShowToolWindow(object sender, EventArgs e)
 		{
-			// Get the instance number 0 of this tool window. This window is single instance so this instance
-			// is actually the only one.
-			// The last flag is set to true so that if the tool window does not exists it will be created.
-			ToolWindowPane window = this.FindToolWindow(typeof(toolSpiraExplorer), 0, true);
-
-			if ((null == window) || (null == window.Frame))
+			try
 			{
-				throw new NotSupportedException(StaticFuncs.getCultureResource.GetString("app_General_CreateWindowError"));
+				// Get the instance number 0 of this tool window. This window is single instance so this instance
+				// is actually the only one.
+				// The last flag is set to true so that if the tool window does not exists it will be created.
+				ToolWindowPane window = this.FindToolWindow(typeof(toolSpiraExplorer), 0, true);
+
+				if ((null == window) || (null == window.Frame))
+				{
+					throw new NotSupportedException(StaticFuncs.getCultureResource.GetString("app_General_CreateWindowError"));
+				}
+				IVsWindowFrame windowFrame = (IVsWindowFrame)window.Frame;
+				Microsoft.VisualStudio.ErrorHandler.ThrowOnFailure(windowFrame.Show());
 			}
-			IVsWindowFrame windowFrame = (IVsWindowFrame)window.Frame;
-			Microsoft.VisualStudio.ErrorHandler.ThrowOnFailure(windowFrame.Show());
+			catch (Exception ex)
+			{
+				Logger.LogMessage(ex, "ShowToolWindow()");
+				MessageBox.Show(StaticFuncs.getCultureResource.GetString("app_General_UnexpectedError"), StaticFuncs.getCultureResource.GetString("app_General_ApplicationShortName"), MessageBoxButton.OK, MessageBoxImage.Error);
+			}
 		}
 
 		#region Package Members
 		/// <summary>Initialization of the package; this method is called right after the package is sited, so this is the place where you can put all the initialization code that rely on services provided by VisualStudio.</summary>
 		protected override void Initialize()
 		{
-			Trace.WriteLine(string.Format(CultureInfo.CurrentCulture, "Entering Initialize() of: {0}", this.ToString()));
-			base.Initialize();
-
-			// Add our command handlers for menu (commands must exist in the .vsct file)
-			OleMenuCommandService mcs = GetService(typeof(IMenuCommandService)) as OleMenuCommandService;
-			if (mcs != null)
+			try
 			{
-				// Create the command for the tool window
-				CommandID toolwndCommandID = new CommandID(GuidList.guidSpiraExplorerCmdSet, (int)PkgCmdIDList.cmdViewExplorerWindow);
-				MenuCommand menuToolWin = new MenuCommand(ShowToolWindow, toolwndCommandID);
-				mcs.AddCommand(menuToolWin);
+				Trace.WriteLine(string.Format(CultureInfo.CurrentCulture, "Entering Initialize() of: {0}", this.ToString()));
+				base.Initialize();
+
+				// Add our command handlers for menu (commands must exist in the .vsct file)
+				OleMenuCommandService mcs = GetService(typeof(IMenuCommandService)) as OleMenuCommandService;
+				if (mcs != null)
+				{
+					// Create the command for the tool window
+					CommandID toolwndCommandID = new CommandID(GuidList.guidSpiraExplorerCmdSet, (int)PkgCmdIDList.cmdViewExplorerWindow);
+					MenuCommand menuToolWin = new MenuCommand(ShowToolWindow, toolwndCommandID);
+					mcs.AddCommand(menuToolWin);
+				}
+
+				//Attach to the environment to get events..
+				this._EnvironEvents = Business.StaticFuncs.GetEnvironment.Events;
+				this._SolEvents = Business.StaticFuncs.GetEnvironment.Events.SolutionEvents;
+				if (this._EnvironEvents != null && this._SolEvents != null)
+				{
+					this._SolEvents.Opened += new EnvDTE._dispSolutionEvents_OpenedEventHandler(SolutionEvents_Opened);
+					this._SolEvents.AfterClosing += new EnvDTE._dispSolutionEvents_AfterClosingEventHandler(SolutionEvents_AfterClosing);
+					this._SolEvents.Renamed += new EnvDTE._dispSolutionEvents_RenamedEventHandler(SolutionEvents_Renamed);
+				}
 			}
-
-			//Attach to the environment to get events..
-			this._EnvironEvents = Business.StaticFuncs.GetEnvironment.Events;
-			this._SolEvents = Business.StaticFuncs.GetEnvironment.Events.SolutionEvents;
-			if (this._EnvironEvents != null && this._SolEvents != null)
+			catch (Exception ex)
 			{
-				this._SolEvents.Opened += new EnvDTE._dispSolutionEvents_OpenedEventHandler(SolutionEvents_Opened);
-				this._SolEvents.AfterClosing += new EnvDTE._dispSolutionEvents_AfterClosingEventHandler(SolutionEvents_AfterClosing);
-				this._SolEvents.Renamed += new EnvDTE._dispSolutionEvents_RenamedEventHandler(SolutionEvents_Renamed);
+				Logger.LogMessage(ex, "Initialize()");
+				MessageBox.Show(StaticFuncs.getCultureResource.GetString("app_General_UnexpectedError"), StaticFuncs.getCultureResource.GetString("app_General_ApplicationShortName"), MessageBoxButton.OK, MessageBoxImage.Error);
 			}
 		}
 		#endregion
@@ -114,70 +130,95 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010
 		/// <param name="OldName">The old name of the solution.</param>
 		private void SolutionEvents_Renamed(string OldName)
 		{
-			//Get the new name of the solution..
-			if (Business.StaticFuncs.GetEnvironment.Solution.IsOpen)
+			try
 			{
-				string NewName = (string)Business.StaticFuncs.GetEnvironment.Solution.Properties.Item("Name").Value;
-				if (!string.IsNullOrWhiteSpace(NewName))
+				//Get the new name of the solution..
+				if (Business.StaticFuncs.GetEnvironment.Solution.IsOpen)
 				{
-					//Modify the settings to transfer over projects.
-					if (Settings.Default.AssignedProjects.ContainsKey(OldName))
+					string NewName = (string)Business.StaticFuncs.GetEnvironment.Solution.Properties.Item("Name").Value;
+					if (!string.IsNullOrWhiteSpace(NewName))
 					{
-						string strAssignedProjects = Settings.Default.AssignedProjects[OldName];
-						Settings.Default.AssignedProjects.Remove(OldName);
-						if (Settings.Default.AssignedProjects.ContainsKey(NewName))
-							Settings.Default.AssignedProjects[NewName] = strAssignedProjects;
-						else
-							Settings.Default.AssignedProjects.Add(NewName, strAssignedProjects);
-						Settings.Default.Save();
-					}
+						//Modify the settings to transfer over projects.
+						if (Settings.Default.AssignedProjects.ContainsKey(OldName))
+						{
+							string strAssignedProjects = Settings.Default.AssignedProjects[OldName];
+							Settings.Default.AssignedProjects.Remove(OldName);
+							if (Settings.Default.AssignedProjects.ContainsKey(NewName))
+								Settings.Default.AssignedProjects[NewName] = strAssignedProjects;
+							else
+								Settings.Default.AssignedProjects.Add(NewName, strAssignedProjects);
+							Settings.Default.Save();
+						}
 
-					//Reload projects..
-					ToolWindowPane window = this.FindToolWindow(typeof(toolSpiraExplorer), 0, false);
-					if (window != null)
-					{
-						cntlSpiraExplorer toolWindow = (cntlSpiraExplorer)window.Content;
-						toolWindow.loadSolution(NewName);
+						//Reload projects..
+						ToolWindowPane window = this.FindToolWindow(typeof(toolSpiraExplorer), 0, false);
+						if (window != null)
+						{
+							cntlSpiraExplorer toolWindow = (cntlSpiraExplorer)window.Content;
+							toolWindow.loadSolution(NewName);
+						}
 					}
 				}
+			}
+			catch (Exception ex)
+			{
+				Logger.LogMessage(ex, "SolutionEvents_Renamed()");
+				MessageBox.Show(StaticFuncs.getCultureResource.GetString("app_General_UnexpectedError"), StaticFuncs.getCultureResource.GetString("app_General_ApplicationShortName"), MessageBoxButton.OK, MessageBoxImage.Error);
 			}
 		}
 
 		/// <summary>Hit when the open solution is closed.</summary>
 		private void SolutionEvents_AfterClosing()
 		{
-			//Get the window.
-			ToolWindowPane window = this.FindToolWindow(typeof(toolSpiraExplorer), 0, false);
-			if (window != null)
-			{
-				cntlSpiraExplorer toolWindow = (cntlSpiraExplorer)window.Content;
-				toolWindow.loadSolution(null);
-			}
-
-			//Close all open details windows.
-			lock (SpiraExplorerPackage._windowDetails)
-			{
-				foreach (KeyValuePair<TreeViewArtifact, int> detailWindow in SpiraExplorerPackage._windowDetails)
-				{
-					ToolWindowPane windowDetail = this.FindToolWindow(typeof(toolSpiraExplorerDetails), detailWindow.Value, false);
-					if (windowDetail != null)
-						((IVsWindowFrame)windowDetail.Frame).Hide();
-				}
-			}
-		}
-
-		/// <summary>Hit when a solution is opened.</summary>
-		private void SolutionEvents_Opened()
-		{
-			if (Business.StaticFuncs.GetEnvironment.Solution.IsOpen)
+			try
 			{
 				//Get the window.
 				ToolWindowPane window = this.FindToolWindow(typeof(toolSpiraExplorer), 0, false);
 				if (window != null)
 				{
 					cntlSpiraExplorer toolWindow = (cntlSpiraExplorer)window.Content;
-					toolWindow.loadSolution((string)Business.StaticFuncs.GetEnvironment.Solution.Properties.Item("Name").Value);
+					toolWindow.loadSolution(null);
 				}
+
+				//Close all open details windows.
+				lock (SpiraExplorerPackage._windowDetails)
+				{
+					foreach (KeyValuePair<TreeViewArtifact, int> detailWindow in SpiraExplorerPackage._windowDetails)
+					{
+						ToolWindowPane windowDetail = this.FindToolWindow(typeof(toolSpiraExplorerDetails), detailWindow.Value, false);
+						if (windowDetail != null)
+							((IVsWindowFrame)windowDetail.Frame).Hide();
+					}
+				}
+			}
+			catch (Exception ex)
+			{
+				Logger.LogMessage(ex, "SolutionEvents_AfterClosing()");
+				MessageBox.Show(StaticFuncs.getCultureResource.GetString("app_General_UnexpectedError"), StaticFuncs.getCultureResource.GetString("app_General_ApplicationShortName"), MessageBoxButton.OK, MessageBoxImage.Error);
+			}
+
+		}
+
+		/// <summary>Hit when a solution is opened.</summary>
+		private void SolutionEvents_Opened()
+		{
+			try
+			{
+				if (Business.StaticFuncs.GetEnvironment.Solution.IsOpen)
+				{
+					//Get the window.
+					ToolWindowPane window = this.FindToolWindow(typeof(toolSpiraExplorer), 0, false);
+					if (window != null)
+					{
+						cntlSpiraExplorer toolWindow = (cntlSpiraExplorer)window.Content;
+						toolWindow.loadSolution((string)Business.StaticFuncs.GetEnvironment.Solution.Properties.Item("Name").Value);
+					}
+				}
+			}
+			catch (Exception ex)
+			{
+				Logger.LogMessage(ex, "SolutionEvents_Opened()");
+				MessageBox.Show(StaticFuncs.getCultureResource.GetString("app_General_UnexpectedError"), StaticFuncs.getCultureResource.GetString("app_General_ApplicationShortName"), MessageBoxButton.OK, MessageBoxImage.Error);
 			}
 		}
 		#endregion
@@ -241,8 +282,8 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010
 			}
 			catch (Exception ex)
 			{
-				Logger.LogMessage(ex, "Tried to open details window.");
-				MessageBox.Show(StaticFuncs.getCultureResource.GetString("app_General_WindowOpenErrorMessage"), StaticFuncs.getCultureResource.GetString("app_General_WindowOpenError"), MessageBoxButton.OK, MessageBoxImage.Error);
+				Logger.LogMessage(ex, "OpenDetailsToolWindow()");
+				MessageBox.Show(StaticFuncs.getCultureResource.GetString("app_General_UnexpectedError"), StaticFuncs.getCultureResource.GetString("app_General_ApplicationShortName"), MessageBoxButton.OK, MessageBoxImage.Error);
 			}
 		}
 

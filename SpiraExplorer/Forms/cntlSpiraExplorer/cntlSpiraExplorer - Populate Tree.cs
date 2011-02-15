@@ -49,7 +49,8 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			}
 			catch (Exception ex)
 			{
-				Logger.LogMessage(ex);
+				Logger.LogMessage(ex, "loadProjects()");
+				MessageBox.Show(StaticFuncs.getCultureResource.GetString("app_General_UnexpectedError"), StaticFuncs.getCultureResource.GetString("app_General_ApplicationShortName"), MessageBoxButton.OK, MessageBoxImage.Error);
 			}
 		}
 
@@ -57,66 +58,74 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 		/// <param name="itemToRefresh">The root item (and children) to update.</param>
 		private void refreshTreeNodeServerData(TreeViewArtifact itemToRefresh)
 		{
-			//Depending what is highlighted will specify what needs to be updated.
-			if (itemToRefresh.ArtifactIsFolder)
+			try
 			{
-				//Update children..
-				foreach (TreeViewArtifact subChild in itemToRefresh.Items)
+				//Depending what is highlighted will specify what needs to be updated.
+				if (itemToRefresh.ArtifactIsFolder)
 				{
-					//If it's a folder, call recursively.
-					if (subChild.ArtifactIsFolder)
-						this.refreshTreeNodeServerData(subChild);
-				}
-
-				if (itemToRefresh.ArtifactType.GetType() == typeof(Spira_ImportExport))
-				{
-					Spira_ImportExport clientExist = (Spira_ImportExport)itemToRefresh.ArtifactTag;
-
-					//Kill it.
-					try
+					//Update children..
+					foreach (TreeViewArtifact subChild in itemToRefresh.Items)
 					{
-						clientExist.Client.Abort();
+						//If it's a folder, call recursively.
+						if (subChild.ArtifactIsFolder)
+							this.refreshTreeNodeServerData(subChild);
 					}
-					catch { }
-					finally
+
+					if (itemToRefresh.ArtifactType.GetType() == typeof(Spira_ImportExport))
 					{
+						Spira_ImportExport clientExist = (Spira_ImportExport)itemToRefresh.ArtifactTag;
+
+						//Kill it.
 						try
 						{
-							clientExist.Client.Connection_Disconnect();
+							clientExist.Client.Abort();
 						}
 						catch { }
+						finally
+						{
+							try
+							{
+								clientExist.Client.Connection_Disconnect();
+							}
+							catch { }
+						}
+						clientExist = null;
+						itemToRefresh.ArtifactTag = null;
 					}
-					clientExist = null;
-					itemToRefresh.ArtifactTag = null;
+
+					//Now refresh this one if necessary.
+					if (itemToRefresh.ArtifactType != TreeViewArtifact.ArtifactTypeEnum.None && itemToRefresh.ArtifactType != TreeViewArtifact.ArtifactTypeEnum.Project)
+					{
+						//We're spawning one off, make the bar visible.
+						this.barLoading.Visibility = System.Windows.Visibility.Visible;
+						this.trvProject.Cursor = System.Windows.Input.Cursors.AppStarting;
+
+						//Generate a new client to go get data for.
+						Spira_ImportExport clientRefresh = new Spira_ImportExport(((SpiraProject)itemToRefresh.ArtifactParentProject.ArtifactTag).ServerURL.ToString(), ((SpiraProject)itemToRefresh.ArtifactParentProject.ArtifactTag).UserName, ((SpiraProject)itemToRefresh.ArtifactParentProject.ArtifactTag).UserPass);
+						clientRefresh.ConnectionReady += new EventHandler(_client_ConnectionReady);
+						clientRefresh.ConnectionError += new EventHandler<Business.Spira_ImportExport.ConnectionException>(_client_ConnectionError);
+						clientRefresh.Client.Incident_RetrieveCompleted += new EventHandler<Business.SpiraTeam_Client.Incident_RetrieveCompletedEventArgs>(_client_Incident_RetrieveCompleted);
+						clientRefresh.Client.Requirement_RetrieveCompleted += new EventHandler<Requirement_RetrieveCompletedEventArgs>(_client_Requirement_RetrieveCompleted);
+						clientRefresh.Client.Task_RetrieveCompleted += new EventHandler<Task_RetrieveCompletedEventArgs>(_client_Task_RetrieveCompleted);
+						clientRefresh.Client.Connection_DisconnectCompleted += new EventHandler<System.ComponentModel.AsyncCompletedEventArgs>(_client_Connection_DisconnectCompleted);
+						clientRefresh.ClientNode = itemToRefresh;
+						itemToRefresh.ArtifactTag = clientRefresh;
+
+						clientRefresh.Connect();
+						this._numActiveClients++;
+					}
 				}
-
-				//Now refresh this one if necessary.
-				if (itemToRefresh.ArtifactType != TreeViewArtifact.ArtifactTypeEnum.None && itemToRefresh.ArtifactType != TreeViewArtifact.ArtifactTypeEnum.Project)
+				else if (itemToRefresh.ArtifactType == TreeViewArtifact.ArtifactTypeEnum.Project)
 				{
-					//We're spawning one off, make the bar visible.
-					this.barLoading.Visibility = System.Windows.Visibility.Visible;
-					this.trvProject.Cursor = System.Windows.Input.Cursors.AppStarting;
-
-					//Generate a new client to go get data for.
-					Spira_ImportExport clientRefresh = new Spira_ImportExport(((SpiraProject)itemToRefresh.ArtifactParentProject.ArtifactTag).ServerURL.ToString(), ((SpiraProject)itemToRefresh.ArtifactParentProject.ArtifactTag).UserName, ((SpiraProject)itemToRefresh.ArtifactParentProject.ArtifactTag).UserPass);
-					clientRefresh.ConnectionReady += new EventHandler(_client_ConnectionReady);
-					clientRefresh.ConnectionError += new EventHandler<Business.Spira_ImportExport.ConnectionException>(_client_ConnectionError);
-					clientRefresh.Client.Incident_RetrieveCompleted += new EventHandler<Business.SpiraTeam_Client.Incident_RetrieveCompletedEventArgs>(_client_Incident_RetrieveCompleted);
-					clientRefresh.Client.Requirement_RetrieveCompleted += new EventHandler<Requirement_RetrieveCompletedEventArgs>(_client_Requirement_RetrieveCompleted);
-					clientRefresh.Client.Task_RetrieveCompleted += new EventHandler<Task_RetrieveCompletedEventArgs>(_client_Task_RetrieveCompleted);
-					clientRefresh.Client.Connection_DisconnectCompleted += new EventHandler<System.ComponentModel.AsyncCompletedEventArgs>(_client_Connection_DisconnectCompleted);
-					clientRefresh.ClientNode = itemToRefresh;
-					itemToRefresh.ArtifactTag = clientRefresh;
-
-					clientRefresh.Connect();
-					this._numActiveClients++;
+					//Loop through each child.
+					foreach (TreeViewArtifact childItem in itemToRefresh.Items)
+						this.refreshTreeNodeServerData(childItem);
 				}
 			}
-			else if (itemToRefresh.ArtifactType == TreeViewArtifact.ArtifactTypeEnum.Project)
+			catch (Exception ex)
 			{
-				//Loop through each child.
-				foreach (TreeViewArtifact childItem in itemToRefresh.Items)
-					this.refreshTreeNodeServerData(childItem);
+				Logger.LogMessage(ex, "refreshTreeNodeServerData()");
+				MessageBox.Show(StaticFuncs.getCultureResource.GetString("app_General_UnexpectedError"), StaticFuncs.getCultureResource.GetString("app_General_ApplicationShortName"), MessageBoxButton.OK, MessageBoxImage.Error);
 			}
 		}
 
@@ -210,7 +219,8 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			}
 			catch (Exception ex)
 			{
-				Logger.LogMessage(ex);
+				Logger.LogMessage(ex, "refreshProjects()");
+				MessageBox.Show(StaticFuncs.getCultureResource.GetString("app_General_UnexpectedError"), StaticFuncs.getCultureResource.GetString("app_General_ApplicationShortName"), MessageBoxButton.OK, MessageBoxImage.Error);
 			}
 		}
 
@@ -220,52 +230,60 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 		/// <param name="e">Incident_RetrieveCompletedEventArgs</param>
 		private void _client_Incident_RetrieveCompleted(object sender, Business.SpiraTeam_Client.Incident_RetrieveCompletedEventArgs e)
 		{
-			//Grab parent node.
-			TreeViewArtifact parentNode = e.UserState as TreeViewArtifact;
-
-			if (parentNode != null)
+			try
 			{
-				parentNode.Items.Clear();
+				//Grab parent node.
+				TreeViewArtifact parentNode = e.UserState as TreeViewArtifact;
 
-				//We got results back. Let's do something with them!
-				if (e.Error == null)
+				if (parentNode != null)
 				{
-					foreach (RemoteIncident incident in e.Result)
-					{
-						//Make new node.
-						TreeViewArtifact newNode = new TreeViewArtifact();
-						newNode.ArtifactType = TreeViewArtifact.ArtifactTypeEnum.Incident;
-						newNode.ArtifactTag = incident;
-						newNode.ArtifactName = incident.Name;
-						newNode.ArtifactIsFolder = false;
-						newNode.ArtifactId = incident.IncidentId.Value;
-						newNode.Parent = parentNode;
-						newNode.DetailsOpenRequested += new EventHandler(newNode_DetailsOpenRequested);
-						newNode.WorkTimerChanged += new EventHandler(newNode_WorkTimerChanged);
+					parentNode.Items.Clear();
 
-						parentNode.Items.Add(newNode);
+					//We got results back. Let's do something with them!
+					if (e.Error == null)
+					{
+						foreach (RemoteIncident incident in e.Result)
+						{
+							//Make new node.
+							TreeViewArtifact newNode = new TreeViewArtifact();
+							newNode.ArtifactType = TreeViewArtifact.ArtifactTypeEnum.Incident;
+							newNode.ArtifactTag = incident;
+							newNode.ArtifactName = incident.Name;
+							newNode.ArtifactIsFolder = false;
+							newNode.ArtifactId = incident.IncidentId.Value;
+							newNode.Parent = parentNode;
+							newNode.DetailsOpenRequested += new EventHandler(newNode_DetailsOpenRequested);
+							newNode.WorkTimerChanged += new EventHandler(newNode_WorkTimerChanged);
+
+							parentNode.Items.Add(newNode);
+						}
+					}
+					else
+					{
+						this.addErrorNode(ref parentNode, e.Error, StaticFuncs.getCultureResource.GetString("app_Error_RetrieveShort"));
 					}
 				}
 				else
 				{
-					this.addErrorNode(ref parentNode, e.Error, StaticFuncs.getCultureResource.GetString("app_Error_RetrieveShort"));
+					//No parent node. Log error, exit.
+					Logger.LogMessage("Did not get a parent folder!", System.Diagnostics.EventLogEntryType.Error);
 				}
-			}
-			else
-			{
-				//No parent node. Log error, exit.
-				Logger.LogMessage("Did not get a parent folder!", System.Diagnostics.EventLogEntryType.Error);
-			}
 
-			//Disconnect the client, subtract from the count.
-			try
-			{
-				((ImportExportClient)sender).Connection_DisconnectAsync();
+				//Disconnect the client, subtract from the count.
+				try
+				{
+					((ImportExportClient)sender).Connection_DisconnectAsync();
+				}
+				catch { }
+				parentNode.ArtifactTag = null;
+				this._numActiveClients--;
+				this.refreshTree();
 			}
-			catch { }
-			parentNode.ArtifactTag = null;
-			this._numActiveClients--;
-			this.refreshTree();
+			catch (Exception ex)
+			{
+				Logger.LogMessage(ex, "_client_Incident_RetrieveCompleted()");
+				MessageBox.Show(StaticFuncs.getCultureResource.GetString("app_General_UnexpectedError"), StaticFuncs.getCultureResource.GetString("app_General_ApplicationShortName"), MessageBoxButton.OK, MessageBoxImage.Error);
+			}
 		}
 
 		/// <summary>Hit when the user updates the worktimer on an TreeViewArtifact.</summary>
@@ -273,40 +291,48 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 		/// <param name="e">EventArgs</param>
 		private void newNode_WorkTimerChanged(object sender, EventArgs e)
 		{
-			//First, update the treeview.
-			this.trvProject.Items.Refresh();
-
-			//If there is no window to update, then we need to save the item.
-			if (!((TreeViewArtifact)sender).IsTimed)
+			try
 			{
-				if (((SpiraExplorerPackage)this.Pane.Package).FindExistingToolWindow((TreeViewArtifact)sender, false) == null)
+				//First, update the treeview.
+				this.trvProject.Items.Refresh();
+
+				//If there is no window to update, then we need to save the item.
+				if (!((TreeViewArtifact)sender).IsTimed)
 				{
-					TreeViewArtifact artItem = sender as TreeViewArtifact;
+					if (((SpiraExplorerPackage)this.Pane.Package).FindExistingToolWindow((TreeViewArtifact)sender, false) == null)
+					{
+						TreeViewArtifact artItem = sender as TreeViewArtifact;
 
-					//No window, update it ourselves. Create the client.
-					ImportExportClient clientWkTime = StaticFuncs.CreateClient(((SpiraProject)artItem.ArtifactParentProject.ArtifactTag).ServerURL.ToString());
-					//Set event handlers.
-					clientWkTime.Connection_Authenticate2Completed += new EventHandler<Connection_Authenticate2CompletedEventArgs>(clientWkTime_Connection_Authenticate2Completed);
-					clientWkTime.Connection_ConnectToProjectCompleted += new EventHandler<Connection_ConnectToProjectCompletedEventArgs>(clientWkTime_Connection_ConnectToProjectCompleted);
-					clientWkTime.Incident_RetrieveByIdCompleted += new EventHandler<Incident_RetrieveByIdCompletedEventArgs>(clientWkTime_Artifact_RetrieveByIdCompleted);
-					clientWkTime.Task_RetrieveByIdCompleted += new EventHandler<Task_RetrieveByIdCompletedEventArgs>(clientWkTime_Artifact_RetrieveByIdCompleted);
-					clientWkTime.Incident_UpdateCompleted += new EventHandler<System.ComponentModel.AsyncCompletedEventArgs>(clientWkTime_Artifact_UpdateCompleted);
-					clientWkTime.Task_UpdateCompleted += new EventHandler<System.ComponentModel.AsyncCompletedEventArgs>(clientWkTime_Artifact_UpdateCompleted);
-					clientWkTime.Connection_DisconnectCompleted += new EventHandler<System.ComponentModel.AsyncCompletedEventArgs>(clientWkTime_Connection_DisconnectCompleted);
+						//No window, update it ourselves. Create the client.
+						ImportExportClient clientWkTime = StaticFuncs.CreateClient(((SpiraProject)artItem.ArtifactParentProject.ArtifactTag).ServerURL.ToString());
+						//Set event handlers.
+						clientWkTime.Connection_Authenticate2Completed += new EventHandler<Connection_Authenticate2CompletedEventArgs>(clientWkTime_Connection_Authenticate2Completed);
+						clientWkTime.Connection_ConnectToProjectCompleted += new EventHandler<Connection_ConnectToProjectCompletedEventArgs>(clientWkTime_Connection_ConnectToProjectCompleted);
+						clientWkTime.Incident_RetrieveByIdCompleted += new EventHandler<Incident_RetrieveByIdCompletedEventArgs>(clientWkTime_Artifact_RetrieveByIdCompleted);
+						clientWkTime.Task_RetrieveByIdCompleted += new EventHandler<Task_RetrieveByIdCompletedEventArgs>(clientWkTime_Artifact_RetrieveByIdCompleted);
+						clientWkTime.Incident_UpdateCompleted += new EventHandler<System.ComponentModel.AsyncCompletedEventArgs>(clientWkTime_Artifact_UpdateCompleted);
+						clientWkTime.Task_UpdateCompleted += new EventHandler<System.ComponentModel.AsyncCompletedEventArgs>(clientWkTime_Artifact_UpdateCompleted);
+						clientWkTime.Connection_DisconnectCompleted += new EventHandler<System.ComponentModel.AsyncCompletedEventArgs>(clientWkTime_Connection_DisconnectCompleted);
 
-					//Fire off the connection.
-					this.barLoading.Visibility = System.Windows.Visibility.Visible;
-					this.barLoading.IsIndeterminate = false;
-					this.barLoading.Minimum = 0;
-					this.barLoading.Maximum = 5;
-					this.barLoading.Value = 0;
-					this._numActiveClients++;
-					clientWkTime.Connection_Authenticate2Async(
-						((SpiraProject)artItem.ArtifactParentProject.ArtifactTag).UserName,
-						((SpiraProject)artItem.ArtifactParentProject.ArtifactTag).UserPass,
-						StaticFuncs.getCultureResource.GetString("app_ReportName"),
-						sender);
+						//Fire off the connection.
+						this.barLoading.Visibility = System.Windows.Visibility.Visible;
+						this.barLoading.IsIndeterminate = false;
+						this.barLoading.Minimum = 0;
+						this.barLoading.Maximum = 5;
+						this.barLoading.Value = 0;
+						this._numActiveClients++;
+						clientWkTime.Connection_Authenticate2Async(
+							((SpiraProject)artItem.ArtifactParentProject.ArtifactTag).UserName,
+							((SpiraProject)artItem.ArtifactParentProject.ArtifactTag).UserPass,
+							StaticFuncs.getCultureResource.GetString("app_ReportName"),
+							sender);
+					}
 				}
+			}
+			catch (Exception ex)
+			{
+				Logger.LogMessage(ex, "newNode_WorkTimerChanged()");
+				MessageBox.Show(StaticFuncs.getCultureResource.GetString("app_General_UnexpectedError"), StaticFuncs.getCultureResource.GetString("app_General_ApplicationShortName"), MessageBoxButton.OK, MessageBoxImage.Error);
 			}
 		}
 
@@ -315,19 +341,27 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 		/// <param name="e">AsyncCompletedEventArgs</param>
 		private void clientWkTime_Artifact_UpdateCompleted(object sender, System.ComponentModel.AsyncCompletedEventArgs e)
 		{
-			ImportExportClient wktimeClient = sender as ImportExportClient;
-			TreeViewArtifact treeArt = (TreeViewArtifact)e.UserState;
-
-			this.barLoading.Value += 1;
-			this._numActiveClients--;
-
-			if (e.Error != null || e.Cancelled)
+			try
 			{
-				//Display error here.
-			}
+				ImportExportClient wktimeClient = sender as ImportExportClient;
+				TreeViewArtifact treeArt = (TreeViewArtifact)e.UserState;
 
-			this._numActiveClients++;
-			wktimeClient.Connection_DisconnectAsync(e.UserState);
+				this.barLoading.Value += 1;
+				this._numActiveClients--;
+
+				if (e.Error != null || e.Cancelled)
+				{
+					//Display error here.
+				}
+
+				this._numActiveClients++;
+				wktimeClient.Connection_DisconnectAsync(e.UserState);
+			}
+			catch (Exception ex)
+			{
+				Logger.LogMessage(ex, "clientWkTime_Artifact_UpdateCompleted()");
+				MessageBox.Show(StaticFuncs.getCultureResource.GetString("app_General_UnexpectedError"), StaticFuncs.getCultureResource.GetString("app_General_ApplicationShortName"), MessageBoxButton.OK, MessageBoxImage.Error);
+			}
 		}
 
 		/// <summary>Hit when the UpdateWorkTimeClient is finished disconnecting from the server.</summary>
@@ -335,10 +369,18 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 		/// <param name="e">AsyncCompletedEventArgs</param>
 		private void clientWkTime_Connection_DisconnectCompleted(object sender, System.ComponentModel.AsyncCompletedEventArgs e)
 		{
-			this._numActiveClients--;
+			try
+			{
+				this._numActiveClients--;
 
-			this.barLoading.Visibility = System.Windows.Visibility.Collapsed;
-			this.barLoading.IsIndeterminate = true;
+				this.barLoading.Visibility = System.Windows.Visibility.Collapsed;
+				this.barLoading.IsIndeterminate = true;
+			}
+			catch (Exception ex)
+			{
+				Logger.LogMessage(ex, "clientWkTime_Connection_DisconnectCompleted()");
+				MessageBox.Show(StaticFuncs.getCultureResource.GetString("app_General_UnexpectedError"), StaticFuncs.getCultureResource.GetString("app_General_ApplicationShortName"), MessageBoxButton.OK, MessageBoxImage.Error);
+			}
 		}
 
 		/// <summary>Hit when the UpdateWorkTimeClient is finished retrieving the artifact from the server.</summary>
@@ -347,82 +389,90 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 		/// <param name="e">AsyncCompletedEventArgs</param>
 		private void clientWkTime_Artifact_RetrieveByIdCompleted(object sender, System.ComponentModel.AsyncCompletedEventArgs e)
 		{
-			ImportExportClient wktimeClient = sender as ImportExportClient;
-			TreeViewArtifact treeArt = (TreeViewArtifact)e.UserState;
-
-			this.barLoading.Value += 1;
-			this._numActiveClients--;
-
-			if (e.Error == null && !e.Cancelled)
+			try
 			{
-				//Get the type of eventargs..
-				string strEvent = e.GetType().ToString();
-				strEvent = strEvent.Substring(strEvent.LastIndexOf(".") + 1).ToLowerInvariant();
-				switch (strEvent)
+				ImportExportClient wktimeClient = sender as ImportExportClient;
+				TreeViewArtifact treeArt = (TreeViewArtifact)e.UserState;
+
+				this.barLoading.Value += 1;
+				this._numActiveClients--;
+
+				if (e.Error == null && !e.Cancelled)
 				{
-					#region Update Incident
-					case "incident_retrievebyidcompletedeventargs":
-						Incident_RetrieveByIdCompletedEventArgs evt1 = e as Incident_RetrieveByIdCompletedEventArgs;
-						//Get current value and add our worked time to it.
-						if (evt1 != null)
-						{
-							int numMinutes = (int)treeArt.WorkTime.TotalMinutes;
-							if (numMinutes > 0)
+					//Get the type of eventargs..
+					string strEvent = e.GetType().ToString();
+					strEvent = strEvent.Substring(strEvent.LastIndexOf(".") + 1).ToLowerInvariant();
+					switch (strEvent)
+					{
+						#region Update Incident
+						case "incident_retrievebyidcompletedeventargs":
+							Incident_RetrieveByIdCompletedEventArgs evt1 = e as Incident_RetrieveByIdCompletedEventArgs;
+							//Get current value and add our worked time to it.
+							if (evt1 != null)
 							{
-								if (evt1.Result.ActualEffort.HasValue)
+								int numMinutes = (int)treeArt.WorkTime.TotalMinutes;
+								if (numMinutes > 0)
 								{
-									evt1.Result.ActualEffort = evt1.Result.ActualEffort.Value + numMinutes;
+									if (evt1.Result.ActualEffort.HasValue)
+									{
+										evt1.Result.ActualEffort = evt1.Result.ActualEffort.Value + numMinutes;
+									}
+									else
+									{
+										evt1.Result.ActualEffort = numMinutes;
+									}
 								}
-								else
-								{
-									evt1.Result.ActualEffort = numMinutes;
-								}
+
+								//Okay, update the item.
+								this._numActiveClients++;
+								wktimeClient.Incident_UpdateAsync(evt1.Result, treeArt);
 							}
+							break;
+						#endregion
 
-							//Okay, update the item.
-							this._numActiveClients++;
-							wktimeClient.Incident_UpdateAsync(evt1.Result, treeArt);
-						}
-						break;
-					#endregion
-
-					#region Update Task
-					case "Task_RetrieveByIdCompletedEventArgs":
-						Task_RetrieveByIdCompletedEventArgs evt2 = e as Task_RetrieveByIdCompletedEventArgs;
-						//Get current value and add our worked time to it.
-						if (evt2 != null)
-						{
-							int numMinutes = (int)treeArt.WorkTime.TotalMinutes;
-							if (numMinutes > 0)
+						#region Update Task
+						case "Task_RetrieveByIdCompletedEventArgs":
+							Task_RetrieveByIdCompletedEventArgs evt2 = e as Task_RetrieveByIdCompletedEventArgs;
+							//Get current value and add our worked time to it.
+							if (evt2 != null)
 							{
-								if (evt2.Result.ActualEffort.HasValue)
+								int numMinutes = (int)treeArt.WorkTime.TotalMinutes;
+								if (numMinutes > 0)
 								{
-									evt2.Result.ActualEffort = evt2.Result.ActualEffort.Value + numMinutes;
+									if (evt2.Result.ActualEffort.HasValue)
+									{
+										evt2.Result.ActualEffort = evt2.Result.ActualEffort.Value + numMinutes;
+									}
+									else
+									{
+										evt2.Result.ActualEffort = numMinutes;
+									}
 								}
-								else
-								{
-									evt2.Result.ActualEffort = numMinutes;
-								}
+
+								//Okay, update the item.
+								this._numActiveClients++;
+								wktimeClient.Task_UpdateAsync(evt2.Result, treeArt);
 							}
+							break;
+						#endregion
 
-							//Okay, update the item.
-							this._numActiveClients++;
-							wktimeClient.Task_UpdateAsync(evt2.Result, treeArt);
-						}
-						break;
-					#endregion
-
-					default:
-						//Error, cancel operation.
-						wktimeClient.Connection_DisconnectAsync(e.UserState);
-						break;
+						default:
+							//Error, cancel operation.
+							wktimeClient.Connection_DisconnectAsync(e.UserState);
+							break;
+					}
+				}
+				else
+				{
+					//Cancel connection.
+					this._numActiveClients++;
+					wktimeClient.Connection_DisconnectAsync(e.UserState);
 				}
 			}
-			else
+			catch (Exception ex)
 			{
-				//Cancel connection.
-				this._numActiveClients++;
-				wktimeClient.Connection_DisconnectAsync(e.UserState);
+				Logger.LogMessage(ex, "clientWkTime_Artifact_RetrieveByIdCompleted()");
+				MessageBox.Show(StaticFuncs.getCultureResource.GetString("app_General_UnexpectedError"), StaticFuncs.getCultureResource.GetString("app_General_ApplicationShortName"), MessageBoxButton.OK, MessageBoxImage.Error);
 			}
 		}
 
@@ -431,41 +481,49 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 		/// <param name="e">AsyncCompletedEventArgs</param>
 		private void clientWkTime_Connection_ConnectToProjectCompleted(object sender, Connection_ConnectToProjectCompletedEventArgs e)
 		{
-			ImportExportClient wktimeClient = sender as ImportExportClient;
-			TreeViewArtifact treeArt = (TreeViewArtifact)e.UserState;
-
-			this.barLoading.Value += 1;
-			this._numActiveClients--;
-
-			if (e.Error == null && !e.Cancelled)
+			try
 			{
-				//Okay, we're good to go get our information.
-				this._numActiveClients++;
-				switch (treeArt.ArtifactType)
+				ImportExportClient wktimeClient = sender as ImportExportClient;
+				TreeViewArtifact treeArt = (TreeViewArtifact)e.UserState;
+
+				this.barLoading.Value += 1;
+				this._numActiveClients--;
+
+				if (e.Error == null && !e.Cancelled)
 				{
-					case TreeViewArtifact.ArtifactTypeEnum.Incident:
-						wktimeClient.Incident_RetrieveByIdAsync(treeArt.ArtifactId, e.UserState);
-						break;
+					//Okay, we're good to go get our information.
+					this._numActiveClients++;
+					switch (treeArt.ArtifactType)
+					{
+						case TreeViewArtifact.ArtifactTypeEnum.Incident:
+							wktimeClient.Incident_RetrieveByIdAsync(treeArt.ArtifactId, e.UserState);
+							break;
 
-					case TreeViewArtifact.ArtifactTypeEnum.Requirement:
-						wktimeClient.Requirement_RetrieveByIdAsync(treeArt.ArtifactId, e.UserState);
-						break;
+						case TreeViewArtifact.ArtifactTypeEnum.Requirement:
+							wktimeClient.Requirement_RetrieveByIdAsync(treeArt.ArtifactId, e.UserState);
+							break;
 
-					case TreeViewArtifact.ArtifactTypeEnum.Task:
-						wktimeClient.Task_RetrieveByIdAsync(treeArt.ArtifactId, e.UserState);
-						break;
+						case TreeViewArtifact.ArtifactTypeEnum.Task:
+							wktimeClient.Task_RetrieveByIdAsync(treeArt.ArtifactId, e.UserState);
+							break;
 
-					default:
-						//Error, cancel operation.
-						wktimeClient.Connection_DisconnectAsync(e.UserState);
-						break;
+						default:
+							//Error, cancel operation.
+							wktimeClient.Connection_DisconnectAsync(e.UserState);
+							break;
+					}
+				}
+				else
+				{
+					//Cancel connection.
+					this._numActiveClients++;
+					wktimeClient.Connection_DisconnectAsync(e.UserState);
 				}
 			}
-			else
+			catch (Exception ex)
 			{
-				//Cancel connection.
-				this._numActiveClients++;
-				wktimeClient.Connection_DisconnectAsync(e.UserState);
+				Logger.LogMessage(ex, "clientWkTime_Connection_ConnectToProjectCompleted()");
+				MessageBox.Show(StaticFuncs.getCultureResource.GetString("app_General_UnexpectedError"), StaticFuncs.getCultureResource.GetString("app_General_ApplicationShortName"), MessageBoxButton.OK, MessageBoxImage.Error);
 			}
 		}
 
@@ -474,23 +532,31 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 		/// <param name="e">AsyncCompletedEventArgs</param>
 		private void clientWkTime_Connection_Authenticate2Completed(object sender, Connection_Authenticate2CompletedEventArgs e)
 		{
-			ImportExportClient wktimeClient = sender as ImportExportClient;
-			TreeViewArtifact treeArt = (TreeViewArtifact)e.UserState;
-
-			this.barLoading.Value += 1;
-			this._numActiveClients--;
-
-			if (e.Error == null && !e.Cancelled)
+			try
 			{
-				//Everything is okay so far, fire off connecting to the project.
-				this._numActiveClients++;
-				wktimeClient.Connection_ConnectToProjectAsync(((SpiraProject)treeArt.ArtifactParentProject.ArtifactTag).ProjectID, e.UserState);
+				ImportExportClient wktimeClient = sender as ImportExportClient;
+				TreeViewArtifact treeArt = (TreeViewArtifact)e.UserState;
+
+				this.barLoading.Value += 1;
+				this._numActiveClients--;
+
+				if (e.Error == null && !e.Cancelled)
+				{
+					//Everything is okay so far, fire off connecting to the project.
+					this._numActiveClients++;
+					wktimeClient.Connection_ConnectToProjectAsync(((SpiraProject)treeArt.ArtifactParentProject.ArtifactTag).ProjectID, e.UserState);
+				}
+				else
+				{
+					//Cancel connection.
+					this._numActiveClients++;
+					wktimeClient.Connection_DisconnectAsync(e.UserState);
+				}
 			}
-			else
+			catch (Exception ex)
 			{
-				//Cancel connection.
-				this._numActiveClients++;
-				wktimeClient.Connection_DisconnectAsync(e.UserState);
+				Logger.LogMessage(ex, "clientWkTime_Connection_Authenticate2Completed()");
+				MessageBox.Show(StaticFuncs.getCultureResource.GetString("app_General_UnexpectedError"), StaticFuncs.getCultureResource.GetString("app_General_ApplicationShortName"), MessageBoxButton.OK, MessageBoxImage.Error);
 			}
 		}
 
@@ -499,7 +565,15 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 		/// <param name="e">EventArgs</param>
 		private void newNode_DetailsOpenRequested(object sender, EventArgs e)
 		{
-			this.TreeNode_MouseDoubleClick(sender, null);
+			try
+			{
+				this.TreeNode_MouseDoubleClick(sender, null);
+			}
+			catch (Exception ex)
+			{
+				Logger.LogMessage(ex, "newNode_DetailsOpenRequested()");
+				MessageBox.Show(StaticFuncs.getCultureResource.GetString("app_General_UnexpectedError"), StaticFuncs.getCultureResource.GetString("app_General_ApplicationShortName"), MessageBoxButton.OK, MessageBoxImage.Error);
+			}
 		}
 
 		/// <summary>Hit when a client ran into an error while trying to connect to the server.</summary>
@@ -507,20 +581,28 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 		/// <param name="e">Spira_ImportExport.ConnectionException</param>
 		private void _client_ConnectionError(object sender, Business.Spira_ImportExport.ConnectionException e)
 		{
-			//There was an error trying to connect. Mark the node as error.
-			Business.Spira_ImportExport _client = sender as Business.Spira_ImportExport;
-			if (_client != null)
+			try
 			{
-				if (_client.ClientNode != null)
+				//There was an error trying to connect. Mark the node as error.
+				Business.Spira_ImportExport _client = sender as Business.Spira_ImportExport;
+				if (_client != null)
 				{
-					TreeViewArtifact treeNode = _client.ClientNode;
-					this.addErrorNode(ref treeNode, e.error, StaticFuncs.getCultureResource.GetString("app_Error_RetrieveShort"));
-					_client.ClientNode = treeNode;
+					if (_client.ClientNode != null)
+					{
+						TreeViewArtifact treeNode = _client.ClientNode;
+						this.addErrorNode(ref treeNode, e.error, StaticFuncs.getCultureResource.GetString("app_Error_RetrieveShort"));
+						_client.ClientNode = treeNode;
 
-					//Refresh treeview.
-					this._numActiveClients--;
-					this.refreshTree();
+						//Refresh treeview.
+						this._numActiveClients--;
+						this.refreshTree();
+					}
 				}
+			}
+			catch (Exception ex)
+			{
+				Logger.LogMessage(ex, "_client_ConnectionError()");
+				MessageBox.Show(StaticFuncs.getCultureResource.GetString("app_General_UnexpectedError"), StaticFuncs.getCultureResource.GetString("app_General_ApplicationShortName"), MessageBoxButton.OK, MessageBoxImage.Error);
 			}
 		}
 
@@ -529,15 +611,23 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 		/// <param name="e">EventArgs</param>
 		private void _client_ConnectionReady(object sender, EventArgs e)
 		{
-			//Connection ready, connect to the project.
-			Business.Spira_ImportExport client = sender as Business.Spira_ImportExport;
-			if (client != null)
+			try
 			{
-				//Get the parent project..
-				TreeViewArtifact nodeProject = client.ClientNode.ArtifactParentProject;
+				//Connection ready, connect to the project.
+				Business.Spira_ImportExport client = sender as Business.Spira_ImportExport;
+				if (client != null)
+				{
+					//Get the parent project..
+					TreeViewArtifact nodeProject = client.ClientNode.ArtifactParentProject;
 
-				client.Client.Connection_ConnectToProjectCompleted += new EventHandler<Connection_ConnectToProjectCompletedEventArgs>(_client_Connection_ConnectToProjectCompleted);
-				client.Client.Connection_ConnectToProjectAsync(nodeProject.ArtifactId, client);
+					client.Client.Connection_ConnectToProjectCompleted += new EventHandler<Connection_ConnectToProjectCompletedEventArgs>(_client_Connection_ConnectToProjectCompleted);
+					client.Client.Connection_ConnectToProjectAsync(nodeProject.ArtifactId, client);
+				}
+			}
+			catch (Exception ex)
+			{
+				Logger.LogMessage(ex, "_client_ConnectionReady()");
+				MessageBox.Show(StaticFuncs.getCultureResource.GetString("app_General_UnexpectedError"), StaticFuncs.getCultureResource.GetString("app_General_ApplicationShortName"), MessageBoxButton.OK, MessageBoxImage.Error);
 			}
 		}
 
@@ -546,102 +636,110 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 		/// <param name="e">Connection_ConnectToProjectCompletedEventArgs</param>
 		private void _client_Connection_ConnectToProjectCompleted(object sender, Connection_ConnectToProjectCompletedEventArgs e)
 		{
-			//Connection ready. Let's fire off our query.
-			Business.Spira_ImportExport client = e.UserState as Business.Spira_ImportExport;
-
-			if (e.Error == null && client != null)
+			try
 			{
-				//Get the parent project..
-				TreeViewArtifact nodeProject = client.ClientNode.ArtifactParentProject;
+				//Connection ready. Let's fire off our query.
+				Business.Spira_ImportExport client = e.UserState as Business.Spira_ImportExport;
 
-				switch (client.ClientNode.ArtifactType)
+				if (e.Error == null && client != null)
 				{
-					case TreeViewArtifact.ArtifactTypeEnum.Incident:
-						string strIncidnet = Business.StaticFuncs.getCultureResource.GetString("app_Tree_Incidents");
-						string strMyIncident = string.Format(Business.StaticFuncs.getCultureResource.GetString("app_Tree_My"), strIncidnet);
-						string strUnIncident = string.Format(Business.StaticFuncs.getCultureResource.GetString("app_Tree_Unassigned"), strIncidnet);
-						if (client.ClientNode.ArtifactName.ToLowerInvariant().Trim() == strMyIncident.ToLowerInvariant().Trim())
-						{
-							//Send this client off to get all incidents assigned to User.
-							client.Client.Incident_RetrieveAsync(Spira_ImportExport.GenerateFilter(((SpiraProject)nodeProject.ArtifactTag).UserID, Settings.Default.ShowCompleted, "IN"), Spira_ImportExport.GenerateSort(), 1, 99999, client.ClientNode);
-						}
-						else if (client.ClientNode.ArtifactName.ToLowerInvariant().Trim() == strUnIncident.ToLowerInvariant().Trim())
-						{
-							//This will only be hit if they have Unassigned incidents displayed. Otherwise,
-							//  this whole section isn't run. No need to check the setting here.
-							client.Client.Incident_RetrieveAsync(Spira_ImportExport.GenerateFilter(-999, Settings.Default.ShowCompleted, "IN"), Spira_ImportExport.GenerateSort(), 1, 99999, client.ClientNode);
-						}
-						else
-						{
-							// Do nothing. Something wrong.
-							Logger.LogMessage("Folder has invalid name.", System.Diagnostics.EventLogEntryType.Error);
-							this._numActiveClients--;
-							this.refreshTree();
-						}
-						break;
+					//Get the parent project..
+					TreeViewArtifact nodeProject = client.ClientNode.ArtifactParentProject;
 
-					case TreeViewArtifact.ArtifactTypeEnum.Requirement:
-						string strRequirement = Business.StaticFuncs.getCultureResource.GetString("app_Tree_Requirements");
-						string strMyRequirement = string.Format(Business.StaticFuncs.getCultureResource.GetString("app_Tree_My"), strRequirement);
-						string strUnRequirement = string.Format(Business.StaticFuncs.getCultureResource.GetString("app_Tree_Unassigned"), strRequirement);
-						if (client.ClientNode.ArtifactName.ToLowerInvariant().Trim() == strMyRequirement.ToLowerInvariant().Trim())
-						{
-							//Send this client off to get all incidents assigned to User.
-							client.Client.Requirement_RetrieveAsync(Spira_ImportExport.GenerateFilter(((SpiraProject)nodeProject.ArtifactTag).UserID, Settings.Default.ShowCompleted, "RQ"), 1, 999999, client.ClientNode);
-						}
-						else if (client.ClientNode.ArtifactName.ToLowerInvariant().Trim() == strUnRequirement.ToLowerInvariant().Trim())
-						{
-							//This will only be hit if they have Unassigned incidents displayed. Otherwise,
-							//  this whole section isn't run. No need to check the setting here.
-							client.Client.Requirement_RetrieveAsync(Spira_ImportExport.GenerateFilter(-999, Settings.Default.ShowCompleted, "RQ"), 1, 99999, client.ClientNode);
-						}
-						else
-						{
-							// Do nothing. Something wrong.
-							Logger.LogMessage("Folder has invalid name.", System.Diagnostics.EventLogEntryType.Error);
-							this._numActiveClients--;
-							this.refreshTree();
-						}
-						break;
+					switch (client.ClientNode.ArtifactType)
+					{
+						case TreeViewArtifact.ArtifactTypeEnum.Incident:
+							string strIncidnet = Business.StaticFuncs.getCultureResource.GetString("app_Tree_Incidents");
+							string strMyIncident = string.Format(Business.StaticFuncs.getCultureResource.GetString("app_Tree_My"), strIncidnet);
+							string strUnIncident = string.Format(Business.StaticFuncs.getCultureResource.GetString("app_Tree_Unassigned"), strIncidnet);
+							if (client.ClientNode.ArtifactName.ToLowerInvariant().Trim() == strMyIncident.ToLowerInvariant().Trim())
+							{
+								//Send this client off to get all incidents assigned to User.
+								client.Client.Incident_RetrieveAsync(Spira_ImportExport.GenerateFilter(((SpiraProject)nodeProject.ArtifactTag).UserID, Settings.Default.ShowCompleted, "IN"), Spira_ImportExport.GenerateSort(), 1, 99999, client.ClientNode);
+							}
+							else if (client.ClientNode.ArtifactName.ToLowerInvariant().Trim() == strUnIncident.ToLowerInvariant().Trim())
+							{
+								//This will only be hit if they have Unassigned incidents displayed. Otherwise,
+								//  this whole section isn't run. No need to check the setting here.
+								client.Client.Incident_RetrieveAsync(Spira_ImportExport.GenerateFilter(-999, Settings.Default.ShowCompleted, "IN"), Spira_ImportExport.GenerateSort(), 1, 99999, client.ClientNode);
+							}
+							else
+							{
+								// Do nothing. Something wrong.
+								Logger.LogMessage("Folder has invalid name.", System.Diagnostics.EventLogEntryType.Error);
+								this._numActiveClients--;
+								this.refreshTree();
+							}
+							break;
 
-					case TreeViewArtifact.ArtifactTypeEnum.Task:
-						string strTask = Business.StaticFuncs.getCultureResource.GetString("app_Tree_Tasks");
-						string strMyTask = string.Format(Business.StaticFuncs.getCultureResource.GetString("app_Tree_My"), strTask);
-						string strUnTask = string.Format(Business.StaticFuncs.getCultureResource.GetString("app_Tree_Unassigned"), strTask);
-						if (client.ClientNode.ArtifactName.ToLowerInvariant().Trim() == strMyTask.ToLowerInvariant().Trim())
-						{
-							//Send this client off to get all incidents assigned to User.
-							client.Client.Task_RetrieveAsync(Spira_ImportExport.GenerateFilter(((SpiraProject)nodeProject.ArtifactTag).UserID, Settings.Default.ShowCompleted, "TK"), Spira_ImportExport.GenerateSort(), 1, 99999, client.ClientNode);
-						}
-						else if (client.ClientNode.ArtifactName.ToLowerInvariant().Trim() == strUnTask.ToLowerInvariant().Trim())
-						{
-							//This will only be hit if they have Unassigned incidents displayed. Otherwise,
-							//  this whole section isn't run. No need to check the setting here.
-							client.Client.Task_RetrieveAsync(Spira_ImportExport.GenerateFilter(-999, Settings.Default.ShowCompleted, "TK"), Spira_ImportExport.GenerateSort(), 1, 99999, client.ClientNode);
-						}
-						else
-						{
-							// Do nothing. Something wrong.
-							Logger.LogMessage("Folder has invalid name.", System.Diagnostics.EventLogEntryType.Error);
-							this._numActiveClients--;
-							this.refreshTree();
-						}
-						break;
+						case TreeViewArtifact.ArtifactTypeEnum.Requirement:
+							string strRequirement = Business.StaticFuncs.getCultureResource.GetString("app_Tree_Requirements");
+							string strMyRequirement = string.Format(Business.StaticFuncs.getCultureResource.GetString("app_Tree_My"), strRequirement);
+							string strUnRequirement = string.Format(Business.StaticFuncs.getCultureResource.GetString("app_Tree_Unassigned"), strRequirement);
+							if (client.ClientNode.ArtifactName.ToLowerInvariant().Trim() == strMyRequirement.ToLowerInvariant().Trim())
+							{
+								//Send this client off to get all incidents assigned to User.
+								client.Client.Requirement_RetrieveAsync(Spira_ImportExport.GenerateFilter(((SpiraProject)nodeProject.ArtifactTag).UserID, Settings.Default.ShowCompleted, "RQ"), 1, 999999, client.ClientNode);
+							}
+							else if (client.ClientNode.ArtifactName.ToLowerInvariant().Trim() == strUnRequirement.ToLowerInvariant().Trim())
+							{
+								//This will only be hit if they have Unassigned incidents displayed. Otherwise,
+								//  this whole section isn't run. No need to check the setting here.
+								client.Client.Requirement_RetrieveAsync(Spira_ImportExport.GenerateFilter(-999, Settings.Default.ShowCompleted, "RQ"), 1, 99999, client.ClientNode);
+							}
+							else
+							{
+								// Do nothing. Something wrong.
+								Logger.LogMessage("Folder has invalid name.", System.Diagnostics.EventLogEntryType.Error);
+								this._numActiveClients--;
+								this.refreshTree();
+							}
+							break;
+
+						case TreeViewArtifact.ArtifactTypeEnum.Task:
+							string strTask = Business.StaticFuncs.getCultureResource.GetString("app_Tree_Tasks");
+							string strMyTask = string.Format(Business.StaticFuncs.getCultureResource.GetString("app_Tree_My"), strTask);
+							string strUnTask = string.Format(Business.StaticFuncs.getCultureResource.GetString("app_Tree_Unassigned"), strTask);
+							if (client.ClientNode.ArtifactName.ToLowerInvariant().Trim() == strMyTask.ToLowerInvariant().Trim())
+							{
+								//Send this client off to get all incidents assigned to User.
+								client.Client.Task_RetrieveAsync(Spira_ImportExport.GenerateFilter(((SpiraProject)nodeProject.ArtifactTag).UserID, Settings.Default.ShowCompleted, "TK"), Spira_ImportExport.GenerateSort(), 1, 99999, client.ClientNode);
+							}
+							else if (client.ClientNode.ArtifactName.ToLowerInvariant().Trim() == strUnTask.ToLowerInvariant().Trim())
+							{
+								//This will only be hit if they have Unassigned incidents displayed. Otherwise,
+								//  this whole section isn't run. No need to check the setting here.
+								client.Client.Task_RetrieveAsync(Spira_ImportExport.GenerateFilter(-999, Settings.Default.ShowCompleted, "TK"), Spira_ImportExport.GenerateSort(), 1, 99999, client.ClientNode);
+							}
+							else
+							{
+								// Do nothing. Something wrong.
+								Logger.LogMessage("Folder has invalid name.", System.Diagnostics.EventLogEntryType.Error);
+								this._numActiveClients--;
+								this.refreshTree();
+							}
+							break;
+					}
+				}
+				else
+				{
+					//Add an error node.
+					if (client != null)
+					{
+						TreeViewArtifact treeNode = client.ClientNode;
+						this.addErrorNode(ref treeNode, e.Error, StaticFuncs.getCultureResource.GetString("app_Error_RetrieveShort"));
+						client.ClientNode = treeNode;
+
+						//Refresh treeview.
+						this._numActiveClients--;
+						this.refreshTree();
+					}
 				}
 			}
-			else
+			catch (Exception ex)
 			{
-				//Add an error node.
-				if (client != null)
-				{
-					TreeViewArtifact treeNode = client.ClientNode;
-					this.addErrorNode(ref treeNode, e.Error, StaticFuncs.getCultureResource.GetString("app_Error_RetrieveShort"));
-					client.ClientNode = treeNode;
-
-					//Refresh treeview.
-					this._numActiveClients--;
-					this.refreshTree();
-				}
+				Logger.LogMessage(ex, "_client_Connection_ConnectToProjectCompleted()");
+				MessageBox.Show(StaticFuncs.getCultureResource.GetString("app_General_UnexpectedError"), StaticFuncs.getCultureResource.GetString("app_General_ApplicationShortName"), MessageBoxButton.OK, MessageBoxImage.Error);
 			}
 		}
 
@@ -650,54 +748,62 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 		/// <param name="e">Requirement_RetrieveCompletedEventArgs</param>
 		private void _client_Requirement_RetrieveCompleted(object sender, Requirement_RetrieveCompletedEventArgs e)
 		{
-			//Grab parent node.
-			TreeViewArtifact parentNode = e.UserState as TreeViewArtifact;
-
-			if (parentNode != null)
+			try
 			{
-				parentNode.Items.Clear();
+				//Grab parent node.
+				TreeViewArtifact parentNode = e.UserState as TreeViewArtifact;
 
-				//We got results back. Let's do something with them!
-				if (e.Error == null)
+				if (parentNode != null)
 				{
-					foreach (RemoteRequirement requirement in e.Result)
-					{
-						if (!requirement.Summary)
-						{
-							//Make new node.
-							TreeViewArtifact newNode = new TreeViewArtifact();
-							newNode.ArtifactType = TreeViewArtifact.ArtifactTypeEnum.Requirement;
-							//newNode.TreeNode = this;
-							newNode.ArtifactTag = requirement;
-							newNode.ArtifactName = requirement.Name;
-							newNode.ArtifactIsFolder = false;
-							newNode.ArtifactId = requirement.RequirementId.Value;
-							newNode.Parent = parentNode;
+					parentNode.Items.Clear();
 
-							parentNode.Items.Add(newNode);
+					//We got results back. Let's do something with them!
+					if (e.Error == null)
+					{
+						foreach (RemoteRequirement requirement in e.Result)
+						{
+							if (!requirement.Summary)
+							{
+								//Make new node.
+								TreeViewArtifact newNode = new TreeViewArtifact();
+								newNode.ArtifactType = TreeViewArtifact.ArtifactTypeEnum.Requirement;
+								//newNode.TreeNode = this;
+								newNode.ArtifactTag = requirement;
+								newNode.ArtifactName = requirement.Name;
+								newNode.ArtifactIsFolder = false;
+								newNode.ArtifactId = requirement.RequirementId.Value;
+								newNode.Parent = parentNode;
+
+								parentNode.Items.Add(newNode);
+							}
 						}
+					}
+					else
+					{
+						this.addErrorNode(ref parentNode, e.Error, StaticFuncs.getCultureResource.GetString("app_Error_RetrieveShort"));
 					}
 				}
 				else
 				{
-					this.addErrorNode(ref parentNode, e.Error, StaticFuncs.getCultureResource.GetString("app_Error_RetrieveShort"));
+					//No parent node. Log error, exit.
+					Logger.LogMessage("No parent folder.", System.Diagnostics.EventLogEntryType.Error);
 				}
-			}
-			else
-			{
-				//No parent node. Log error, exit.
-				Logger.LogMessage("No parent folder.", System.Diagnostics.EventLogEntryType.Error);
-			}
 
-			//Disconnect the client, subtract from the count.
-			try
-			{
-				((ImportExportClient)sender).Connection_DisconnectAsync();
+				//Disconnect the client, subtract from the count.
+				try
+				{
+					((ImportExportClient)sender).Connection_DisconnectAsync();
+				}
+				catch { }
+				parentNode.ArtifactTag = null;
+				this._numActiveClients--;
+				this.refreshTree();
 			}
-			catch { }
-			parentNode.ArtifactTag = null;
-			this._numActiveClients--;
-			this.refreshTree();
+			catch (Exception ex)
+			{
+				Logger.LogMessage(ex, "_client_Requirement_RetrieveCompleted()");
+				MessageBox.Show(StaticFuncs.getCultureResource.GetString("app_General_UnexpectedError"), StaticFuncs.getCultureResource.GetString("app_General_ApplicationShortName"), MessageBoxButton.OK, MessageBoxImage.Error);
+			}
 		}
 
 		/// <summary>Hit when a client sent to retrieve Tasks is finished with results.</summary>
@@ -705,50 +811,58 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 		/// <param name="e">Task_RetrieveCompletedEventArgs</param>
 		private void _client_Task_RetrieveCompleted(object sender, Task_RetrieveCompletedEventArgs e)
 		{
-			//Grab parent node.
-			TreeViewArtifact parentNode = e.UserState as TreeViewArtifact;
-
-			if (parentNode != null)
+			try
 			{
-				parentNode.Items.Clear();
+				//Grab parent node.
+				TreeViewArtifact parentNode = e.UserState as TreeViewArtifact;
 
-				//We got results back. Let's do something with them!
-				if (e.Error == null)
+				if (parentNode != null)
 				{
-					foreach (RemoteTask task in e.Result)
-					{
-						//Make new node.
-						TreeViewArtifact newNode = new TreeViewArtifact();
-						newNode.ArtifactType = TreeViewArtifact.ArtifactTypeEnum.Task;
-						newNode.ArtifactTag = task;
-						newNode.ArtifactName = task.Name;
-						newNode.ArtifactIsFolder = false;
-						newNode.ArtifactId = task.TaskId.Value;
-						newNode.Parent = parentNode;
+					parentNode.Items.Clear();
 
-						parentNode.Items.Add(newNode);
+					//We got results back. Let's do something with them!
+					if (e.Error == null)
+					{
+						foreach (RemoteTask task in e.Result)
+						{
+							//Make new node.
+							TreeViewArtifact newNode = new TreeViewArtifact();
+							newNode.ArtifactType = TreeViewArtifact.ArtifactTypeEnum.Task;
+							newNode.ArtifactTag = task;
+							newNode.ArtifactName = task.Name;
+							newNode.ArtifactIsFolder = false;
+							newNode.ArtifactId = task.TaskId.Value;
+							newNode.Parent = parentNode;
+
+							parentNode.Items.Add(newNode);
+						}
+					}
+					else
+					{
+						this.addErrorNode(ref parentNode, e.Error, StaticFuncs.getCultureResource.GetString("app_Error_RetrieveShort"));
 					}
 				}
 				else
 				{
-					this.addErrorNode(ref parentNode, e.Error, StaticFuncs.getCultureResource.GetString("app_Error_RetrieveShort"));
+					//No parent node. Log error, exit.
+					Logger.LogMessage("No parent node!", System.Diagnostics.EventLogEntryType.Error);
 				}
-			}
-			else
-			{
-				//No parent node. Log error, exit.
-				Logger.LogMessage("No parent node!", System.Diagnostics.EventLogEntryType.Error);
-			}
 
-			//Disconnect the client, subtract from the count.
-			try
-			{
-				((ImportExportClient)sender).Connection_DisconnectAsync();
+				//Disconnect the client, subtract from the count.
+				try
+				{
+					((ImportExportClient)sender).Connection_DisconnectAsync();
+				}
+				catch { }
+				parentNode.ArtifactTag = null;
+				this._numActiveClients--;
+				this.refreshTree();
 			}
-			catch { }
-			parentNode.ArtifactTag = null;
-			this._numActiveClients--;
-			this.refreshTree();
+			catch (Exception ex)
+			{
+				Logger.LogMessage(ex, "_client_Task_RetrieveCompleted()");
+				MessageBox.Show(StaticFuncs.getCultureResource.GetString("app_General_UnexpectedError"), StaticFuncs.getCultureResource.GetString("app_General_ApplicationShortName"), MessageBoxButton.OK, MessageBoxImage.Error);
+			}
 		}
 
 		/// <summary>Hit when a client is finished connecting.</summary>
@@ -756,8 +870,16 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 		/// <param name="e"></param>
 		private void _client_Connection_DisconnectCompleted(object sender, System.ComponentModel.AsyncCompletedEventArgs e)
 		{
-			//We're finished disconnecting. Let's null it out.
-			sender = null;
+			try
+			{
+				//We're finished disconnecting. Let's null it out.
+				sender = null;
+			}
+			catch (Exception ex)
+			{
+				Logger.LogMessage(ex, "_client_Connection_DisconnectCompleted()");
+				MessageBox.Show(StaticFuncs.getCultureResource.GetString("app_General_UnexpectedError"), StaticFuncs.getCultureResource.GetString("app_General_ApplicationShortName"), MessageBoxButton.OK, MessageBoxImage.Error);
+			}
 		}
 
 		#endregion
@@ -778,7 +900,8 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			}
 			catch (Exception ex)
 			{
-				Logger.LogMessage(ex);
+				Logger.LogMessage(ex, "noSolutionLoaded()");
+				MessageBox.Show(StaticFuncs.getCultureResource.GetString("app_General_UnexpectedError"), StaticFuncs.getCultureResource.GetString("app_General_ApplicationShortName"), MessageBoxButton.OK, MessageBoxImage.Error);
 			}
 		}
 
@@ -797,20 +920,29 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			}
 			catch (Exception ex)
 			{
-				Logger.LogMessage(ex);
+				Logger.LogMessage(ex, "noProjectsLoaded()");
+				MessageBox.Show(StaticFuncs.getCultureResource.GetString("app_General_UnexpectedError"), StaticFuncs.getCultureResource.GetString("app_General_ApplicationShortName"), MessageBoxButton.OK, MessageBoxImage.Error);
 			}
 		}
 
 		/// <summary>Refreshes tree and other items when needed.</summary>
 		private void refreshTree()
 		{
-			//Calls the code to refresh the tree, and hide the progress br if necessary.
-			this.trvProject.Items.Refresh();
-
-			if (this._numActiveClients == 0)
+			try
 			{
-				this.barLoading.Visibility = System.Windows.Visibility.Collapsed;
-				this.trvProject.Cursor = System.Windows.Input.Cursors.Arrow;
+				//Calls the code to refresh the tree, and hide the progress br if necessary.
+				this.trvProject.Items.Refresh();
+
+				if (this._numActiveClients == 0)
+				{
+					this.barLoading.Visibility = System.Windows.Visibility.Collapsed;
+					this.trvProject.Cursor = System.Windows.Input.Cursors.Arrow;
+				}
+			}
+			catch (Exception ex)
+			{
+				Logger.LogMessage(ex, "refreshTree()");
+				MessageBox.Show(StaticFuncs.getCultureResource.GetString("app_General_UnexpectedError"), StaticFuncs.getCultureResource.GetString("app_General_ApplicationShortName"), MessageBoxButton.OK, MessageBoxImage.Error);
 			}
 		}
 
@@ -820,23 +952,23 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 		/// <param name="Title">The title of the error node.</param>
 		private void addErrorNode(ref TreeViewArtifact nodeToAddTo, Exception exception, String Title)
 		{
-			TreeViewArtifact errorNode = new TreeViewArtifact();
-			errorNode.ArtifactIsError = true;
-			errorNode.ArtifactName = Title;
-			errorNode.ArtifactTag = exception;
-			errorNode.Parent = nodeToAddTo;
+			try
+			{
+				TreeViewArtifact errorNode = new TreeViewArtifact();
+				errorNode.ArtifactIsError = true;
+				errorNode.ArtifactName = Title;
+				errorNode.ArtifactTag = exception;
+				errorNode.Parent = nodeToAddTo;
 
-			//Clear existing, add error.
-			nodeToAddTo.Items.Clear();
-			nodeToAddTo.Items.Add(errorNode);
+				//Clear existing, add error.
+				nodeToAddTo.Items.Clear();
+				nodeToAddTo.Items.Add(errorNode);
+			}
+			catch (Exception ex)
+			{
+				Logger.LogMessage(ex, "clientSave_Connection_ConnectToProjectCompleted()");
+				MessageBox.Show(StaticFuncs.getCultureResource.GetString("app_General_UnexpectedError"), StaticFuncs.getCultureResource.GetString("app_General_ApplicationShortName"), MessageBoxButton.OK, MessageBoxImage.Error);
+			}
 		}
 	}
 }
-
-/*
-			catch (FaultException<ServiceFaultMessage> exception)
-			{
-				//Need to get the underlying message fault
-				ServiceFaultMessage detail = exception.Detail;
-				if (detail.Type == "SessionNotAuthenticated")
-*/

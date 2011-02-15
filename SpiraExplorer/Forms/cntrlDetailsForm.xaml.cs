@@ -1,4 +1,8 @@
 ﻿using System.Windows.Controls;
+using System;
+using Inflectra.Global;
+using System.Windows;
+using Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business;
 
 namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Controls
 {
@@ -9,10 +13,19 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Controls
 	{
 		public cntrlDetailsForm()
 		{
-			InitializeComponent();
+			try
+			{
+				InitializeComponent();
+			}
+			catch (Exception ex)
+			{
+				Logger.LogMessage(ex, "InitializeComponent()");
+				MessageBox.Show(StaticFuncs.getCultureResource.GetString("app_General_UnexpectedError"), StaticFuncs.getCultureResource.GetString("app_General_ApplicationShortName"), MessageBoxButton.OK, MessageBoxImage.Error);
+			}
+
 		}
 
-		public object Content
+		public new object Content
 		{
 			get
 			{

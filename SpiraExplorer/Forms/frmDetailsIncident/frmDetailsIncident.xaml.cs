@@ -33,79 +33,103 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 
 		private TreeViewArtifact _ArtifactDetails;
 
+		#region Class Initializers
 		/// <summary>Creates a new instance of our IncidentDetailsForm.</summary>
 		public frmDetailsIncident()
 		{
-			InitializeComponent();
+			try
+			{
+				InitializeComponent();
 
-			//Load images needed..
-			this.imgLoadingIncident.Source = StaticFuncs.getImage("imgInfoWPF", new Size(48, 48)).Source;
-			this.imgSavingIncident.Source = StaticFuncs.getImage("imgSaveWPF", new Size(48, 48)).Source;
-			this.imgLoadingError.Source = StaticFuncs.getImage("imgErrorWPF", new Size(48, 48)).Source;
-			//Load strings needed..
-			this.toolTxtSave.Text = StaticFuncs.getCultureResource.GetString("app_General_Save");
-			this.toolTxtRefresh.Text = StaticFuncs.getCultureResource.GetString("app_General_Refresh");
-			this.toolTxtLoadWeb.Text = StaticFuncs.getCultureResource.GetString("app_General_ViewBrowser");
-			this.toolTxtTimer.Text = StaticFuncs.getCultureResource.GetString("app_General_StartTimer");
-			this.mnuTxtActions.Text = StaticFuncs.getCultureResource.GetString("app_Incident_StatusActions") + ":";
-			this.lblLoadingIncident.Text = StaticFuncs.getCultureResource.GetString("app_Incident_Loading");
-			this.lblSavingIncident.Text = StaticFuncs.getCultureResource.GetString("app_Incident_Saving");
-			this.lblExpanderDetails.Text = StaticFuncs.getCultureResource.GetString("app_General_ExpanderDetails");
-			this.btnRetryLoad.Content = StaticFuncs.getCultureResource.GetString("app_General_ButtonRetry");
-			this.lblLoadingError.Text = StaticFuncs.getCultureResource.GetString("app_General_TalkingToServerErrorMessage");
-			this.lblName.Text = StaticFuncs.getCultureResource.GetString("app_General_Name") + ":";
-			this.lblTxtToken.Text = StaticFuncs.getCultureResource.GetString("app_General_CopyToClipboard");
-			this.lblType.Text = StaticFuncs.getCultureResource.GetString("app_Incident_Type") + ":";
-			this.lblStatus.Text = StaticFuncs.getCultureResource.GetString("app_General_Status") + ":";
-			this.lblDetectedBy.Text = StaticFuncs.getCultureResource.GetString("app_Incident_DetectedBy") + ":";
-			this.lblOwnedBy.Text = StaticFuncs.getCultureResource.GetString("app_General_OwnedBy") + ":";
-			this.lblPriority.Text = StaticFuncs.getCultureResource.GetString("app_General_Priority") + ":";
-			this.lblSeverity.Text = StaticFuncs.getCultureResource.GetString("app_Incident_Severity") + ":";
-			this.lblDetectedIn.Text = StaticFuncs.getCultureResource.GetString("app_Incident_DetectedRelease") + ":";
-			this.lblResolvedIn.Text = StaticFuncs.getCultureResource.GetString("app_Incident_ResolvedRelease") + ":";
-			this.lblVerifiedIn.Text = StaticFuncs.getCultureResource.GetString("app_Incident_VerifiedRelease") + ":";
-			this.lblDescription.Text = StaticFuncs.getCultureResource.GetString("app_General_Description") + ":";
-			this.lblExpanderResolution.Text = StaticFuncs.getCultureResource.GetString("app_General_ExpanderResolution");
-			this.lblExpanderSchedule.Text = StaticFuncs.getCultureResource.GetString("app_General_ExpanderSchedule");
-			this.lblPerComplete.Text = StaticFuncs.getCultureResource.GetString("app_General_PerComplete") + ":";
-			this.lblStartDate.Text = StaticFuncs.getCultureResource.GetString("app_General_StartDate") + ":";
-			this.lblEndDate.Text = StaticFuncs.getCultureResource.GetString("app_General_EndDate") + ":";
-			this.lblEstEffort.Text = StaticFuncs.getCultureResource.GetString("app_General_EstEffort") + ":";
-			this.lblHours4.Text = StaticFuncs.getCultureResource.GetString("app_General_Hours");
-			this.lblMins4.Text = StaticFuncs.getCultureResource.GetString("app_General_Minutes");
-			this.lblProjEffort.Text = StaticFuncs.getCultureResource.GetString("app_General_ProjEffort") + ":";
-			this.lblHours1.Text = StaticFuncs.getCultureResource.GetString("app_General_Hours");
-			this.lblMins1.Text = StaticFuncs.getCultureResource.GetString("app_General_Minutes");
-			this.lblActEffort.Text = StaticFuncs.getCultureResource.GetString("app_General_ActEffort") + ":";
-			this.lblHours2.Text = StaticFuncs.getCultureResource.GetString("app_General_Hours");
-			this.lblMins2.Text = StaticFuncs.getCultureResource.GetString("app_General_Minutes");
-			this.lblRemEffort.Text = StaticFuncs.getCultureResource.GetString("app_General_RemEffort") + ":";
-			this.lblHours3.Text = StaticFuncs.getCultureResource.GetString("app_General_Hours");
-			this.lblMins3.Text = StaticFuncs.getCultureResource.GetString("app_General_Minutes");
-			this.lblExpanderCustom.Text = StaticFuncs.getCultureResource.GetString("app_General_ExpanderCustom");
-			this.lblExpanderAttachments.Text = StaticFuncs.getCultureResource.GetString("app_General_Attachments");
-			this.lblAddNewResolution.Text = StaticFuncs.getCultureResource.GetString("app_General_AddNewComment") + ":";
-			this.btnConcurrencyMergeNo.Content = StaticFuncs.getCultureResource.GetString("app_General_Refresh");
-			this.btnConcurrencyMergeYes.Content = StaticFuncs.getCultureResource.GetString("app_General_Merge");
-			this.lblMergeConcurrency.Text = StaticFuncs.getCultureResource.GetString("app_Incident_AskMergeConcurrency");
-			this.btnConcurrencyRefresh.Content = StaticFuncs.getCultureResource.GetString("app_General_Refresh");
-			this.lblNoMergeConcurrency.Text = StaticFuncs.getCultureResource.GetString("app_Incident_NoMergeConcurrency");
+				//Load images needed..
+				this.imgLoadingIncident.Source = StaticFuncs.getImage("imgInfoWPF", new Size(48, 48)).Source;
+				this.imgSavingIncident.Source = StaticFuncs.getImage("imgSaveWPF", new Size(48, 48)).Source;
+				this.imgLoadingError.Source = StaticFuncs.getImage("imgErrorWPF", new Size(48, 48)).Source;
+				//Load strings needed..
+				this.toolTxtSave.Text = StaticFuncs.getCultureResource.GetString("app_General_Save");
+				this.toolTxtRefresh.Text = StaticFuncs.getCultureResource.GetString("app_General_Refresh");
+				this.toolTxtLoadWeb.Text = StaticFuncs.getCultureResource.GetString("app_General_ViewBrowser");
+				this.toolTxtTimer.Text = StaticFuncs.getCultureResource.GetString("app_General_StartTimer");
+				this.mnuTxtActions.Text = StaticFuncs.getCultureResource.GetString("app_Incident_StatusActions") + ":";
+				this.lblLoadingIncident.Text = StaticFuncs.getCultureResource.GetString("app_Incident_Loading");
+				this.lblSavingIncident.Text = StaticFuncs.getCultureResource.GetString("app_Incident_Saving");
+				this.lblExpanderDetails.Text = StaticFuncs.getCultureResource.GetString("app_General_ExpanderDetails");
+				this.btnRetryLoad.Content = StaticFuncs.getCultureResource.GetString("app_General_ButtonRetry");
+				this.lblLoadingError.Text = StaticFuncs.getCultureResource.GetString("app_General_TalkingToServerErrorMessage");
+				this.lblName.Text = StaticFuncs.getCultureResource.GetString("app_General_Name") + ":";
+				this.lblTxtToken.Text = StaticFuncs.getCultureResource.GetString("app_General_CopyToClipboard");
+				this.lblType.Text = StaticFuncs.getCultureResource.GetString("app_Incident_Type") + ":";
+				this.lblStatus.Text = StaticFuncs.getCultureResource.GetString("app_General_Status") + ":";
+				this.lblDetectedBy.Text = StaticFuncs.getCultureResource.GetString("app_Incident_DetectedBy") + ":";
+				this.lblOwnedBy.Text = StaticFuncs.getCultureResource.GetString("app_General_OwnedBy") + ":";
+				this.lblPriority.Text = StaticFuncs.getCultureResource.GetString("app_General_Priority") + ":";
+				this.lblSeverity.Text = StaticFuncs.getCultureResource.GetString("app_Incident_Severity") + ":";
+				this.lblDetectedIn.Text = StaticFuncs.getCultureResource.GetString("app_Incident_DetectedRelease") + ":";
+				this.lblResolvedIn.Text = StaticFuncs.getCultureResource.GetString("app_Incident_ResolvedRelease") + ":";
+				this.lblVerifiedIn.Text = StaticFuncs.getCultureResource.GetString("app_Incident_VerifiedRelease") + ":";
+				this.lblDescription.Text = StaticFuncs.getCultureResource.GetString("app_General_Description") + ":";
+				this.lblExpanderResolution.Text = StaticFuncs.getCultureResource.GetString("app_General_ExpanderResolution");
+				this.lblExpanderSchedule.Text = StaticFuncs.getCultureResource.GetString("app_General_ExpanderSchedule");
+				this.lblPerComplete.Text = StaticFuncs.getCultureResource.GetString("app_General_PerComplete") + ":";
+				this.lblStartDate.Text = StaticFuncs.getCultureResource.GetString("app_General_StartDate") + ":";
+				this.lblEndDate.Text = StaticFuncs.getCultureResource.GetString("app_General_EndDate") + ":";
+				this.lblEstEffort.Text = StaticFuncs.getCultureResource.GetString("app_General_EstEffort") + ":";
+				this.lblHours4.Text = StaticFuncs.getCultureResource.GetString("app_General_Hours");
+				this.lblMins4.Text = StaticFuncs.getCultureResource.GetString("app_General_Minutes");
+				this.lblProjEffort.Text = StaticFuncs.getCultureResource.GetString("app_General_ProjEffort") + ":";
+				this.lblHours1.Text = StaticFuncs.getCultureResource.GetString("app_General_Hours");
+				this.lblMins1.Text = StaticFuncs.getCultureResource.GetString("app_General_Minutes");
+				this.lblActEffort.Text = StaticFuncs.getCultureResource.GetString("app_General_ActEffort") + ":";
+				this.lblHours2.Text = StaticFuncs.getCultureResource.GetString("app_General_Hours");
+				this.lblMins2.Text = StaticFuncs.getCultureResource.GetString("app_General_Minutes");
+				this.lblRemEffort.Text = StaticFuncs.getCultureResource.GetString("app_General_RemEffort") + ":";
+				this.lblHours3.Text = StaticFuncs.getCultureResource.GetString("app_General_Hours");
+				this.lblMins3.Text = StaticFuncs.getCultureResource.GetString("app_General_Minutes");
+				this.lblExpanderCustom.Text = StaticFuncs.getCultureResource.GetString("app_General_ExpanderCustom");
+				this.lblExpanderAttachments.Text = StaticFuncs.getCultureResource.GetString("app_General_Attachments");
+				this.lblAddNewResolution.Text = StaticFuncs.getCultureResource.GetString("app_General_AddNewComment") + ":";
+				this.btnConcurrencyMergeNo.Content = StaticFuncs.getCultureResource.GetString("app_General_Refresh");
+				this.btnConcurrencyMergeYes.Content = StaticFuncs.getCultureResource.GetString("app_General_Merge");
+				this.lblMergeConcurrency.Text = StaticFuncs.getCultureResource.GetString("app_Incident_AskMergeConcurrency");
+				this.btnConcurrencyRefresh.Content = StaticFuncs.getCultureResource.GetString("app_General_Refresh");
+				this.lblNoMergeConcurrency.Text = StaticFuncs.getCultureResource.GetString("app_Incident_NoMergeConcurrency");
 
-			//Load set vars..
-			this._WorkflowFields = this.workflow_GenerateStandardFields();
+				//Load set vars..
+				this._WorkflowFields = this.workflow_GenerateStandardFields();
+			}
+			catch (Exception ex)
+			{
+				Logger.LogMessage(ex, "InitializeComponent()");
+				MessageBox.Show(StaticFuncs.getCultureResource.GetString("app_General_UnexpectedError"), StaticFuncs.getCultureResource.GetString("app_General_ApplicationShortName"), MessageBoxButton.OK, MessageBoxImage.Error);
+			}
 		}
 
-		#region Class Initializers
 		public frmDetailsIncident(ToolWindowPane ParentWindow)
 			: this()
 		{
-			this.ParentWindowPane = ParentWindow;
+			try
+			{
+				this.ParentWindowPane = ParentWindow;
+			}
+			catch (Exception ex)
+			{
+				Logger.LogMessage(ex, ".ctor()");
+				MessageBox.Show(StaticFuncs.getCultureResource.GetString("app_General_UnexpectedError"), StaticFuncs.getCultureResource.GetString("app_General_ApplicationShortName"), MessageBoxButton.OK, MessageBoxImage.Error);
+			}
 		}
 
 		public frmDetailsIncident(TreeViewArtifact artifactDetails, ToolWindowPane parentWindow)
 			: this(parentWindow)
 		{
-			this.ArtifactDetail = artifactDetails;
+			try
+			{
+				this.ArtifactDetail = artifactDetails;
+			}
+			catch (Exception ex)
+			{
+				Logger.LogMessage(ex, ".ctor()");
+				MessageBox.Show(StaticFuncs.getCultureResource.GetString("app_General_UnexpectedError"), StaticFuncs.getCultureResource.GetString("app_General_ApplicationShortName"), MessageBoxButton.OK, MessageBoxImage.Error);
+			}
 		}
 
 		#endregion
@@ -117,7 +141,15 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 		/// <param name="e">EventArgs</param>
 		private void _ArtifactDetails_WorkTimerChanged(object sender, EventArgs e)
 		{
-			this.btnStartStopTimer.IsChecked = this._ArtifactDetails.IsTimed;
+			try
+			{
+				this.btnStartStopTimer.IsChecked = this._ArtifactDetails.IsTimed;
+			}
+			catch (Exception ex)
+			{
+				Logger.LogMessage(ex, "_ArtifactDetails_WorkTimerChanged()");
+				MessageBox.Show(StaticFuncs.getCultureResource.GetString("app_General_UnexpectedError"), StaticFuncs.getCultureResource.GetString("app_General_ApplicationShortName"), MessageBoxButton.OK, MessageBoxImage.Error);
+			}
 		}
 
 		/// <summary>Hit when the Type or Status dropdown is changed. Have to reload workflow and update fields.</summary>
@@ -181,7 +213,8 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			}
 			catch (Exception ex)
 			{
-				Logger.LogMessage(ex);
+				Logger.LogMessage(ex, "_cntrlType_Changed()");
+				MessageBox.Show(StaticFuncs.getCultureResource.GetString("app_General_UnexpectedError"), StaticFuncs.getCultureResource.GetString("app_General_ApplicationShortName"), MessageBoxButton.OK, MessageBoxImage.Error);
 			}
 		}
 
@@ -190,9 +223,16 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 		/// <param name="e">SelectionChangedEventArgs</param>
 		private void cntrlDate_SelectedDateChanged(object sender, SelectionChangedEventArgs e)
 		{
-			this._cntrl_TextChanged(sender, e);
+			try
+			{
+				this._cntrl_TextChanged(sender, e);
+			}
+			catch (Exception ex)
+			{
+				Logger.LogMessage(ex, "cntrlDate_SelectedDateChanged()");
+				MessageBox.Show(StaticFuncs.getCultureResource.GetString("app_General_UnexpectedError"), StaticFuncs.getCultureResource.GetString("app_General_ApplicationShortName"), MessageBoxButton.OK, MessageBoxImage.Error);
+			}
 		}
-
 
 		/// <summary>Hit when a textbox or dropdown list changes.</summary>
 		/// <param name="sender">cntrlIncidentName, cntrlDetectedBy, cntrlOwnedBy, cntrlPriority, cntrlSeverity, cntrlDetectedIn, cntrlResolvedIn, cntrlVerifiedIn, cntrlDescription</param>
@@ -247,7 +287,8 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			}
 			catch (Exception ex)
 			{
-				//Connect.logEventMessage("wpfDetailsIncident::TextBlock_MouseDown", ex, System.Diagnostics.EventLogEntryType.Error);
+				Logger.LogMessage(ex, "_cntrl_TextChanged()");
+				MessageBox.Show(StaticFuncs.getCultureResource.GetString("app_General_UnexpectedError"), StaticFuncs.getCultureResource.GetString("app_General_ApplicationShortName"), MessageBoxButton.OK, MessageBoxImage.Error);
 			}
 		}
 
@@ -256,9 +297,17 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 		/// <param name="e">DependencyPropertyChangedEventArgs</param>
 		private void toolButton_IsEnabledChanged(object sender, DependencyPropertyChangedEventArgs e)
 		{
-			UIElement control = sender as UIElement;
-			if (control != null)
-				control.Opacity = ((control.IsEnabled) ? 1 : .5);
+			try
+			{
+				UIElement control = sender as UIElement;
+				if (control != null)
+					control.Opacity = ((control.IsEnabled) ? 1 : .5);
+			}
+			catch (Exception ex)
+			{
+				Logger.LogMessage(ex, "toolButton_IsEnabledChanged()");
+				MessageBox.Show(StaticFuncs.getCultureResource.GetString("app_General_UnexpectedError"), StaticFuncs.getCultureResource.GetString("app_General_ApplicationShortName"), MessageBoxButton.OK, MessageBoxImage.Error);
+			}
 		}
 
 		/// <summary>Hit when a toolbar is loaded. Hides the overflow arrow.</summary>
@@ -266,11 +315,19 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 		/// <param name="e">RoutedEventArgsparam>
 		private void _toolbar_Loaded(object sender, EventArgs e)
 		{
-			ToolBar toolBar = sender as ToolBar;
-			var overflowGrid = toolBar.Template.FindName("OverflowGrid", toolBar) as FrameworkElement;
-			if (overflowGrid != null)
+			try
 			{
-				overflowGrid.Visibility = Visibility.Collapsed;
+				ToolBar toolBar = sender as ToolBar;
+				var overflowGrid = toolBar.Template.FindName("OverflowGrid", toolBar) as FrameworkElement;
+				if (overflowGrid != null)
+				{
+					overflowGrid.Visibility = Visibility.Collapsed;
+				}
+			}
+			catch (Exception ex)
+			{
+				Logger.LogMessage(ex, "_toolbar_Loaded()");
+				MessageBox.Show(StaticFuncs.getCultureResource.GetString("app_General_UnexpectedError"), StaticFuncs.getCultureResource.GetString("app_General_ApplicationShortName"), MessageBoxButton.OK, MessageBoxImage.Error);
 			}
 		}
 
@@ -302,76 +359,84 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 		/// <param name="e">RoutedEventArgs</param>
 		private void mnuActions_Click(object sender, RoutedEventArgs e)
 		{
-			//Show the overlay.
-			this.lblLoadingIncident.Text = StaticFuncs.getCultureResource.GetString("app_Incident_LoadingWorkflow");
-			this.barLoadingIncident.Value = 0;
-			this.barLoadingIncident.Maximum = 4;
-			this.display_SetOverlayWindow(this.panelStatus, Visibility.Visible);
-			this._isWorkflowChanging = true;
-
-			//See if they want to or need to confirm..
-			MessageBoxResult areTheySure = MessageBoxResult.Yes;
-			if (this._isFieldChanged || this._isDescChanged || this._isResChanged) //We don't check if the workflow changed here.
-				areTheySure = MessageBox.Show(StaticFuncs.getCultureResource.GetString("app_General_WorkflowResetFieldsMessage"), StaticFuncs.getCultureResource.GetString("app_General_AreYouSure"), MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.No);
-
-			if (areTheySure == MessageBoxResult.Yes)
+			try
 			{
+				//Show the overlay.
+				this.lblLoadingIncident.Text = StaticFuncs.getCultureResource.GetString("app_Incident_LoadingWorkflow");
+				this.barLoadingIncident.Value = 0;
+				this.barLoadingIncident.Maximum = 4;
+				this.display_SetOverlayWindow(this.panelStatus, Visibility.Visible);
+				this._isWorkflowChanging = true;
 
-				//Get the item they clicked.
-				RemoteWorkflowIncidentTransition wkfTrans = (((MenuItem)e.OriginalSource).Header) as RemoteWorkflowIncidentTransition;
-				if (wkfTrans != null)
+				//See if they want to or need to confirm..
+				MessageBoxResult areTheySure = MessageBoxResult.Yes;
+				if (this._isFieldChanged || this._isDescChanged || this._isResChanged) //We don't check if the workflow changed here.
+					areTheySure = MessageBox.Show(StaticFuncs.getCultureResource.GetString("app_General_WorkflowResetFieldsMessage"), StaticFuncs.getCultureResource.GetString("app_General_AreYouSure"), MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.No);
+
+				if (areTheySure == MessageBoxResult.Yes)
 				{
-					if (wkfTrans.Name.Trim().StartsWith("»"))
+
+					//Get the item they clicked.
+					RemoteWorkflowIncidentTransition wkfTrans = (((MenuItem)e.OriginalSource).Header) as RemoteWorkflowIncidentTransition;
+					if (wkfTrans != null)
 					{
-						//They selected a different status, update the selected index and call the workflow.
-						this._IncSelectedStatus = wkfTrans.IncidentStatusId_Output;
+						if (wkfTrans.Name.Trim().StartsWith("»"))
+						{
+							//They selected a different status, update the selected index and call the workflow.
+							this._IncSelectedStatus = wkfTrans.IncidentStatusId_Output;
 
-						//Reset fields..
-						this.workflow_ClearAllRequiredHighlights();
-						this.loadItem_DisplayInformation(this._Incident);
+							//Reset fields..
+							this.workflow_ClearAllRequiredHighlights();
+							this.loadItem_DisplayInformation(this._Incident);
 
-						//Update the field..
-						this.cntrlIncidentStatus.Text = wkfTrans.Name;
+							//Update the field..
+							this.cntrlIncidentStatus.Text = wkfTrans.Name;
 
-						//Clear menu items, add the 'revert' menu.
-						this.mnuActions.Items.Clear();
-						RemoteWorkflowIncidentTransition tempTrans = new RemoteWorkflowIncidentTransition();
-						tempTrans.Name = String.Format(StaticFuncs.getCultureResource.GetString("app_Incident_Revert"), this._Incident.IncidentStatusName);
-						tempTrans.IncidentStatusId_Output = this._Incident.IncidentStatusId.Value;
-						tempTrans.IncidentStatusName_Output = this._Incident.IncidentStatusName;
-						this.mnuActions.Items.Add(tempTrans);
+							//Clear menu items, add the 'revert' menu.
+							this.mnuActions.Items.Clear();
+							RemoteWorkflowIncidentTransition tempTrans = new RemoteWorkflowIncidentTransition();
+							tempTrans.Name = String.Format(StaticFuncs.getCultureResource.GetString("app_Incident_Revert"), this._Incident.IncidentStatusName);
+							tempTrans.IncidentStatusId_Output = this._Incident.IncidentStatusId.Value;
+							tempTrans.IncidentStatusName_Output = this._Incident.IncidentStatusName;
+							this.mnuActions.Items.Add(tempTrans);
 
-						//Update workflow fields..
-						this.workflow_ChangeWorkflowStep();
+							//Update workflow fields..
+							this.workflow_ChangeWorkflowStep();
 
 
-						//Set changed flag.
-						this.display_SetWindowChanged(true);
-						this._isWkfChanged = true;
-					}
-					else
-					{
-						//They reverted. Need to reset things here.
-						this._IncSelectedStatus = null;
-						this._IncSelectedType = null;
+							//Set changed flag.
+							this.display_SetWindowChanged(true);
+							this._isWkfChanged = true;
+						}
+						else
+						{
+							//They reverted. Need to reset things here.
+							this._IncSelectedStatus = null;
+							this._IncSelectedType = null;
 
-						//Reset fields..
-						this.loadItem_DisplayInformation(this._Incident);
+							//Reset fields..
+							this.loadItem_DisplayInformation(this._Incident);
 
-						//Update workflow fields..
-						this.workflow_ChangeWorkflowStep();
+							//Update workflow fields..
+							this.workflow_ChangeWorkflowStep();
 
-						//Revert changed flag.
-						this.display_SetWindowChanged(false);
+							//Revert changed flag.
+							this.display_SetWindowChanged(false);
 
-						//No longer in workflow.
-						this._isWorkflowChanging = false;
+							//No longer in workflow.
+							this._isWorkflowChanging = false;
+						}
 					}
 				}
+				else
+				{
+					this.display_SetOverlayWindow(this.panelStatus, Visibility.Collapsed);
+				}
 			}
-			else
+			catch (Exception ex)
 			{
-				this.display_SetOverlayWindow(this.panelStatus, Visibility.Collapsed);
+				Logger.LogMessage(ex, "mnuActions_Click()");
+				MessageBox.Show(StaticFuncs.getCultureResource.GetString("app_General_UnexpectedError"), StaticFuncs.getCultureResource.GetString("app_General_ApplicationShortName"), MessageBoxButton.OK, MessageBoxImage.Error);
 			}
 		}
 
@@ -380,55 +445,63 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 		/// <param name="e">RoutedEventArgs</param>
 		private void btnStartStopTimer_CheckedChanged(object sender, RoutedEventArgs e)
 		{
-			e.Handled = true;
-
-			//Make sure the value's not null. If it is, we're defaulting to unchecked.
-			if (!this.btnStartStopTimer.IsChecked.HasValue) this.btnStartStopTimer.IsChecked = false;
-
-			if (this.btnStartStopTimer.IsChecked.Value)
+			try
 			{
-				this.toolTxtTimer.Text = StaticFuncs.getCultureResource.GetString("app_General_StopTimer");
-				//Set the timer..
-				this._ArtifactDetails.IsTimed = true;
+				e.Handled = true;
+
+				//Make sure the value's not null. If it is, we're defaulting to unchecked.
+				if (!this.btnStartStopTimer.IsChecked.HasValue) this.btnStartStopTimer.IsChecked = false;
+
+				if (this.btnStartStopTimer.IsChecked.Value)
+				{
+					this.toolTxtTimer.Text = StaticFuncs.getCultureResource.GetString("app_General_StopTimer");
+					//Set the timer..
+					this._ArtifactDetails.IsTimed = true;
+				}
+				else
+				{
+					this.toolTxtTimer.Text = StaticFuncs.getCultureResource.GetString("app_General_StartTimer");
+
+					//Set the timer.
+					this._ArtifactDetails.IsTimed = false;
+
+					//Get the value and add it to the task.
+					TimeSpan workedSpan = this._ArtifactDetails.WorkTime;
+
+					//Add it to the Incident.
+					int intActH = 0;
+					int intActM = 0;
+					if (!string.IsNullOrWhiteSpace(cntrlActEffortH.Text))
+					{
+						try
+						{
+							intActH = int.Parse(cntrlActEffortH.Text);
+						}
+						catch { }
+					}
+					if (!string.IsNullOrWhiteSpace(cntrlActEffortM.Text))
+					{
+						try
+						{
+							intActM = int.Parse(cntrlActEffortM.Text);
+						}
+						catch { }
+					}
+					intActH += (workedSpan.Days * 24) + workedSpan.Hours;
+					intActM += workedSpan.Minutes;
+					//Add it up again..
+					TimeSpan newWorked = new TimeSpan(intActH, intActM, 0);
+					//Copy new values to the temporary storage fields and the display fields.
+					this._tempHoursWorked = ((newWorked.Days * 24) + newWorked.Hours);
+					this._tempMinutedWorked = newWorked.Minutes;
+					this.cntrlActEffortH.Text = this._tempHoursWorked.ToString();
+					this.cntrlActEffortM.Text = this._tempMinutedWorked.ToString();
+				}
 			}
-			else
+			catch (Exception ex)
 			{
-				this.toolTxtTimer.Text = StaticFuncs.getCultureResource.GetString("app_General_StartTimer");
-
-				//Set the timer.
-				this._ArtifactDetails.IsTimed = false;
-
-				//Get the value and add it to the task.
-				TimeSpan workedSpan = this._ArtifactDetails.WorkTime;
-
-				//Add it to the Incident.
-				int intActH = 0;
-				int intActM = 0;
-				if (!string.IsNullOrWhiteSpace(cntrlActEffortH.Text))
-				{
-					try
-					{
-						intActH = int.Parse(cntrlActEffortH.Text);
-					}
-					catch { }
-				}
-				if (!string.IsNullOrWhiteSpace(cntrlActEffortM.Text))
-				{
-					try
-					{
-						intActM = int.Parse(cntrlActEffortM.Text);
-					}
-					catch { }
-				}
-				intActH += (workedSpan.Days * 24) + workedSpan.Hours;
-				intActM += workedSpan.Minutes;
-				//Add it up again..
-				TimeSpan newWorked = new TimeSpan(intActH, intActM, 0);
-				//Copy new values to the temporary storage fields and the display fields.
-				this._tempHoursWorked = ((newWorked.Days * 24) + newWorked.Hours);
-				this._tempMinutedWorked = newWorked.Minutes;
-				this.cntrlActEffortH.Text = this._tempHoursWorked.ToString();
-				this.cntrlActEffortM.Text = this._tempMinutedWorked.ToString();
+				Logger.LogMessage(ex, "btnStartStopTimer_CheckedChanged()");
+				MessageBox.Show(StaticFuncs.getCultureResource.GetString("app_General_UnexpectedError"), StaticFuncs.getCultureResource.GetString("app_General_ApplicationShortName"), MessageBoxButton.OK, MessageBoxImage.Error);
 			}
 		}
 
@@ -437,8 +510,16 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 		/// <param name="e">TextChangedEventArgs</param>
 		private void cntrlMasked_TextChanged(object sender, TextChangedEventArgs e)
 		{
-			//Simply call the real one.
-			this._cntrl_TextChanged(sender, e);
+			try
+			{
+				//Simply call the real one.
+				this._cntrl_TextChanged(sender, e);
+			}
+			catch (Exception ex)
+			{
+				Logger.LogMessage(ex, "cntrlMasked_TextChanged()");
+				MessageBox.Show(StaticFuncs.getCultureResource.GetString("app_General_UnexpectedError"), StaticFuncs.getCultureResource.GetString("app_General_ApplicationShortName"), MessageBoxButton.OK, MessageBoxImage.Error);
+			}
 		}
 
 		/// <summary>Hit when the View in Web button is clicked.</summary>
@@ -464,19 +545,27 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 		/// <param name="e">RoutedEventArgs</param>
 		private void btnRefresh_Click(object sender, RoutedEventArgs e)
 		{
-			e.Handled = true;
-
-			MessageBoxResult isUserSure = MessageBoxResult.Yes;
-			if (this._isDescChanged || this._isFieldChanged || this._isResChanged || this._isWkfChanged)
+			try
 			{
-				isUserSure = MessageBox.Show(StaticFuncs.getCultureResource.GetString("app_General_LoseChangesMessage"), StaticFuncs.getCultureResource.GetString("app_General_AreYouSure"), MessageBoxButton.YesNo, MessageBoxImage.Exclamation, MessageBoxResult.No);
+				e.Handled = true;
+
+				MessageBoxResult isUserSure = MessageBoxResult.Yes;
+				if (this._isDescChanged || this._isFieldChanged || this._isResChanged || this._isWkfChanged)
+				{
+					isUserSure = MessageBox.Show(StaticFuncs.getCultureResource.GetString("app_General_LoseChangesMessage"), StaticFuncs.getCultureResource.GetString("app_General_AreYouSure"), MessageBoxButton.YesNo, MessageBoxImage.Exclamation, MessageBoxResult.No);
+				}
+
+				if (isUserSure == MessageBoxResult.Yes)
+				{
+					//User is sure, change the label, and launch the refresh.
+					this.lblLoadingIncident.Text = StaticFuncs.getCultureResource.GetString("app_Incident_Refreshing");
+					this.load_LoadItem();
+				}
 			}
-
-			if (isUserSure == MessageBoxResult.Yes)
+			catch (Exception ex)
 			{
-				//User is sure, change the label, and launch the refresh.
-				this.lblLoadingIncident.Text = StaticFuncs.getCultureResource.GetString("app_Incident_Refreshing");
-				this.load_LoadItem();
+				Logger.LogMessage(ex, "btnRefresh_Click()");
+				MessageBox.Show(StaticFuncs.getCultureResource.GetString("app_General_UnexpectedError"), StaticFuncs.getCultureResource.GetString("app_General_ApplicationShortName"), MessageBoxButton.OK, MessageBoxImage.Error);
 			}
 		}
 
@@ -485,9 +574,17 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 		/// <param name="e">MouseButtonEventArgs</param>
 		private void lblToken_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
 		{
-			e.Handled = true;
+			try
+			{
+				e.Handled = true;
 
-			Clipboard.SetText(this._ArtifactDetails.ArtifactIDDisplay);
+				Clipboard.SetText(this._ArtifactDetails.ArtifactIDDisplay);
+			}
+			catch (Exception ex)
+			{
+				Logger.LogMessage(ex, "lblToken_MouseDown()");
+				MessageBox.Show(StaticFuncs.getCultureResource.GetString("app_General_UnexpectedError"), StaticFuncs.getCultureResource.GetString("app_General_ApplicationShortName"), MessageBoxButton.OK, MessageBoxImage.Error);
+			}
 		}
 
 		/// <summary>Hit when a HyperLink object is clicked.</summary>
@@ -495,19 +592,27 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 		/// <param name="e">RoutedEventArgs</param>
 		private void Hyperlink_Click(object sender, RoutedEventArgs e)
 		{
-			e.Handled = true;
-
-			if (sender is Hyperlink)
+			try
 			{
-				try
+				e.Handled = true;
+
+				if (sender is Hyperlink)
 				{
-					System.Diagnostics.Process.Start(((Hyperlink)sender).NavigateUri.ToString());
+					try
+					{
+						System.Diagnostics.Process.Start(((Hyperlink)sender).NavigateUri.ToString());
+					}
+					catch (Exception ex)
+					{
+						Logger.LogMessage(ex, "Could not launch URL.");
+						MessageBox.Show(StaticFuncs.getCultureResource.GetString("app_General_ErrorLaunchingUrlMessage"), StaticFuncs.getCultureResource.GetString("app_General_Error"), MessageBoxButton.OK, MessageBoxImage.Error);
+					}
 				}
-				catch (Exception ex)
-				{
-					Logger.LogMessage(ex, "Could not launch URL.");
-					MessageBox.Show(StaticFuncs.getCultureResource.GetString("app_General_ErrorLaunchingUrlMessage"), StaticFuncs.getCultureResource.GetString("app_General_Error"), MessageBoxButton.OK, MessageBoxImage.Error);
-				}
+			}
+			catch (Exception ex)
+			{
+				Logger.LogMessage(ex, "Hyperlink_Click()");
+				MessageBox.Show(StaticFuncs.getCultureResource.GetString("app_General_UnexpectedError"), StaticFuncs.getCultureResource.GetString("app_General_ApplicationShortName"), MessageBoxButton.OK, MessageBoxImage.Error);
 			}
 		}
 
@@ -530,19 +635,27 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			}
 			set
 			{
-				if (this._isLoadingInformation != value)
+				try
 				{
-					if (value)
+					if (this._isLoadingInformation != value)
 					{
-						this.display_SetOverlayWindow(this.panelStatus, Visibility.Visible);
-					}
-					else
-					{
-						this.barLoadingIncident.Value = 1;
-						this.display_SetOverlayWindow(this.panelStatus, Visibility.Hidden);
-					}
+						if (value)
+						{
+							this.display_SetOverlayWindow(this.panelStatus, Visibility.Visible);
+						}
+						else
+						{
+							this.barLoadingIncident.Value = 1;
+							this.display_SetOverlayWindow(this.panelStatus, Visibility.Hidden);
+						}
 
-					this._isLoadingInformation = value;
+						this._isLoadingInformation = value;
+					}
+				}
+				catch (Exception ex)
+				{
+					Logger.LogMessage(ex, "IsLoading.Set");
+					MessageBox.Show(StaticFuncs.getCultureResource.GetString("app_General_UnexpectedError"), StaticFuncs.getCultureResource.GetString("app_General_ApplicationShortName"), MessageBoxButton.OK, MessageBoxImage.Error);
 				}
 			}
 		}
@@ -556,19 +669,27 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			}
 			set
 			{
-				if (this._isSavingInformation != value)
+				try
 				{
-					if (value)
+					if (this._isSavingInformation != value)
 					{
-						this.display_SetOverlayWindow(this.panelSaving, Visibility.Visible);
-					}
-					else
-					{
-						this.barLoadingIncident.Value = 1;
-						this.display_SetOverlayWindow(this.panelSaving, Visibility.Hidden);
-					}
+						if (value)
+						{
+							this.display_SetOverlayWindow(this.panelSaving, Visibility.Visible);
+						}
+						else
+						{
+							this.barLoadingIncident.Value = 1;
+							this.display_SetOverlayWindow(this.panelSaving, Visibility.Hidden);
+						}
 
-					this._isSavingInformation = value;
+						this._isSavingInformation = value;
+					}
+				}
+				catch (Exception ex)
+				{
+					Logger.LogMessage(ex, "IsSaving.Set");
+					MessageBox.Show(StaticFuncs.getCultureResource.GetString("app_General_UnexpectedError"), StaticFuncs.getCultureResource.GetString("app_General_ApplicationShortName"), MessageBoxButton.OK, MessageBoxImage.Error);
 				}
 			}
 		}
@@ -578,10 +699,18 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 		{
 			get
 			{
-				if (this._ArtifactDetails != null)
-					return this._ArtifactDetails.ArtifactName + " " + this._ArtifactDetails.ArtifactIDDisplay;
-				else
-					return "";
+				try
+				{
+					if (this._ArtifactDetails != null)
+						return this._ArtifactDetails.ArtifactName + " " + this._ArtifactDetails.ArtifactIDDisplay;
+					else
+						return "";
+				}
+				catch (Exception ex)
+				{
+					Logger.LogMessage(ex, "TabTitle.Get");
+					MessageBox.Show(StaticFuncs.getCultureResource.GetString("app_General_UnexpectedError"), StaticFuncs.getCultureResource.GetString("app_General_ApplicationShortName"), MessageBoxButton.OK, MessageBoxImage.Error);
+				}
 			}
 		}
 
@@ -594,20 +723,28 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			}
 			set
 			{
-				//See if they've made any changes..
-				this._ArtifactDetails = value;
-				this._ArtifactDetails.WorkTimerChanged += new EventHandler(_ArtifactDetails_WorkTimerChanged);
-				this._Project = value.ArtifactParentProject.ArtifactTag as SpiraProject;
+				try
+				{
+					//See if they've made any changes..
+					this._ArtifactDetails = value;
+					this._ArtifactDetails.WorkTimerChanged += new EventHandler(_ArtifactDetails_WorkTimerChanged);
+					this._Project = value.ArtifactParentProject.ArtifactTag as SpiraProject;
 
-				//Set tab title.
-				if (this.ParentWindowPane != null)
-					this.ParentWindowPane.Caption = this.TabTitle;
+					//Set tab title.
+					if (this.ParentWindowPane != null)
+						this.ParentWindowPane.Caption = this.TabTitle;
 
-				//Set isworking flag..
-				this.btnStartStopTimer.IsChecked = value.IsTimed;
+					//Set isworking flag..
+					this.btnStartStopTimer.IsChecked = value.IsTimed;
 
-				//Load details.
-				this.load_LoadItem();
+					//Load details.
+					this.load_LoadItem();
+				}
+				catch (Exception ex)
+				{
+					Logger.LogMessage(ex, "ArtifactDetail.Set");
+					MessageBox.Show(StaticFuncs.getCultureResource.GetString("app_General_UnexpectedError"), StaticFuncs.getCultureResource.GetString("app_General_ApplicationShortName"), MessageBoxButton.OK, MessageBoxImage.Error);
+				}
 			}
 		}
 
@@ -632,44 +769,52 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 		/// <param name="visiblity">The visibility of the window.</param>
 		private void display_SetOverlayWindow(Grid Panel, Visibility visiblity)
 		{
-			//Fade in or out the status window...
-			switch (visiblity)
+			try
 			{
-				case System.Windows.Visibility.Visible:
-					//Set initial values..
-					Panel.Opacity = 0;
-					Panel.Visibility = System.Windows.Visibility.Visible;
+				//Fade in or out the status window...
+				switch (visiblity)
+				{
+					case System.Windows.Visibility.Visible:
+						//Set initial values..
+						Panel.Opacity = 0;
+						Panel.Visibility = System.Windows.Visibility.Visible;
 
-					Storyboard storyFadeIn = new Storyboard();
-					DoubleAnimation animFadeIn = new DoubleAnimation(0, 1, new TimeSpan(0, 0, 0, 0, 150));
-					Storyboard.SetTarget(animFadeIn, Panel);
-					Storyboard.SetTargetProperty(animFadeIn, new PropertyPath(Control.OpacityProperty));
-					storyFadeIn.Children.Add(animFadeIn);
+						Storyboard storyFadeIn = new Storyboard();
+						DoubleAnimation animFadeIn = new DoubleAnimation(0, 1, new TimeSpan(0, 0, 0, 0, 150));
+						Storyboard.SetTarget(animFadeIn, Panel);
+						Storyboard.SetTargetProperty(animFadeIn, new PropertyPath(Control.OpacityProperty));
+						storyFadeIn.Children.Add(animFadeIn);
 
-					//Start the animation.
-					storyFadeIn.Begin();
+						//Start the animation.
+						storyFadeIn.Begin();
 
-					break;
+						break;
 
-				case System.Windows.Visibility.Collapsed:
-				case System.Windows.Visibility.Hidden:
-				default:
-					//Assign to the var..
-					this._gridCurrentlyFadingOut = Panel;
+					case System.Windows.Visibility.Collapsed:
+					case System.Windows.Visibility.Hidden:
+					default:
+						//Assign to the var..
+						this._gridCurrentlyFadingOut = Panel;
 
-					//Fade it out.
-					Storyboard storyFadeOut = new Storyboard();
-					DoubleAnimation animFadeOut = new DoubleAnimation(1, 0, new TimeSpan(0, 0, 0, 0, 250));
-					Storyboard.SetTarget(animFadeOut, Panel);
-					Storyboard.SetTargetProperty(animFadeOut, new PropertyPath(Control.OpacityProperty));
-					animFadeOut.Completed += new EventHandler(animFadeOut_Completed); //To actually hide the layer.
-					Panel.Tag = animFadeOut;
-					storyFadeOut.Children.Add(animFadeOut);
+						//Fade it out.
+						Storyboard storyFadeOut = new Storyboard();
+						DoubleAnimation animFadeOut = new DoubleAnimation(1, 0, new TimeSpan(0, 0, 0, 0, 250));
+						Storyboard.SetTarget(animFadeOut, Panel);
+						Storyboard.SetTargetProperty(animFadeOut, new PropertyPath(Control.OpacityProperty));
+						animFadeOut.Completed += new EventHandler(animFadeOut_Completed); //To actually hide the layer.
+						Panel.Tag = animFadeOut;
+						storyFadeOut.Children.Add(animFadeOut);
 
-					//Start the animation.
-					storyFadeOut.Begin();
+						//Start the animation.
+						storyFadeOut.Begin();
 
-					break;
+						break;
+				}
+			}
+			catch (Exception ex)
+			{
+				Logger.LogMessage(ex, "display_SetOverlayWindow()");
+				MessageBox.Show(StaticFuncs.getCultureResource.GetString("app_General_UnexpectedError"), StaticFuncs.getCultureResource.GetString("app_General_ApplicationShortName"), MessageBoxButton.OK, MessageBoxImage.Error);
 			}
 		}
 
@@ -677,15 +822,23 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 		/// <param name="Message">Optional Message to show.</param>
 		private void display_ShowErrorPanel(string Message = null)
 		{
-			if (!string.IsNullOrWhiteSpace(Message))
-				this.lblLoadingError.Text = Message;
+			try
+			{
+				if (!string.IsNullOrWhiteSpace(Message))
+					this.lblLoadingError.Text = Message;
 
-			//Display the error panel.
-			this.gridSavingConcurrencyMerge.Visibility = System.Windows.Visibility.Collapsed;
-			this.gridSavingConcurrencyNoMerge.Visibility = System.Windows.Visibility.Collapsed;
-			this.gridLoadingError.Visibility = System.Windows.Visibility.Visible;
-			this.display_SetOverlayWindow(this.panelStatus, System.Windows.Visibility.Collapsed);
-			this.display_SetOverlayWindow(this.panelError, System.Windows.Visibility.Visible);
+				//Display the error panel.
+				this.gridSavingConcurrencyMerge.Visibility = System.Windows.Visibility.Collapsed;
+				this.gridSavingConcurrencyNoMerge.Visibility = System.Windows.Visibility.Collapsed;
+				this.gridLoadingError.Visibility = System.Windows.Visibility.Visible;
+				this.display_SetOverlayWindow(this.panelStatus, System.Windows.Visibility.Collapsed);
+				this.display_SetOverlayWindow(this.panelError, System.Windows.Visibility.Visible);
+			}
+			catch (Exception ex)
+			{
+				Logger.LogMessage(ex, "display_ShowErrorPanel()");
+				MessageBox.Show(StaticFuncs.getCultureResource.GetString("app_General_UnexpectedError"), StaticFuncs.getCultureResource.GetString("app_General_ApplicationShortName"), MessageBoxButton.OK, MessageBoxImage.Error);
+			}
 		}
 
 		/// <summary>Sets whether the window has changed or not.</summary>
@@ -717,14 +870,23 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			}
 			catch (Exception ex)
 			{
-				Logger.LogMessage(ex, "Setting WindowChanged status.");
+				Logger.LogMessage(ex, "display_SetWindowChanged()");
+				MessageBox.Show(StaticFuncs.getCultureResource.GetString("app_General_UnexpectedError"), StaticFuncs.getCultureResource.GetString("app_General_ApplicationShortName"), MessageBoxButton.OK, MessageBoxImage.Error);
 			}
 		}
 
 		/// <summary>Got a save command from an external source.</summary>
 		public void ExternalSave()
 		{
-			this.btnSave_Click(this.btnSave, null);
+			try
+			{
+				this.btnSave_Click(this.btnSave, null);
+			}
+			catch (Exception ex)
+			{
+				Logger.LogMessage(ex, "ExternalSave()");
+				MessageBox.Show(StaticFuncs.getCultureResource.GetString("app_General_UnexpectedError"), StaticFuncs.getCultureResource.GetString("app_General_ApplicationShortName"), MessageBoxButton.OK, MessageBoxImage.Error);
+			}
 		}
 
 	}

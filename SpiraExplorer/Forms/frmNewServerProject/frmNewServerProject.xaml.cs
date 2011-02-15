@@ -55,7 +55,8 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			}
 			catch (Exception ex)
 			{
-				Logger.LogMessage(ex);
+				Logger.LogMessage(ex, "InitializeComponent()");
+				MessageBox.Show(StaticFuncs.getCultureResource.GetString("app_General_UnexpectedError"), StaticFuncs.getCultureResource.GetString("app_General_ApplicationShortName"), MessageBoxButton.OK, MessageBoxImage.Error);
 			}
 		}
 
@@ -85,7 +86,8 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			}
 			catch (Exception ex)
 			{
-				Logger.LogMessage(ex);
+				Logger.LogMessage(ex, "cmbProjectList_SelectionChanged()");
+				MessageBox.Show(StaticFuncs.getCultureResource.GetString("app_General_UnexpectedError"), StaticFuncs.getCultureResource.GetString("app_General_ApplicationShortName"), MessageBoxButton.OK, MessageBoxImage.Error);
 			}
 		}
 
@@ -141,7 +143,8 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			}
 			catch (Exception ex)
 			{
-				Logger.LogMessage(ex);
+				Logger.LogMessage(ex, "btnConnect_Click()");
+				MessageBox.Show(StaticFuncs.getCultureResource.GetString("app_General_UnexpectedError"), StaticFuncs.getCultureResource.GetString("app_General_ApplicationShortName"), MessageBoxButton.OK, MessageBoxImage.Error);
 			}
 		}
 
@@ -150,95 +153,103 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 		/// <param name="e">EventArgs</param>
 		private void _client_CommunicationFinished(object sender, AsyncCompletedEventArgs e)
 		{
-			if (e.Error == null)
+			try
 			{
-				try
+				if (e.Error == null)
 				{
-					if (e.GetType() == typeof(Connection_Authenticate2CompletedEventArgs))
+					try
 					{
-						Connection_Authenticate2CompletedEventArgs evt = e as Connection_Authenticate2CompletedEventArgs;
-						if (evt.Result)
+						if (e.GetType() == typeof(Connection_Authenticate2CompletedEventArgs))
 						{
-							this.txtStatus.Text = "Getting user information...";
-							this._client.User_RetrieveByUserNameAsync(this.txbUserID.Text);
-						}
-						else
-						{
-							//Failed login.
-							this.btnConnect_Click(null, null);
-							//Just act like they canceled the service, then set error flag.
-							this.barProg.Foreground = (Brush)new System.Windows.Media.BrushConverter().ConvertFrom(StaticFuncs.getCultureResource.GetString("app_Colors_StyledBarError"));
-							this.barProg.Value = 1;
-							this.txtStatus.Text = "Invalid username or password.";
-						}
-					}
-					else if (e.GetType() == typeof(User_RetrieveByUserNameCompletedEventArgs))
-					{
-						User_RetrieveByUserNameCompletedEventArgs evt = e as User_RetrieveByUserNameCompletedEventArgs;
-						if (evt != null)
-						{
-							this.txtStatus.Text = "Getting Projects...";
-							this.txbUserNum.Text = evt.Result.UserId.ToString();
-							this._client.Project_RetrieveAsync();
-						}
-						else
-							throw new Exception("Results are null.");
-					}
-					else if (e.GetType() == typeof(Project_RetrieveCompletedEventArgs))
-					{
-						this.cmbProjectList.Items.Clear();
-
-						Project_RetrieveCompletedEventArgs evt = e as Project_RetrieveCompletedEventArgs;
-
-						//Load projects here.
-						if (evt != null && evt.Result.Count > 0)
-						{
-							foreach (RemoteProject RemoteProj in evt.Result)
+							Connection_Authenticate2CompletedEventArgs evt = e as Connection_Authenticate2CompletedEventArgs;
+							if (evt.Result)
 							{
-								Business.SpiraProject Project = new Business.SpiraProject();
-								Project.ProjectID = RemoteProj.ProjectId.Value;
-								Project.ServerURL = new Uri(this.txbServer.Text);
-								Project.UserName = this.txbUserID.Text;
-								Project.UserPass = this.txbUserPass.Password;
-								Project.UserID = int.Parse(this.txbUserNum.Text);
-
-								this.cmbProjectList.Items.Add(Project);
+								this.txtStatus.Text = "Getting user information...";
+								this._client.User_RetrieveByUserNameAsync(this.txbUserID.Text);
 							}
-							this.cmbProjectList.SelectedIndex = 0;
-							this.grdAvailProjs.IsEnabled = true;
+							else
+							{
+								//Failed login.
+								this.btnConnect_Click(null, null);
+								//Just act like they canceled the service, then set error flag.
+								this.barProg.Foreground = (Brush)new System.Windows.Media.BrushConverter().ConvertFrom(StaticFuncs.getCultureResource.GetString("app_Colors_StyledBarError"));
+								this.barProg.Value = 1;
+								this.txtStatus.Text = "Invalid username or password.";
+							}
 						}
-						else
+						else if (e.GetType() == typeof(User_RetrieveByUserNameCompletedEventArgs))
 						{
-							int num = this.cmbProjectList.Items.Add("-- No Projects Available --");
-							this.cmbProjectList.SelectedIndex = num;
+							User_RetrieveByUserNameCompletedEventArgs evt = e as User_RetrieveByUserNameCompletedEventArgs;
+							if (evt != null)
+							{
+								this.txtStatus.Text = "Getting Projects...";
+								this.txbUserNum.Text = evt.Result.UserId.ToString();
+								this._client.Project_RetrieveAsync();
+							}
+							else
+								throw new Exception("Results are null.");
 						}
+						else if (e.GetType() == typeof(Project_RetrieveCompletedEventArgs))
+						{
+							this.cmbProjectList.Items.Clear();
 
+							Project_RetrieveCompletedEventArgs evt = e as Project_RetrieveCompletedEventArgs;
+
+							//Load projects here.
+							if (evt != null && evt.Result.Count > 0)
+							{
+								foreach (RemoteProject RemoteProj in evt.Result)
+								{
+									Business.SpiraProject Project = new Business.SpiraProject();
+									Project.ProjectID = RemoteProj.ProjectId.Value;
+									Project.ServerURL = new Uri(this.txbServer.Text);
+									Project.UserName = this.txbUserID.Text;
+									Project.UserPass = this.txbUserPass.Password;
+									Project.UserID = int.Parse(this.txbUserNum.Text);
+
+									this.cmbProjectList.Items.Add(Project);
+								}
+								this.cmbProjectList.SelectedIndex = 0;
+								this.grdAvailProjs.IsEnabled = true;
+							}
+							else
+							{
+								int num = this.cmbProjectList.Items.Add("-- No Projects Available --");
+								this.cmbProjectList.SelectedIndex = num;
+							}
+
+							//Reset form.
+							this.btnConnect_Click(null, null);
+						}
+					}
+					catch (Exception ex)
+					{
+						Logger.LogMessage(ex);
 						//Reset form.
 						this.btnConnect_Click(null, null);
+						//Just act like they canceled the service, then set error flag.
+						this.barProg.Foreground = (Brush)new System.Windows.Media.BrushConverter().ConvertFrom(StaticFuncs.getCultureResource.GetString("app_Colors_StyledBarError"));
+						this.barProg.Value = 1;
+						this.txtStatus.Text = "Error connecting.";
+						this.txtStatus.ToolTip = ex.Message;
 					}
 				}
-				catch (Exception ex)
+				else
 				{
-					Logger.LogMessage(ex);
+					Logger.LogMessage(e.Error);
 					//Reset form.
 					this.btnConnect_Click(null, null);
 					//Just act like they canceled the service, then set error flag.
 					this.barProg.Foreground = (Brush)new System.Windows.Media.BrushConverter().ConvertFrom(StaticFuncs.getCultureResource.GetString("app_Colors_StyledBarError"));
-					this.barProg.Value = 1; 
-					this.txtStatus.Text = "Error connecting.";
-					this.txtStatus.ToolTip = ex.Message;
+					this.barProg.Value = 1;
+					this.txtStatus.Text = "Could not connect!";
+					this.txtStatus.ToolTip = e.Error.Message;
 				}
 			}
-			else
+			catch (Exception ex)
 			{
-				Logger.LogMessage(e.Error);
-				//Reset form.
-				this.btnConnect_Click(null, null);
-				//Just act like they canceled the service, then set error flag.
-				this.barProg.Foreground = (Brush)new System.Windows.Media.BrushConverter().ConvertFrom(StaticFuncs.getCultureResource.GetString("app_Colors_StyledBarError"));
-				this.barProg.Value = 1;
-				this.txtStatus.Text = "Could not connect!";
-				this.txtStatus.ToolTip = e.Error.Message;
+				Logger.LogMessage(ex, "_client_CommunicationFinished()");
+				MessageBox.Show(StaticFuncs.getCultureResource.GetString("app_General_UnexpectedError"), StaticFuncs.getCultureResource.GetString("app_General_ApplicationShortName"), MessageBoxButton.OK, MessageBoxImage.Error);
 			}
 		}
 
@@ -247,8 +258,16 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 		/// <param name="e">RoutedEventArgs</param>
 		private void btnSave_Click(object sender, RoutedEventArgs e)
 		{
-			e.Handled = true;
-			this.DialogResult = true;
+			try
+			{
+				e.Handled = true;
+				this.DialogResult = true;
+			}
+			catch (Exception ex)
+			{
+				Logger.LogMessage(ex, "btnSave_Click()");
+				MessageBox.Show(StaticFuncs.getCultureResource.GetString("app_General_UnexpectedError"), StaticFuncs.getCultureResource.GetString("app_General_ApplicationShortName"), MessageBoxButton.OK, MessageBoxImage.Error);
+			}
 		}
 
 		/// <summary>Hit when the user wants to cancel.</summary>
@@ -256,8 +275,17 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 		/// <param name="e">RoutedEventArgs</param>
 		private void btnCancel_Click(object sender, RoutedEventArgs e)
 		{
-			e.Handled = true;
-			this.DialogResult = false;
+			try
+			{
+				e.Handled = true;
+				this.DialogResult = false;
+			}
+			catch (Exception ex)
+			{
+				Logger.LogMessage(ex, "btnCancel_Click()");
+				MessageBox.Show(StaticFuncs.getCultureResource.GetString("app_General_UnexpectedError"), StaticFuncs.getCultureResource.GetString("app_General_ApplicationShortName"), MessageBoxButton.OK, MessageBoxImage.Error);
+			}
+
 		}
 	}
 }

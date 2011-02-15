@@ -1,5 +1,8 @@
-﻿using Microsoft.VisualStudio.Shell;
+﻿using System;
+using System.Windows;
+using Inflectra.Global;
 using Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business;
+using Microsoft.VisualStudio.Shell;
 
 namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 {
@@ -23,24 +26,33 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 		public toolSpiraExplorer() :
 			base(null)
 		{
-			// Set the window title reading it from the resources.
-			this.Caption = StaticFuncs.getCultureResource.GetString("app_Tree_Name");
-			// Set the image that will appear on the tab of the window frame
-			// when docked with an other window
-			// The resource ID correspond to the one defined in the resx file
-			// while the Index is the offset in the bitmap strip. Each image in
-			// the strip being 16x16.
-			this.BitmapResourceID = 301;
-			this.BitmapIndex = 0;
+			try
+			{
+				// Set the window title reading it from the resources.
+				this.Caption = StaticFuncs.getCultureResource.GetString("app_Tree_Name");
+				// Set the image that will appear on the tab of the window frame
+				// when docked with an other window
+				// The resource ID correspond to the one defined in the resx file
+				// while the Index is the offset in the bitmap strip. Each image in
+				// the strip being 16x16.
+				this.BitmapResourceID = 301;
+				this.BitmapIndex = 0;
 
-			// This is the user control hosted by the tool window; Note that, even if this class implements IDisposable,
-			// we are not calling Dispose on this object. This is because ToolWindowPane calls Dispose on 
-			// the object returned by the Content property.
+				// This is the user control hosted by the tool window; Note that, even if this class implements IDisposable,
+				// we are not calling Dispose on this object. This is because ToolWindowPane calls Dispose on 
+				// the object returned by the Content property.
 
-			cntlSpiraExplorer explorerWindow = new cntlSpiraExplorer();
-			explorerWindow.Pane = this;
+				cntlSpiraExplorer explorerWindow = new cntlSpiraExplorer();
+				explorerWindow.Pane = this;
 
-			base.Content = explorerWindow;
+				base.Content = explorerWindow;
+			}
+			catch (Exception ex)
+			{
+				Logger.LogMessage(ex, "ShowToolWindow()");
+				MessageBox.Show(StaticFuncs.getCultureResource.GetString("app_General_UnexpectedError"), StaticFuncs.getCultureResource.GetString("app_General_ApplicationShortName"), MessageBoxButton.OK, MessageBoxImage.Error);
+			}
+
 		}
 	}
 }

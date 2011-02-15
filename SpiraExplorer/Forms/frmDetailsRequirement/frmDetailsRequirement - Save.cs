@@ -60,7 +60,8 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			}
 			catch (Exception ex)
 			{
-				//Connect.logEventMessage("wpfDetailsIncident::_cntrlSave_Click", ex, System.Diagnostics.EventLogEntryType.Error);
+				Logger.LogMessage(ex, "btnSave_Click()");
+				MessageBox.Show(StaticFuncs.getCultureResource.GetString("app_General_UnexpectedError"), StaticFuncs.getCultureResource.GetString("app_General_ApplicationShortName"), MessageBoxButton.OK, MessageBoxImage.Error);
 			}
 
 			if (this._clientNumSaving == 0)
@@ -75,14 +76,22 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 		/// <param name="e">AsyncCompletedEventArgs</param>
 		private void clientSave_Connection_DisconnectCompleted(object sender, System.ComponentModel.AsyncCompletedEventArgs e)
 		{
-			const string METHOD = "clientSave_Connection_DisconnectCompleted()";
-			Logger.LogTrace(CLASS + METHOD + " Enter: " + this._clientNumSaving.ToString() + " running.");
+			try
+			{
+				const string METHOD = "clientSave_Connection_DisconnectCompleted()";
+				Logger.LogTrace(CLASS + METHOD + " Enter: " + this._clientNumSaving.ToString() + " running.");
 
-			this._clientNumSaving--;
-			this.barSavingIncident.Value++;
+				this._clientNumSaving--;
+				this.barSavingIncident.Value++;
 
-			//See if it's okay to reload.
-			this.save_CheckIfOkayToLoad();
+				//See if it's okay to reload.
+				this.save_CheckIfOkayToLoad();
+			}
+			catch (Exception ex)
+			{
+				Logger.LogMessage(ex, "clientSave_Connection_DisconnectCompleted()");
+				MessageBox.Show(StaticFuncs.getCultureResource.GetString("app_General_UnexpectedError"), StaticFuncs.getCultureResource.GetString("app_General_ApplicationShortName"), MessageBoxButton.OK, MessageBoxImage.Error);
+			}
 		}
 
 		/// <summary>Hit when we're finished adding a resolution.</summary>
@@ -90,32 +99,40 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 		/// <param name="e">Incident_AddResolutionsCompletedEventArgs</param>
 		private void clientSave_Requirement_CreateCommentCompleted(object sender, Requirement_CreateCommentCompletedEventArgs e)
 		{
-			const string METHOD = "clientSave_Requirement_CreateCommentCompleted()";
-			Logger.LogTrace(CLASS + METHOD + " Enter: " + this._clientNumSaving.ToString() + " running.");
-
-			ImportExportClient client = (sender as ImportExportClient);
-			this._clientNumSaving--;
-			this.barSavingIncident.Value++;
-
-			if (!e.Cancelled)
+			try
 			{
-				if (e.Error != null)
+				const string METHOD = "clientSave_Requirement_CreateCommentCompleted()";
+				Logger.LogTrace(CLASS + METHOD + " Enter: " + this._clientNumSaving.ToString() + " running.");
+
+				ImportExportClient client = (sender as ImportExportClient);
+				this._clientNumSaving--;
+				this.barSavingIncident.Value++;
+
+				if (!e.Cancelled)
 				{
-					//Log message.
-					Logger.LogMessage(e.Error, "Adding Comment to Requirement");
-					//Display error that the item saved, but adding the new resolution didn't.
-					MessageBox.Show(StaticFuncs.getCultureResource.GetString("app_General_AddCommentErrorMessage"), StaticFuncs.getCultureResource.GetString("app_General_UpdateError"), MessageBoxButton.OK, MessageBoxImage.Error);
+					if (e.Error != null)
+					{
+						//Log message.
+						Logger.LogMessage(e.Error, "Adding Comment to Requirement");
+						//Display error that the item saved, but adding the new resolution didn't.
+						MessageBox.Show(StaticFuncs.getCultureResource.GetString("app_General_AddCommentErrorMessage"), StaticFuncs.getCultureResource.GetString("app_General_UpdateError"), MessageBoxButton.OK, MessageBoxImage.Error);
+					}
+
+					//Regardless of what happens, we're disconnecting here.
+					this._clientNumSaving++;
+					client.Connection_DisconnectAsync(this._clientNum++);
 				}
 
-				//Regardless of what happens, we're disconnecting here.
-				this._clientNumSaving++;
-				client.Connection_DisconnectAsync(this._clientNum++);
+				//See if it's okay to reload.
+				this.save_CheckIfOkayToLoad();
+
+				Logger.LogTrace(CLASS + METHOD + " Exit: " + this._clientNumSaving.ToString() + " left.");
 			}
-
-			//See if it's okay to reload.
-			this.save_CheckIfOkayToLoad();
-
-			Logger.LogTrace(CLASS + METHOD + " Exit: " + this._clientNumSaving.ToString() + " left.");
+			catch (Exception ex)
+			{
+				Logger.LogMessage(ex, "clientSave_Requirement_CreateCommentCompleted()");
+				MessageBox.Show(StaticFuncs.getCultureResource.GetString("app_General_UnexpectedError"), StaticFuncs.getCultureResource.GetString("app_General_ApplicationShortName"), MessageBoxButton.OK, MessageBoxImage.Error);
+			}
 		}
 
 		/// <summary>Hit when we're finished updating the main information.</summary>
@@ -123,67 +140,75 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 		/// <param name="e">AsyncCompletedEventArgs</param>
 		private void clientSave_Requirement_UpdateCompleted(object sender, System.ComponentModel.AsyncCompletedEventArgs e)
 		{
-			const string METHOD = "clientSave_Requirement_UpdateCompleted()";
-			Logger.LogTrace(CLASS + METHOD + " Enter: " + this._clientNumSaving.ToString() + " running.");
-
-			ImportExportClient client = (sender as ImportExportClient);
-			this._clientNumSaving--;
-			this.barSavingIncident.Value++;
-
-			if (!e.Cancelled)
+			try
 			{
-				if (e.Error == null)
-				{
-					//See if we need to add a resolution.
-					if (this._isResChanged)
-					{
-						//We need to save a resolution.
-						RemoteComment newRes = new RemoteComment();
-						newRes.CreationDate = DateTime.Now;
-						newRes.UserId = ((SpiraProject)this._ArtifactDetails.ArtifactParentProject.ArtifactTag).UserID;
-						newRes.ArtifactId = this._ArtifactDetails.ArtifactId;
-						newRes.Text = this.cntrlResolution.HTMLText;
+				const string METHOD = "clientSave_Requirement_UpdateCompleted()";
+				Logger.LogTrace(CLASS + METHOD + " Enter: " + this._clientNumSaving.ToString() + " running.");
 
-						this._clientNumSaving++;
-						client.Requirement_CreateCommentAsync(newRes, this._clientNum++);
+				ImportExportClient client = (sender as ImportExportClient);
+				this._clientNumSaving--;
+				this.barSavingIncident.Value++;
+
+				if (!e.Cancelled)
+				{
+					if (e.Error == null)
+					{
+						//See if we need to add a resolution.
+						if (this._isResChanged)
+						{
+							//We need to save a resolution.
+							RemoteComment newRes = new RemoteComment();
+							newRes.CreationDate = DateTime.Now;
+							newRes.UserId = ((SpiraProject)this._ArtifactDetails.ArtifactParentProject.ArtifactTag).UserID;
+							newRes.ArtifactId = this._ArtifactDetails.ArtifactId;
+							newRes.Text = this.cntrlResolution.HTMLText;
+
+							this._clientNumSaving++;
+							client.Requirement_CreateCommentAsync(newRes, this._clientNum++);
+						}
+						else
+						{
+							//We're finished.
+							this.barSavingIncident.Value++;
+							this._clientNumSaving++;
+							client.Connection_DisconnectAsync(this._clientNum++);
+						}
 					}
 					else
 					{
-						//We're finished.
-						this.barSavingIncident.Value++;
-						this._clientNumSaving++;
-						client.Connection_DisconnectAsync(this._clientNum++);
+						//Log error.
+						Logger.LogMessage(e.Error, "Saving Incident Changes to Database");
+
+						//If we get a concurrency error, get the current data.
+						if (e.Error is FaultException<ServiceFaultMessage> && ((FaultException<ServiceFaultMessage>)e.Error).Detail.Type == "DataAccessConcurrencyException")
+						{
+							client.Requirement_RetrieveByIdCompleted += new EventHandler<Requirement_RetrieveByIdCompletedEventArgs>(client_Requirement_RetrieveByIdCompleted);
+
+							//Fire it off.
+							this._clientNumSaving++;
+							client.Requirement_RetrieveByIdAsync(this._ArtifactDetails.ArtifactId, this._clientNum++);
+						}
+						else
+						{
+							//Display the error screen here.
+
+							//Cancel calls.
+							this._clientNumSaving++;
+							client.Connection_DisconnectAsync(this._clientNum++);
+						}
 					}
 				}
-				else
-				{
-					//Log error.
-					Logger.LogMessage(e.Error, "Saving Incident Changes to Database");
 
-					//If we get a concurrency error, get the current data.
-					if (e.Error is FaultException<ServiceFaultMessage> && ((FaultException<ServiceFaultMessage>)e.Error).Detail.Type == "DataAccessConcurrencyException")
-					{
-						client.Requirement_RetrieveByIdCompleted += new EventHandler<Requirement_RetrieveByIdCompletedEventArgs>(client_Requirement_RetrieveByIdCompleted);
+				//See if it's okay to reload.
+				this.save_CheckIfOkayToLoad();
 
-						//Fire it off.
-						this._clientNumSaving++;
-						client.Requirement_RetrieveByIdAsync(this._ArtifactDetails.ArtifactId, this._clientNum++);
-					}
-					else
-					{
-						//Display the error screen here.
-
-						//Cancel calls.
-						this._clientNumSaving++;
-						client.Connection_DisconnectAsync(this._clientNum++);
-					}
-				}
+				Logger.LogTrace(CLASS + METHOD + " Exit: " + this._clientNumSaving.ToString() + " left.");
 			}
-
-			//See if it's okay to reload.
-			this.save_CheckIfOkayToLoad();
-
-			Logger.LogTrace(CLASS + METHOD + " Exit: " + this._clientNumSaving.ToString() + " left.");
+			catch (Exception ex)
+			{
+				Logger.LogMessage(ex, "clientSave_Requirement_UpdateCompleted()");
+				MessageBox.Show(StaticFuncs.getCultureResource.GetString("app_General_UnexpectedError"), StaticFuncs.getCultureResource.GetString("app_General_ApplicationShortName"), MessageBoxButton.OK, MessageBoxImage.Error);
+			}
 		}
 
 		/// <summary>Hit if we hit a concurrency issue, and have to compare values.</summary>
@@ -191,52 +216,60 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 		/// <param name="e">Incident_RetrieveByIdCompletedEventArgs</param>
 		private void client_Requirement_RetrieveByIdCompleted(object sender, Requirement_RetrieveByIdCompletedEventArgs e)
 		{
-			const string METHOD = "client_Requirement_RetrieveByIdCompleted()";
-			Logger.LogTrace(CLASS + METHOD + " Enter: " + this._clientNumSaving.ToString() + " running.");
-
-			ImportExportClient client = (sender as ImportExportClient);
-			this._clientNumSaving--;
-			this.barSavingIncident.Value++;
-
-
-			if (!e.Cancelled)
+			try
 			{
-				if (e.Error == null)
+				const string METHOD = "client_Requirement_RetrieveByIdCompleted()";
+				Logger.LogTrace(CLASS + METHOD + " Enter: " + this._clientNumSaving.ToString() + " running.");
+
+				ImportExportClient client = (sender as ImportExportClient);
+				this._clientNumSaving--;
+				this.barSavingIncident.Value++;
+
+
+				if (!e.Cancelled)
 				{
-					//We got new information here. Let's see if it can be merged.
-					bool canBeMerged = this.save_CheckIfConcurrencyCanBeMerged(e.Result);
-					this._RequirementConcurrent = e.Result;
-
-					if (canBeMerged)
+					if (e.Error == null)
 					{
-						this.gridLoadingError.Visibility = System.Windows.Visibility.Collapsed;
-						this.gridSavingConcurrencyMerge.Visibility = System.Windows.Visibility.Visible;
-						this.gridSavingConcurrencyNoMerge.Visibility = System.Windows.Visibility.Collapsed;
-						this.display_SetOverlayWindow(this.panelSaving, System.Windows.Visibility.Hidden);
-						this.display_SetOverlayWindow(this.panelError, System.Windows.Visibility.Visible);
+						//We got new information here. Let's see if it can be merged.
+						bool canBeMerged = this.save_CheckIfConcurrencyCanBeMerged(e.Result);
+						this._RequirementConcurrent = e.Result;
 
-						//Save the client to the 'Merge' button.
-						this.btnConcurrencyMergeYes.Tag = sender;
+						if (canBeMerged)
+						{
+							this.gridLoadingError.Visibility = System.Windows.Visibility.Collapsed;
+							this.gridSavingConcurrencyMerge.Visibility = System.Windows.Visibility.Visible;
+							this.gridSavingConcurrencyNoMerge.Visibility = System.Windows.Visibility.Collapsed;
+							this.display_SetOverlayWindow(this.panelSaving, System.Windows.Visibility.Hidden);
+							this.display_SetOverlayWindow(this.panelError, System.Windows.Visibility.Visible);
+
+							//Save the client to the 'Merge' button.
+							this.btnConcurrencyMergeYes.Tag = sender;
+						}
+						else
+						{
+							//TODO: Display error message here, tell users they must refresh their data.
+							this.gridLoadingError.Visibility = System.Windows.Visibility.Collapsed;
+							this.gridSavingConcurrencyMerge.Visibility = System.Windows.Visibility.Collapsed;
+							this.gridSavingConcurrencyNoMerge.Visibility = System.Windows.Visibility.Visible;
+							this.display_SetOverlayWindow(this.panelSaving, System.Windows.Visibility.Hidden);
+							this.display_SetOverlayWindow(this.panelError, System.Windows.Visibility.Visible);
+						}
 					}
 					else
 					{
-						//TODO: Display error message here, tell users they must refresh their data.
-						this.gridLoadingError.Visibility = System.Windows.Visibility.Collapsed;
-						this.gridSavingConcurrencyMerge.Visibility = System.Windows.Visibility.Collapsed;
-						this.gridSavingConcurrencyNoMerge.Visibility = System.Windows.Visibility.Visible;
-						this.display_SetOverlayWindow(this.panelSaving, System.Windows.Visibility.Hidden);
-						this.display_SetOverlayWindow(this.panelError, System.Windows.Visibility.Visible);
+						//We even errored on retrieving information. Somethin's really wrong here.
+						//Display error.
+						Logger.LogMessage(e.Error, "Getting updated Concurrency Incident");
 					}
 				}
-				else
-				{
-					//We even errored on retrieving information. Somethin's really wrong here.
-					//Display error.
-					Logger.LogMessage(e.Error, "Getting updated Concurrency Incident");
-				}
-			}
 
-			Logger.LogTrace(CLASS + METHOD + " Exit");
+				Logger.LogTrace(CLASS + METHOD + " Exit");
+			}
+			catch (Exception ex)
+			{
+				Logger.LogMessage(ex, "client_Requirement_RetrieveByIdCompleted()");
+				MessageBox.Show(StaticFuncs.getCultureResource.GetString("app_General_UnexpectedError"), StaticFuncs.getCultureResource.GetString("app_General_ApplicationShortName"), MessageBoxButton.OK, MessageBoxImage.Error);
+			}
 		}
 
 		/// <summary>Hit when we're finished connecting to the project.</summary>
@@ -244,27 +277,37 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 		/// <param name="e">Connection_ConnectToProjectCompletedEventArgs</param>
 		private void clientSave_Connection_ConnectToProjectCompleted(object sender, Connection_ConnectToProjectCompletedEventArgs e)
 		{
-			const string METHOD = "clientSave_Connection_ConnectToProjectCompleted()";
-			Logger.LogTrace(CLASS + METHOD + " Enter: " + this._clientNumSaving.ToString() + " running.");
-
-			ImportExportClient client = (sender as ImportExportClient);
-			this._clientNumSaving--;
-			this.barSavingIncident.Value++;
-
-			if (!e.Cancelled)
+			try
 			{
-				if (e.Error == null)
-				{
-					if (e.Result)
-					{
-						//Get the new RemoteIncident
-						RemoteRequirement newRequirement = this.save_GetFromFields();
+				const string METHOD = "clientSave_Connection_ConnectToProjectCompleted()";
+				Logger.LogTrace(CLASS + METHOD + " Enter: " + this._clientNumSaving.ToString() + " running.");
 
-						if (newRequirement != null)
+				ImportExportClient client = (sender as ImportExportClient);
+				this._clientNumSaving--;
+				this.barSavingIncident.Value++;
+
+				if (!e.Cancelled)
+				{
+					if (e.Error == null)
+					{
+						if (e.Result)
 						{
-							//Fire off our update calls.
-							this._clientNumSaving++;
-							client.Requirement_UpdateAsync(newRequirement, this._clientNum++);
+							//Get the new RemoteIncident
+							RemoteRequirement newRequirement = this.save_GetFromFields();
+
+							if (newRequirement != null)
+							{
+								//Fire off our update calls.
+								this._clientNumSaving++;
+								client.Requirement_UpdateAsync(newRequirement, this._clientNum++);
+							}
+							else
+							{
+								//TODO: Show Error.
+								//Cancel calls.
+								this._clientNumSaving++;
+								client.Connection_DisconnectAsync(this._clientNum++);
+							}
 						}
 						else
 						{
@@ -282,19 +325,17 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 						client.Connection_DisconnectAsync(this._clientNum++);
 					}
 				}
-				else
-				{
-					//TODO: Show Error.
-					//Cancel calls.
-					this._clientNumSaving++;
-					client.Connection_DisconnectAsync(this._clientNum++);
-				}
+
+				//See if it's okay to reload.
+				this.save_CheckIfOkayToLoad();
+
+				Logger.LogTrace(CLASS + METHOD + " Exit: " + this._clientNumSaving.ToString() + " left.");
 			}
-
-			//See if it's okay to reload.
-			this.save_CheckIfOkayToLoad();
-
-			Logger.LogTrace(CLASS + METHOD + " Exit: " + this._clientNumSaving.ToString() + " left.");
+			catch (Exception ex)
+			{
+				Logger.LogMessage(ex, "clientSave_Connection_ConnectToProjectCompleted()");
+				MessageBox.Show(StaticFuncs.getCultureResource.GetString("app_General_UnexpectedError"), StaticFuncs.getCultureResource.GetString("app_General_ApplicationShortName"), MessageBoxButton.OK, MessageBoxImage.Error);
+			}
 		}
 
 		/// <summary>Hit when we're authenticated to the server.</summary>
@@ -302,22 +343,32 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 		/// <param name="e">Connection_Authenticate2CompletedEventArgs</param>
 		private void clientSave_Connection_Authenticate2Completed(object sender, Connection_Authenticate2CompletedEventArgs e)
 		{
-			const string METHOD = "clientSave_Connection_Authenticate2Completed()";
-			Logger.LogTrace(CLASS + METHOD + " Enter: " + this._clientNumSaving.ToString() + " running.");
-
-			ImportExportClient client = (sender as ImportExportClient);
-			this._clientNumSaving--;
-			this.barSavingIncident.Value++;
-
-			if (!e.Cancelled)
+			try
 			{
-				if (e.Error == null)
+				const string METHOD = "clientSave_Connection_Authenticate2Completed()";
+				Logger.LogTrace(CLASS + METHOD + " Enter: " + this._clientNumSaving.ToString() + " running.");
+
+				ImportExportClient client = (sender as ImportExportClient);
+				this._clientNumSaving--;
+				this.barSavingIncident.Value++;
+
+				if (!e.Cancelled)
 				{
-					if (e.Result)
+					if (e.Error == null)
 					{
-						//Connect to the progect ID.
-						this._clientNumSaving++;
-						client.Connection_ConnectToProjectAsync(((SpiraProject)this._ArtifactDetails.ArtifactParentProject.ArtifactTag).ProjectID, this._clientNum++);
+						if (e.Result)
+						{
+							//Connect to the progect ID.
+							this._clientNumSaving++;
+							client.Connection_ConnectToProjectAsync(((SpiraProject)this._ArtifactDetails.ArtifactParentProject.ArtifactTag).ProjectID, this._clientNum++);
+						}
+						else
+						{
+							//TODO: Show Error.
+							//Cancel calls.
+							this._clientNumSaving++;
+							client.Connection_DisconnectAsync(this._clientNum++);
+						}
 					}
 					else
 					{
@@ -327,154 +378,169 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 						client.Connection_DisconnectAsync(this._clientNum++);
 					}
 				}
-				else
-				{
-					//TODO: Show Error.
-					//Cancel calls.
-					this._clientNumSaving++;
-					client.Connection_DisconnectAsync(this._clientNum++);
-				}
+
+				//See if it's okay to reload.
+				this.save_CheckIfOkayToLoad();
+
+				Logger.LogTrace(CLASS + METHOD + " Exit: " + this._clientNumSaving.ToString() + " left.");
 			}
-
-			//See if it's okay to reload.
-			this.save_CheckIfOkayToLoad();
-
-			Logger.LogTrace(CLASS + METHOD + " Exit: " + this._clientNumSaving.ToString() + " left.");
+			catch (Exception ex)
+			{
+				Logger.LogMessage(ex, "clientSave_Connection_Authenticate2Completed()");
+				MessageBox.Show(StaticFuncs.getCultureResource.GetString("app_General_UnexpectedError"), StaticFuncs.getCultureResource.GetString("app_General_ApplicationShortName"), MessageBoxButton.OK, MessageBoxImage.Error);
+			}
 		}
 		#endregion
 
 		/// <summary>Checks if it's okay to refresh the data details.</summary>
 		private void save_CheckIfOkayToLoad()
 		{
-			const string METHOD = "save_CheckIfOkayToLoad()";
-			Logger.LogTrace(CLASS + METHOD + " Enter: " + this._clientNumSaving.ToString() + " running.");
-
-			//If we're down to 0, we have to reload our information.
-			if (this._clientNumSaving == 0)
+			try
 			{
-				this.IsSaving = false;
-				this.lblLoadingIncident.Text = StaticFuncs.getCultureResource.GetString("app_Requirement_Refreshing");
-				this.load_LoadItem();
-			}
+				const string METHOD = "save_CheckIfOkayToLoad()";
+				Logger.LogTrace(CLASS + METHOD + " Enter: " + this._clientNumSaving.ToString() + " running.");
 
-			Logger.LogTrace(CLASS + METHOD + " Exit");
+				//If we're down to 0, we have to reload our information.
+				if (this._clientNumSaving == 0)
+				{
+					this.IsSaving = false;
+					this.lblLoadingIncident.Text = StaticFuncs.getCultureResource.GetString("app_Requirement_Refreshing");
+					this.load_LoadItem();
+				}
+
+				Logger.LogTrace(CLASS + METHOD + " Exit");
+			}
+			catch (Exception ex)
+			{
+				Logger.LogMessage(ex, "save_CheckIfOkayToLoad()");
+				MessageBox.Show(StaticFuncs.getCultureResource.GetString("app_General_UnexpectedError"), StaticFuncs.getCultureResource.GetString("app_General_ApplicationShortName"), MessageBoxButton.OK, MessageBoxImage.Error);
+			}
 		}
 
 		/// <summary>Returns whether the given Concurrent Incident can be safely merged with the user's values.</summary>
 		/// <param name="moddedTask">The concurrent task.</param>
 		private bool save_CheckIfConcurrencyCanBeMerged(RemoteRequirement moddedRequirement)
 		{
-			bool retValue = false;
-
-			//Get current values..
-			RemoteRequirement userRequirement = this.save_GetFromFields();
-
-			if (userRequirement != null && moddedRequirement != null)
+			try
 			{
-				//Okay, check all fields. We want to see if a user-changed field (userTask) was also
-				//   changed by someone else. If it was, we return false (they cannot be merged). Otherwise,
-				//   we return true (they can be merged).
-				//So we check the user-entered field against the original field. If they are different,
-				//   check the original field against the concurrent field. If they are different, return
-				//   false. Otherwise to both if's, return true.
-				//We just loop through all available fields. The fielNum here has no reference to workflow
-				//   field ID, _WorkflowFields is just used to get the count of fields to check against.
-				int fieldNum = 1;
-				bool fieldCheck = true;
-				while (fieldNum < 29 && fieldCheck == true)
+				bool retValue = false;
+
+				//Get current values..
+				RemoteRequirement userRequirement = this.save_GetFromFields();
+
+				if (userRequirement != null && moddedRequirement != null)
 				{
-					switch (fieldNum)
+					//Okay, check all fields. We want to see if a user-changed field (userTask) was also
+					//   changed by someone else. If it was, we return false (they cannot be merged). Otherwise,
+					//   we return true (they can be merged).
+					//So we check the user-entered field against the original field. If they are different,
+					//   check the original field against the concurrent field. If they are different, return
+					//   false. Otherwise to both if's, return true.
+					//We just loop through all available fields. The fielNum here has no reference to workflow
+					//   field ID, _WorkflowFields is just used to get the count of fields to check against.
+					int fieldNum = 1;
+					bool fieldCheck = true;
+					while (fieldNum < 29 && fieldCheck == true)
 					{
-						case 1:
-							if (userRequirement.AuthorId != this._Requirement.AuthorId) fieldCheck = (this._Requirement.AuthorId == moddedRequirement.AuthorId);
-							break;
-						case 2:
-							if (StaticFuncs.StripTagsCharArray(userRequirement.Description).ToLowerInvariant().Trim() != StaticFuncs.StripTagsCharArray(this._Requirement.Description).ToLowerInvariant().Trim()) fieldCheck = (StaticFuncs.StripTagsCharArray(this._Requirement.Description).ToLowerInvariant().Trim() == StaticFuncs.StripTagsCharArray(moddedRequirement.Description).ToLowerInvariant().Trim());
-							break;
-						case 3:
-							if (userRequirement.ImportanceId != this._Requirement.ImportanceId) fieldCheck = (this._Requirement.ImportanceId == moddedRequirement.ImportanceId);
-							break;
-						case 4:
-							if (userRequirement.List01 != this._Requirement.List01) fieldCheck = (this._Requirement.List01 == moddedRequirement.List01);
-							break;
-						case 5:
-							if (userRequirement.List02 != this._Requirement.List02) fieldCheck = (this._Requirement.List02 == moddedRequirement.List02);
-							break;
-						case 6:
-							if (userRequirement.List03 != this._Requirement.List03) fieldCheck = (this._Requirement.List03 == moddedRequirement.List03);
-							break;
-						case 7:
-							if (userRequirement.List04 != this._Requirement.List04) fieldCheck = (this._Requirement.List04 == moddedRequirement.List04);
-							break;
-						case 8:
-							if (userRequirement.List05 != this._Requirement.List05) fieldCheck = (this._Requirement.List05 == moddedRequirement.List05);
-							break;
-						case 9:
-							if (userRequirement.List06 != this._Requirement.List06) fieldCheck = (this._Requirement.List06 == moddedRequirement.List06);
-							break;
-						case 10:
-							if (userRequirement.List07 != this._Requirement.List07) fieldCheck = (this._Requirement.List07 == moddedRequirement.List07);
-							break;
-						case 11:
-							if (userRequirement.List08 != this._Requirement.List08) fieldCheck = (this._Requirement.List08 == moddedRequirement.List08);
-							break;
-						case 12:
-							if (userRequirement.List09 != this._Requirement.List09) fieldCheck = (this._Requirement.List09 == moddedRequirement.List09);
-							break;
-						case 13:
-							if (userRequirement.List10 != this._Requirement.List10) fieldCheck = (this._Requirement.List10 == moddedRequirement.List10);
-							break;
-						case 14:
-							if (userRequirement.Name.TrimEquals(this._Requirement.Name)) fieldCheck = (this._Requirement.Name.TrimEquals(moddedRequirement.Name));
-							break;
-						case 15:
-							if (userRequirement.OwnerId != this._Requirement.OwnerId) fieldCheck = (this._Requirement.OwnerId == moddedRequirement.OwnerId);
-							break;
-						case 16:
-							if (userRequirement.PlannedEffort != this._Requirement.PlannedEffort) fieldCheck = (this._Requirement.PlannedEffort == moddedRequirement.PlannedEffort);
-							break;
-						case 17:
-							if (userRequirement.ReleaseId != this._Requirement.ReleaseId) fieldCheck = (this._Requirement.ReleaseId == moddedRequirement.ReleaseId);
-							break;
-						case 18:
-							if (userRequirement.StatusId != this._Requirement.StatusId) fieldCheck = (this._Requirement.StatusId == moddedRequirement.StatusId);
-							break;
-						case 19:
-							if (userRequirement.Text01.TrimEquals(this._Requirement.Text01)) fieldCheck = (this._Requirement.Text01.TrimEquals(moddedRequirement.Text01));
-							break;
-						case 20:
-							if (userRequirement.Text02.TrimEquals(this._Requirement.Text02)) fieldCheck = (this._Requirement.Text02.TrimEquals(moddedRequirement.Text02));
-							break;
-						case 21:
-							if (userRequirement.Text03.TrimEquals(this._Requirement.Text03)) fieldCheck = (this._Requirement.Text03.TrimEquals(moddedRequirement.Text03));
-							break;
-						case 22:
-							if (userRequirement.Text04.TrimEquals(this._Requirement.Text04)) fieldCheck = (this._Requirement.Text04.TrimEquals(moddedRequirement.Text04));
-							break;
-						case 23:
-							if (userRequirement.Text05.TrimEquals(this._Requirement.Text05)) fieldCheck = (this._Requirement.Text05.TrimEquals(moddedRequirement.Text05));
-							break;
-						case 24:
-							if (userRequirement.Text06.TrimEquals(this._Requirement.Text06)) fieldCheck = (this._Requirement.Text06.TrimEquals(moddedRequirement.Text06));
-							break;
-						case 25:
-							if (userRequirement.Text07.TrimEquals(this._Requirement.Text07)) fieldCheck = (this._Requirement.Text07.TrimEquals(moddedRequirement.Text07));
-							break;
-						case 26:
-							if (userRequirement.Text08.TrimEquals(this._Requirement.Text08)) fieldCheck = (this._Requirement.Text08.TrimEquals(moddedRequirement.Text08));
-							break;
-						case 27:
-							if (userRequirement.Text09.TrimEquals(this._Requirement.Text09)) fieldCheck = (this._Requirement.Text09.TrimEquals(moddedRequirement.Text09));
-							break;
-						case 28:
-							if (userRequirement.Text10.TrimEquals(this._Requirement.Text10)) fieldCheck = (this._Requirement.Text10.TrimEquals(moddedRequirement.Text10));
-							break;
+						switch (fieldNum)
+						{
+							case 1:
+								if (userRequirement.AuthorId != this._Requirement.AuthorId) fieldCheck = (this._Requirement.AuthorId == moddedRequirement.AuthorId);
+								break;
+							case 2:
+								if (StaticFuncs.StripTagsCharArray(userRequirement.Description).ToLowerInvariant().Trim() != StaticFuncs.StripTagsCharArray(this._Requirement.Description).ToLowerInvariant().Trim()) fieldCheck = (StaticFuncs.StripTagsCharArray(this._Requirement.Description).ToLowerInvariant().Trim() == StaticFuncs.StripTagsCharArray(moddedRequirement.Description).ToLowerInvariant().Trim());
+								break;
+							case 3:
+								if (userRequirement.ImportanceId != this._Requirement.ImportanceId) fieldCheck = (this._Requirement.ImportanceId == moddedRequirement.ImportanceId);
+								break;
+							case 4:
+								if (userRequirement.List01 != this._Requirement.List01) fieldCheck = (this._Requirement.List01 == moddedRequirement.List01);
+								break;
+							case 5:
+								if (userRequirement.List02 != this._Requirement.List02) fieldCheck = (this._Requirement.List02 == moddedRequirement.List02);
+								break;
+							case 6:
+								if (userRequirement.List03 != this._Requirement.List03) fieldCheck = (this._Requirement.List03 == moddedRequirement.List03);
+								break;
+							case 7:
+								if (userRequirement.List04 != this._Requirement.List04) fieldCheck = (this._Requirement.List04 == moddedRequirement.List04);
+								break;
+							case 8:
+								if (userRequirement.List05 != this._Requirement.List05) fieldCheck = (this._Requirement.List05 == moddedRequirement.List05);
+								break;
+							case 9:
+								if (userRequirement.List06 != this._Requirement.List06) fieldCheck = (this._Requirement.List06 == moddedRequirement.List06);
+								break;
+							case 10:
+								if (userRequirement.List07 != this._Requirement.List07) fieldCheck = (this._Requirement.List07 == moddedRequirement.List07);
+								break;
+							case 11:
+								if (userRequirement.List08 != this._Requirement.List08) fieldCheck = (this._Requirement.List08 == moddedRequirement.List08);
+								break;
+							case 12:
+								if (userRequirement.List09 != this._Requirement.List09) fieldCheck = (this._Requirement.List09 == moddedRequirement.List09);
+								break;
+							case 13:
+								if (userRequirement.List10 != this._Requirement.List10) fieldCheck = (this._Requirement.List10 == moddedRequirement.List10);
+								break;
+							case 14:
+								if (userRequirement.Name.TrimEquals(this._Requirement.Name)) fieldCheck = (this._Requirement.Name.TrimEquals(moddedRequirement.Name));
+								break;
+							case 15:
+								if (userRequirement.OwnerId != this._Requirement.OwnerId) fieldCheck = (this._Requirement.OwnerId == moddedRequirement.OwnerId);
+								break;
+							case 16:
+								if (userRequirement.PlannedEffort != this._Requirement.PlannedEffort) fieldCheck = (this._Requirement.PlannedEffort == moddedRequirement.PlannedEffort);
+								break;
+							case 17:
+								if (userRequirement.ReleaseId != this._Requirement.ReleaseId) fieldCheck = (this._Requirement.ReleaseId == moddedRequirement.ReleaseId);
+								break;
+							case 18:
+								if (userRequirement.StatusId != this._Requirement.StatusId) fieldCheck = (this._Requirement.StatusId == moddedRequirement.StatusId);
+								break;
+							case 19:
+								if (userRequirement.Text01.TrimEquals(this._Requirement.Text01)) fieldCheck = (this._Requirement.Text01.TrimEquals(moddedRequirement.Text01));
+								break;
+							case 20:
+								if (userRequirement.Text02.TrimEquals(this._Requirement.Text02)) fieldCheck = (this._Requirement.Text02.TrimEquals(moddedRequirement.Text02));
+								break;
+							case 21:
+								if (userRequirement.Text03.TrimEquals(this._Requirement.Text03)) fieldCheck = (this._Requirement.Text03.TrimEquals(moddedRequirement.Text03));
+								break;
+							case 22:
+								if (userRequirement.Text04.TrimEquals(this._Requirement.Text04)) fieldCheck = (this._Requirement.Text04.TrimEquals(moddedRequirement.Text04));
+								break;
+							case 23:
+								if (userRequirement.Text05.TrimEquals(this._Requirement.Text05)) fieldCheck = (this._Requirement.Text05.TrimEquals(moddedRequirement.Text05));
+								break;
+							case 24:
+								if (userRequirement.Text06.TrimEquals(this._Requirement.Text06)) fieldCheck = (this._Requirement.Text06.TrimEquals(moddedRequirement.Text06));
+								break;
+							case 25:
+								if (userRequirement.Text07.TrimEquals(this._Requirement.Text07)) fieldCheck = (this._Requirement.Text07.TrimEquals(moddedRequirement.Text07));
+								break;
+							case 26:
+								if (userRequirement.Text08.TrimEquals(this._Requirement.Text08)) fieldCheck = (this._Requirement.Text08.TrimEquals(moddedRequirement.Text08));
+								break;
+							case 27:
+								if (userRequirement.Text09.TrimEquals(this._Requirement.Text09)) fieldCheck = (this._Requirement.Text09.TrimEquals(moddedRequirement.Text09));
+								break;
+							case 28:
+								if (userRequirement.Text10.TrimEquals(this._Requirement.Text10)) fieldCheck = (this._Requirement.Text10.TrimEquals(moddedRequirement.Text10));
+								break;
+						}
+						fieldNum++;
 					}
-					fieldNum++;
+					retValue = fieldCheck;
 				}
-				retValue = fieldCheck;
+				return retValue;
 			}
-			return retValue;
+			catch (Exception ex)
+			{
+				Logger.LogMessage(ex, "save_CheckIfConcurrencyCanBeMerged()");
+				MessageBox.Show(StaticFuncs.getCultureResource.GetString("app_General_UnexpectedError"), StaticFuncs.getCultureResource.GetString("app_General_ApplicationShortName"), MessageBoxButton.OK, MessageBoxImage.Error);
+				return false;
+			}
 		}
 
 		/// <summary>Copies over our values from the form into an Incident object.</summary>
@@ -605,8 +671,8 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			}
 			catch (Exception ex)
 			{
-				//TODO: Log error here.
-
+				Logger.LogMessage(ex, METHOD);
+				MessageBox.Show(StaticFuncs.getCultureResource.GetString("app_General_UnexpectedError"), StaticFuncs.getCultureResource.GetString("app_General_ApplicationShortName"), MessageBoxButton.OK, MessageBoxImage.Error);
 				retRequirement = null;
 			}
 
@@ -620,12 +686,20 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 		/// <param name="e">RoutedEventArgs</param>
 		private void btnConcurrencyRefresh_Click(object sender, RoutedEventArgs e)
 		{
-			//Hide the error panel, jump to loading..
-			this.display_SetOverlayWindow(this.panelError, System.Windows.Visibility.Collapsed);
-			this.display_SetOverlayWindow(this.panelStatus, System.Windows.Visibility.Visible);
-			this.lblLoadingIncident.Text = StaticFuncs.getCultureResource.GetString("app_Requirement_Refreshing");
+			try
+			{
+				//Hide the error panel, jump to loading..
+				this.display_SetOverlayWindow(this.panelError, System.Windows.Visibility.Collapsed);
+				this.display_SetOverlayWindow(this.panelStatus, System.Windows.Visibility.Visible);
+				this.lblLoadingIncident.Text = StaticFuncs.getCultureResource.GetString("app_Requirement_Refreshing");
 
-			this.load_LoadItem();
+				this.load_LoadItem();
+			}
+			catch (Exception ex)
+			{
+				Logger.LogMessage(ex, "btnConcurrencyRefresh_Click()");
+				MessageBox.Show(StaticFuncs.getCultureResource.GetString("app_General_UnexpectedError"), StaticFuncs.getCultureResource.GetString("app_General_ApplicationShortName"), MessageBoxButton.OK, MessageBoxImage.Error);
+			}
 		}
 
 		/// <summary>Hit when the user wants to merge their changes with the concurrent task.</summary>
@@ -655,8 +729,8 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			}
 			catch (Exception ex)
 			{
-				Logger.LogMessage(ex, "Resaving saved Incident");
-				//TODO: Clean up here.
+				Logger.LogMessage(ex, "btnConcurrencyMergeYes_Click()");
+				MessageBox.Show(StaticFuncs.getCultureResource.GetString("app_General_UnexpectedError"), StaticFuncs.getCultureResource.GetString("app_General_ApplicationShortName"), MessageBoxButton.OK, MessageBoxImage.Error);
 			}
 		}
 		#endregion
@@ -729,8 +803,8 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			}
 			catch (Exception ex)
 			{
-				//Log error, return null.
-				Logger.LogMessage(ex, "Combining concurrent Incident.");
+				Logger.LogMessage(ex, "save_MergeConcurrency()");
+				MessageBox.Show(StaticFuncs.getCultureResource.GetString("app_General_UnexpectedError"), StaticFuncs.getCultureResource.GetString("app_General_ApplicationShortName"), MessageBoxButton.OK, MessageBoxImage.Error);
 				return null;
 			}
 		}

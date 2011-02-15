@@ -63,8 +63,8 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			}
 			catch (Exception ex)
 			{
-				Logger.LogMessage(ex);
-				throw ex;
+				Logger.LogMessage(ex, ".ctor()");
+				MessageBox.Show(StaticFuncs.getCultureResource.GetString("app_General_UnexpectedError"), StaticFuncs.getCultureResource.GetString("app_General_ApplicationShortName"), MessageBoxButton.OK, MessageBoxImage.Error);
 			}
 		}
 
@@ -82,7 +82,8 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			}
 			catch (Exception ex)
 			{
-				Logger.LogMessage(ex);
+				Logger.LogMessage(ex, "tree_NodeDoubleClick()");
+				MessageBox.Show(StaticFuncs.getCultureResource.GetString("app_General_UnexpectedError"), StaticFuncs.getCultureResource.GetString("app_General_ApplicationShortName"), MessageBoxButton.OK, MessageBoxImage.Error);
 			}
 		}
 
@@ -91,17 +92,25 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 		/// <param name="e">RoutedPropertyChangedEventArgs</param>
 		private void trvProject_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
 		{
-			e.Handled = true;
-
-			//If it's a TreeViewArtifact item.
-			if (this.trvProject.SelectedItem != null && this.trvProject.SelectedItem.GetType() == typeof(TreeViewArtifact))
+			try
 			{
-				//Only if it's NOT not a folder.
-				TreeViewArtifact selItem = this.trvProject.SelectedItem as TreeViewArtifact;
-				this.btnRefresh.IsEnabled = (selItem != null && selItem.ArtifactIsFolder);
+				e.Handled = true;
+
+				//If it's a TreeViewArtifact item.
+				if (this.trvProject.SelectedItem != null && this.trvProject.SelectedItem.GetType() == typeof(TreeViewArtifact))
+				{
+					//Only if it's NOT not a folder.
+					TreeViewArtifact selItem = this.trvProject.SelectedItem as TreeViewArtifact;
+					this.btnRefresh.IsEnabled = (selItem != null && selItem.ArtifactIsFolder);
+				}
+				else
+					this.btnRefresh.IsEnabled = false;
 			}
-			else
-				this.btnRefresh.IsEnabled = false;
+			catch (Exception ex)
+			{
+				Logger.LogMessage(ex, "trvProject_SelectedItemChanged()");
+				MessageBox.Show(StaticFuncs.getCultureResource.GetString("app_General_UnexpectedError"), StaticFuncs.getCultureResource.GetString("app_General_ApplicationShortName"), MessageBoxButton.OK, MessageBoxImage.Error);
+			}
 		}
 
 		/// <summary>Hit when the user wants to refresh the list.</summary>
@@ -116,7 +125,8 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			}
 			catch (Exception ex)
 			{
-				Logger.LogMessage(ex);
+				Logger.LogMessage(ex, "btnRefresh_Click()");
+				MessageBox.Show(StaticFuncs.getCultureResource.GetString("app_General_UnexpectedError"), StaticFuncs.getCultureResource.GetString("app_General_ApplicationShortName"), MessageBoxButton.OK, MessageBoxImage.Error);
 			}
 		}
 
@@ -125,20 +135,28 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 		/// <param name="e">RoutedEventArgs</param>
 		private void btnShowClosed_Click(object sender, RoutedEventArgs e)
 		{
-			e.Handled = true;
-
-			//We need to save the setting here.
-			Settings.Default.ShowCompleted = this.btnShowClosed.IsChecked.Value;
-			Settings.Default.Save();
-
-			//Clear out all children..
-			foreach (TreeViewArtifact trvProject in this._Projects)
+			try
 			{
-				trvProject.Items.Clear();
-			}
+				e.Handled = true;
 
-			//Refresh the item list.
-			this.refreshProjects();
+				//We need to save the setting here.
+				Settings.Default.ShowCompleted = this.btnShowClosed.IsChecked.Value;
+				Settings.Default.Save();
+
+				//Clear out all children..
+				foreach (TreeViewArtifact trvProject in this._Projects)
+				{
+					trvProject.Items.Clear();
+				}
+
+				//Refresh the item list.
+				this.refreshProjects();
+			}
+			catch (Exception ex)
+			{
+				Logger.LogMessage(ex, "btnShowClosed_Click()");
+				MessageBox.Show(StaticFuncs.getCultureResource.GetString("app_General_UnexpectedError"), StaticFuncs.getCultureResource.GetString("app_General_ApplicationShortName"), MessageBoxButton.OK, MessageBoxImage.Error);
+			}
 		}
 
 		/// <summary>Hit when a toolbar button IsEnabled is changed, for greying out icons.</summary>
@@ -154,7 +172,8 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			}
 			catch (Exception ex)
 			{
-				Logger.LogMessage(ex);
+				Logger.LogMessage(ex, "toolButton_IsEnabledChanged()");
+				MessageBox.Show(StaticFuncs.getCultureResource.GetString("app_General_UnexpectedError"), StaticFuncs.getCultureResource.GetString("app_General_ApplicationShortName"), MessageBoxButton.OK, MessageBoxImage.Error);
 			}
 		}
 
@@ -178,10 +197,57 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			}
 			catch (Exception ex)
 			{
-				Logger.LogMessage(ex);
+				Logger.LogMessage(ex, "btnConfig_Click()");
+				MessageBox.Show(StaticFuncs.getCultureResource.GetString("app_General_UnexpectedError"), StaticFuncs.getCultureResource.GetString("app_General_ApplicationShortName"), MessageBoxButton.OK, MessageBoxImage.Error);
 			}
 			e.Handled = true;
 		}
+
+		/// <summary>Possibly hit when the user double-clicks on an item in the treenode.</summary>
+		/// <param name="sender">Object</param>
+		/// <param name="e">MouseButtonEventArgs</param>
+		/// <remarks>Must be public so the TreeNodeArtifact can access the funtion.</remarks>
+		private void TreeNode_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
+		{
+			try
+			{
+				//If it's not a folder and an artifact, open a details screen.
+				//Try to get the data item.
+				ContentControl trvContainer = sender as ContentControl;
+				if (trvContainer != null)
+				{
+					Grid trvGrid = trvContainer.Content as Grid;
+					if (trvGrid != null)
+					{
+						TreeViewArtifact trvArtifact = trvGrid.DataContext as TreeViewArtifact;
+						if (trvArtifact != null)
+						{
+							if (!trvArtifact.ArtifactIsFolder &&
+								(trvArtifact.ArtifactType == TreeViewArtifact.ArtifactTypeEnum.Incident ||
+								trvArtifact.ArtifactType == TreeViewArtifact.ArtifactTypeEnum.Requirement ||
+								trvArtifact.ArtifactType == TreeViewArtifact.ArtifactTypeEnum.Task))
+							{
+								//Okay then, let's open up the details.
+								((SpiraExplorerPackage)this.Pane.Package).OpenDetailsToolWindow(trvArtifact);
+							}
+						}
+					}
+				}
+				else
+				{
+					if (sender is TreeViewArtifact)
+					{
+						((SpiraExplorerPackage)this.Pane.Package).OpenDetailsToolWindow((sender as TreeViewArtifact));
+					}
+				}
+			}
+			catch (Exception ex)
+			{
+				Logger.LogMessage(ex, "TreeNode_MouseDoubleClick()");
+				MessageBox.Show(StaticFuncs.getCultureResource.GetString("app_General_UnexpectedError"), StaticFuncs.getCultureResource.GetString("app_General_ApplicationShortName"), MessageBoxButton.OK, MessageBoxImage.Error);
+			}
+		}
+
 		#endregion
 
 		/// <summary>Tells the control that a new solution was loaded.</summary>
@@ -213,7 +279,8 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			}
 			catch (Exception ex)
 			{
-				Logger.LogMessage(ex);
+				Logger.LogMessage(ex, "loadSolution()");
+				MessageBox.Show(StaticFuncs.getCultureResource.GetString("app_General_UnexpectedError"), StaticFuncs.getCultureResource.GetString("app_General_ApplicationShortName"), MessageBoxButton.OK, MessageBoxImage.Error);
 			}
 		}
 
@@ -236,7 +303,8 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			}
 			catch (Exception ex)
 			{
-				Logger.LogMessage(ex);
+				Logger.LogMessage(ex, "CreateStandardNodes()");
+				MessageBox.Show(StaticFuncs.getCultureResource.GetString("app_General_UnexpectedError"), StaticFuncs.getCultureResource.GetString("app_General_ApplicationShortName"), MessageBoxButton.OK, MessageBoxImage.Error);
 			}
 		}
 		#endregion
@@ -253,43 +321,6 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			}
 		}
 		#endregion
-
-		/// <summary>Possibly hit when the user double-clicks on an item in the treenode.</summary>
-		/// <param name="sender">Object</param>
-		/// <param name="e">MouseButtonEventArgs</param>
-		/// <remarks>Must be public so the TreeNodeArtifact can access the funtion.</remarks>
-		private void TreeNode_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
-		{
-			//If it's not a folder and an artifact, open a details screen.
-			//Try to get the data item.
-			ContentControl trvContainer = sender as ContentControl;
-			if (trvContainer != null)
-			{
-				Grid trvGrid = trvContainer.Content as Grid;
-				if (trvGrid != null)
-				{
-					TreeViewArtifact trvArtifact = trvGrid.DataContext as TreeViewArtifact;
-					if (trvArtifact != null)
-					{
-						if (!trvArtifact.ArtifactIsFolder &&
-							(trvArtifact.ArtifactType == TreeViewArtifact.ArtifactTypeEnum.Incident ||
-							trvArtifact.ArtifactType == TreeViewArtifact.ArtifactTypeEnum.Requirement ||
-							trvArtifact.ArtifactType == TreeViewArtifact.ArtifactTypeEnum.Task))
-						{
-							//Okay then, let's open up the details.
-							((SpiraExplorerPackage)this.Pane.Package).OpenDetailsToolWindow(trvArtifact);
-						}
-					}
-				}
-			}
-			else
-			{
-				if (sender is TreeViewArtifact)
-				{
-					((SpiraExplorerPackage)this.Pane.Package).OpenDetailsToolWindow((sender as TreeViewArtifact));
-				}
-			}
-		}
 
 		public ToolWindowPane Pane
 		{
