@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
+using System.Windows.Shapes;
 using Inflectra.Global;
 using Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business;
 using Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business.SpiraTeam_Client;
@@ -1119,9 +1120,9 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 				try
 				{
 					int intChildTries = 0;
-					while (this.gridAttachments.Children.Count > 5 && intChildTries < 10000)
+					while (this.gridAttachments.Children.Count > 7 && intChildTries < 10000)
 					{
-						this.gridAttachments.Children.RemoveAt(5);
+						this.gridAttachments.Children.RemoveAt(7);
 						intChildTries++;
 					}
 
@@ -1213,6 +1214,18 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 						Grid.SetRow(txbSize, numAdding);
 						gridAttachments.Children.Add(txbSize);
 					}
+					//Now create the background rectangle..
+					Rectangle rectBackg = new Rectangle();
+					rectBackg.HorizontalAlignment = System.Windows.HorizontalAlignment.Stretch;
+					rectBackg.VerticalAlignment = System.Windows.VerticalAlignment.Stretch;
+					rectBackg.Margin = new Thickness(0);
+					rectBackg.Fill = this.rectTitleBar.Fill;
+					Grid.SetColumn(rectBackg, 0);
+					Grid.SetRow(rectBackg, 1);
+					Grid.SetColumnSpan(rectBackg, 7);
+					Grid.SetRowSpan(rectBackg, this.gridAttachments.RowDefinitions.Count);
+					Panel.SetZIndex(rectBackg, -100);
+					this.gridAttachments.Children.Insert(7, rectBackg);
 				}
 				#endregion
 

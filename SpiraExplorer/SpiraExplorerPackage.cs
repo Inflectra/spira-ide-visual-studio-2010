@@ -59,6 +59,9 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010
 			{
 				SpiraExplorerPackage._windowDetails = new Dictionary<TreeViewArtifact, int>();
 			}
+
+			//Initialize the Logger.
+			Logger.ApplicationName = StaticFuncs.getCultureResource.GetString("app_General_ApplicationShortName");
 		}
 
 		/// <summary>This function is called when the user clicks the menu item that shows the tool window. See the Initialize method to see how the menu item is associated to this function using the OleMenuCommandService service and the MenuCommand class.</summary>

@@ -163,7 +163,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			{
 				if (e.Error == null && e.Result)
 				{
-					this._clientNumRunning += 7;
+					this._clientNumRunning += 8;
 					//Here we need to fire off all data retrieval functions:
 					// - Project users.
 					this._client.Project_RetrieveUserMembershipAsync(this._clientNum++);
@@ -177,6 +177,8 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 					this._client.System_GetArtifactUrlAsync(-14, this._Project.ProjectID, -2, null, this._clientNum++);
 					// - Get the Requirement.
 					this._client.Requirement_RetrieveByIdAsync(this._ArtifactDetails.ArtifactId, this._clientNum++);
+					// - Get documents for the item.
+					this._client.Document_RetrieveForArtifactAsync(1, this._ArtifactDetails.ArtifactId, new List<RemoteFilter> {}, new RemoteSort(), this._clientNum++);
 					// - Get the linked tasks.
 					this._client.Task_RetrieveAsync(
 						new List<RemoteFilter> { new RemoteFilter() { IntValue = this._ArtifactDetails.ArtifactId, PropertyName = "RequirementId" } },
@@ -440,14 +442,14 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 					{
 						this._ReqDocumentsUrl = e.Result;
 						this._clientNumRunning++;
-						//TODO: This needs to be moved to when we get the requirement details.
+						//Get the other link now.
 						this._client.System_GetArtifactUrlAsync(1, this._ArtifactDetails.ArtifactParentProject.ArtifactId, this._ArtifactDetails.ArtifactId, null, this._clientNum++);
 					}
 					else
 					{
 						this._RequirementUrl = e.Result.Replace("~", this._Project.ServerURL.ToString());
-						this.load_IsReadyToDisplayData();
 					}
+					this.load_IsReadyToDisplayData();
 
 				}
 				else
@@ -781,7 +783,14 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 					txtTaskName.Inlines.Add(linkFile);
 
 					//Create ToolTip.
-					txtTaskName.ToolTip = new cntrlRichTextEditor() { IsReadOnly = true, IsToolbarVisible = false, HTMLText = reqTask.Description, Width = 200 };
+					TreeViewArtifact tskTrv = new TreeViewArtifact();
+					tskTrv.ArtifactId = reqTask.TaskId.Value;
+					tskTrv.ArtifactName = reqTask.Name;
+					tskTrv.ArtifactTag = reqTask;
+					tskTrv.ArtifactType = TreeViewArtifact.ArtifactTypeEnum.Task;
+					tskTrv.Parent = this._ArtifactDetails;
+					txtTaskName.ToolTip = new Business.Forms.cntlTTipTask();
+					((Business.Forms.cntlTTipTask)txtTaskName.ToolTip).DataItem = tskTrv;
 					txtTaskName.Style = (Style)this.FindResource("PaddedLabel");
 					txtTaskName.HorizontalAlignment = System.Windows.HorizontalAlignment.Left;
 
@@ -856,7 +865,8 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 				Grid.SetRow(rectBackg, 1);
 				Grid.SetColumnSpan(rectBackg, 7);
 				Grid.SetRowSpan(rectBackg, this.gridTasks.RowDefinitions.Count);
-				this.gridTasks.Children.Insert(0, rectBackg);
+				Panel.SetZIndex(rectBackg, -100);
+				this.gridTasks.Children.Insert(7, rectBackg);
 			}
 		}
 		#endregion
@@ -916,9 +926,9 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 				try
 				{
 					int intChildTries = 0;
-					while (this.gridAttachments.Children.Count > 5 && intChildTries < 10000)
+					while (this.gridAttachments.Children.Count > 7 && intChildTries < 10000)
 					{
-						this.gridAttachments.Children.RemoveAt(5);
+						this.gridAttachments.Children.RemoveAt(7);
 						intChildTries++;
 					}
 
@@ -1010,6 +1020,19 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 						Grid.SetRow(txbSize, numAdding);
 						gridAttachments.Children.Add(txbSize);
 					}
+
+					//Now create the background rectangle..
+					Rectangle rectBackg = new Rectangle();
+					rectBackg.HorizontalAlignment = System.Windows.HorizontalAlignment.Stretch;
+					rectBackg.VerticalAlignment = System.Windows.VerticalAlignment.Stretch;
+					rectBackg.Margin = new Thickness(0);
+					rectBackg.Fill = this.rectTitleBar.Fill;
+					Grid.SetColumn(rectBackg, 0);
+					Grid.SetRow(rectBackg, 1);
+					Grid.SetColumnSpan(rectBackg, 7);
+					Grid.SetRowSpan(rectBackg, this.gridAttachments.RowDefinitions.Count);
+					Panel.SetZIndex(rectBackg, -100);
+					this.gridAttachments.Children.Insert(7, rectBackg);
 				}
 				#endregion
 
