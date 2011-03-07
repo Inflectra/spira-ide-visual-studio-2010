@@ -17,7 +17,7 @@
 				<Button Name="btnConfig" ToolTip="Project Explorer Configuration" Click="btnConfig_Click" />
 			</ToolBar>
 		</ToolBarPanel>
-		<ProgressBar DockPanel.Dock="Bottom" Height="10" IsIndeterminate="True" Foreground="Orange" Visibility="Hidden" Name="barLoading" />
+		<ProgressBar DockPanel.Dock="Bottom" Height="15" IsIndeterminate="True" Foreground="Orange" Visibility="Hidden" Name="barLoading" />
 		<TreeView Name="trvProject" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" MinHeight="150" SelectedItemChanged="trvProject_SelectedItemChanged" BorderBrush="Transparent" BorderThickness="0">
 <TreeView.Resources>
 				<HierarchicalDataTemplate DataType="{x:Type local:TreeViewArtifact}" ItemsSource="{Binding Path=Items}" >

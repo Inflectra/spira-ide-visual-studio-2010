@@ -9,6 +9,18 @@
 	SizeToContent="Height"
 	WindowStartupLocation="CenterOwner">
 
+	<Window.Resources>
+		<Style TargetType="{x:Type Button}">
+			<Setter Property="Padding" Value="5,2" />
+		</Style>
+		<Style TargetType="{x:Type TextBox}">
+			<Setter Property="Margin" Value="2" />
+		</Style>
+		<Style TargetType="{x:Type PasswordBox}">
+			<Setter Property="Margin" Value="2" />
+		</Style>
+	</Window.Resources>
+	
 	<DockPanel LastChildFill="True">
 		<!-- Status Bar -->
 		<StatusBar DockPanel.Dock="Bottom" Padding="1">
@@ -52,15 +64,15 @@
 								<RowDefinition Height="Auto" />
 							</Grid.RowDefinitions>
 							<!-- Server URL -->
-							<TextBlock Grid.Column="0" Grid.Row="0" HorizontalAlignment="Right">Server URL:</TextBlock>
-							<TextBox Margin="2" Name="txbServer" HorizontalAlignment="Stretch" Grid.Column="1" Grid.Row="0"  VerticalAlignment="Center" />
+							<TextBlock Grid.Column="0" Grid.Row="0" HorizontalAlignment="Right" VerticalAlignment="Center" Text="Server URL:" />
+							<TextBox Name="txbServer" HorizontalAlignment="Stretch" Grid.Column="1" Grid.Row="0"  VerticalAlignment="Center" />
 							<!-- Server User -->
-							<TextBlock Grid.Column="0" Grid.Row="1" HorizontalAlignment="Right">User ID:</TextBlock>
-							<TextBox Margin="2" Name="txbUserID" HorizontalAlignment="Stretch" Grid.Column="1" Grid.Row="1" VerticalAlignment="Center"/>
+							<TextBlock Grid.Column="0" Grid.Row="1" HorizontalAlignment="Right" VerticalAlignment="Center" Text="User ID:" />
+							<TextBox Name="txbUserID" HorizontalAlignment="Stretch" Grid.Column="1" Grid.Row="1" VerticalAlignment="Center"/>
 							<!-- Server Password -->
-							<TextBlock Grid.Column="0" Grid.Row="2" HorizontalAlignment="Right">Password:</TextBlock>
-							<PasswordBox Margin="2" Name="txbUserPass" HorizontalAlignment="Stretch" Grid.Column="1" Grid.Row="2" VerticalAlignment="Center" PasswordChar="·"/>
-							<TextBlock Visibility="Collapsed" Name="txbUserNum" IsEnabled="False"></TextBlock>
+							<TextBlock Grid.Column="0" Grid.Row="2" HorizontalAlignment="Right" VerticalAlignment="Center" Text="Password:" />
+							<PasswordBox Name="txbUserPass" HorizontalAlignment="Stretch" Grid.Column="1" Grid.Row="2" VerticalAlignment="Center" Height="{Binding ElementName=txbServer, Path=ActualHeight}" />
+							<TextBlock Visibility="Collapsed" Name="txbUserNum" IsEnabled="False" />
 							<!-- Progress & Connect Button -->
 							<Grid Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="2">
 								<Grid.ColumnDefinitions>

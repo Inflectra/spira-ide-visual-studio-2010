@@ -43,6 +43,9 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010
 		public SpiraExplorerPackage()
 		{
 			Trace.WriteLine(string.Format(CultureInfo.CurrentCulture, "Entering constructor for: {0}", this.ToString()));
+		
+			//Upgrade existing settings,
+			Settings.Default.Upgrade();
 
 			//Get settings ready..
 			if (Settings.Default.AssignedProjects == null)

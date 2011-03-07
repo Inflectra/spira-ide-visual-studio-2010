@@ -68,17 +68,18 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 				this.btn_IsEnabledChanged(this.btnEdit, new DependencyPropertyChangedEventArgs());
 				this.btn_IsEnabledChanged(this.btnDelete, new DependencyPropertyChangedEventArgs());
 
-				//Get the solution name.
+				//Get the solution name & load items.
 				if (Business.StaticFuncs.GetEnvironment.Solution.IsOpen)
-				{
 					this._solname = (string)Business.StaticFuncs.GetEnvironment.Solution.Properties.Item("Name").Value;
-					this.loadSolution();
-				}
 				else
 					this._solname = null;
+				this.loadSolution();
 
 				//Set the caption.
 				this.setRTFCaption();
+
+				//Load available projects into Selection box.
+
 			}
 			catch (Exception ex)
 			{
@@ -90,7 +91,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 		#region Form Events
 		/// <summary>Hit when the user decides they want to delete a project.</summary>
 		/// <param name="sender">btnDelete</param>
-		/// <param name="e">Event Args</param>
+		/// <param name="e">RoutedEventArgs</param>
 		private void btnDelete_Click(object sender, RoutedEventArgs e)
 		{
 			try
@@ -162,10 +163,14 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 				selProjects = selProjects.Trim(SpiraProject.CHAR_RECORD);
 
 				//Save the selected projects to the settings.
-				if (Settings.Default.AssignedProjects.ContainsKey(this._solname))
-					Settings.Default.AssignedProjects[this._solname] = selProjects;
-				else
-					Settings.Default.AssignedProjects.Add(this._solname, selProjects);
+				if (!string.IsNullOrWhiteSpace(this._solname))
+				{
+					if (Settings.Default.AssignedProjects.ContainsKey(this._solname))
+						Settings.Default.AssignedProjects[this._solname] = selProjects;
+					else
+						Settings.Default.AssignedProjects.Add(this._solname, selProjects);
+				}
+
 				Settings.Default.AllProjects = availProjects;
 				Settings.Default.Save();
 
