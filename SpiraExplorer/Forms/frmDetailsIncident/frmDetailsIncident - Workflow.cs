@@ -97,7 +97,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 				//Now update the ones that need it.
 				foreach (RemoteWorkflowIncidentFields wkfField in workflowFields)
 				{
-					if ((int)retList[wkfField.FieldId] < wkfField.FieldStateId)
+					if (retList.ContainsKey(wkfField.FieldId) && (int)retList[wkfField.FieldId] < wkfField.FieldStateId)
 					{
 						retList[wkfField.FieldId] = (WorkflowField.WorkflowStatusEnum)wkfField.FieldStateId;
 					}
@@ -167,7 +167,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 							}
 							catch (Exception ex)
 							{
-								//TODO: Log error
+								Logger.LogMessage(ex, "Trying to set field '" + incField.Value.FieldName + "' enabled/disabled.");
 							}
 						}
 
@@ -180,7 +180,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 							}
 							catch (Exception ex)
 							{
-								//TODO: Log error
+								Logger.LogMessage(ex, "Trying to set field '" + incField.Value.FieldName + "' bold.");
 							}
 						}
 					}

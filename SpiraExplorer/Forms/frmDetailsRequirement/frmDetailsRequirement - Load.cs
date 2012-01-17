@@ -704,7 +704,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 			}
 			catch (Exception ex)
 			{
-				//Connect.logEventMessage("wpfDetailsIncident::loadItem_PopulateUser", ex, System.Diagnostics.EventLogEntryType.Error);
+				Logger.LogMessage(ex, "Populating user.");
 			}
 		}
 

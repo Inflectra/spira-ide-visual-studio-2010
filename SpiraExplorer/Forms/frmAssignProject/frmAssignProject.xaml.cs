@@ -19,7 +19,6 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 	public partial class frmAssignProject : Window
 	{
 		#region Internal Vars
-		private List<Business.SpiraProject> _Projects;
 		private bool _hasChanged = false;
 		private string _solname;
 		#endregion

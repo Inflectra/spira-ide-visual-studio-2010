@@ -18,7 +18,6 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 		private ImportExportClient _client;
 		private int _clientNumRunning; //Holds the number current executing.
 		private int _clientNum; //Holds the total amount. Needed to multiple ASYNC() calls.
-		private int _clientNumWorkflow;
 		#endregion
 
 		#region Private Data Storage Variables

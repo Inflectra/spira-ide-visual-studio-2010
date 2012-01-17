@@ -16,18 +16,16 @@ using Microsoft.VisualStudio.Shell.Interop;
 
 namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010
 {
-	/// <summary>
-	/// This is the class that implements the package exposed by this assembly.
+	/// <summary>This is the class that implements the package exposed by this assembly.
 	///
 	/// The minimum requirement for a class to be considered a valid package for Visual Studio
 	/// is to implement the IVsPackage interface and register itself with the shell.
 	/// This package uses the helper classes defined inside the Managed Package Framework (MPF)
 	/// to do it: it derives from the Package class that provides the implementation of the 
 	/// IVsPackage interface and uses the registration attributes defined in the framework to 
-	/// register itself and its components with the shell.
-	/// </summary>
+	/// register itself and its components with the shell.</summary>
 	[PackageRegistration(UseManagedResourcesOnly = true)] // This attribute tells the PkgDef creation utility (CreatePkgDef.exe) that this class is a package.
-	[InstalledProductRegistration("#110", "#112", "1.0", IconResourceID = 400)] // This attribute is used to register the information needed to show the this package in the Help/About dialog of Visual Studio.
+	[InstalledProductRegistration("#110", "#112", "3.2.0", IconResourceID = 400)] // This attribute is used to register the information needed to show the this package in the Help/About dialog of Visual Studio.
 	[ProvideMenuResource("Menus.ctmenu", 1)] // This attribute is needed to let the shell know that this package exposes some menus.
 	[ProvideToolWindow(typeof(toolSpiraExplorer), MultiInstances = false, Window = "3ae79031-e1bc-11d0-8f78-00a0c9110057")] // This attribute registers a tool window exposed by this package.
 	[ProvideToolWindow(typeof(toolSpiraExplorerDetails), MultiInstances = true, Window = "76C22C24-36B6-4C0C-BF60-FFCB65D1B05B", Transient = false)] // This attribute registers a tool window exposed by this package.

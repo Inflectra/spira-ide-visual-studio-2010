@@ -9,6 +9,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Business.resources", "Spira
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Inflectra.Global", "..\..\Inflectra.Global\Inflectra.Global\Inflectra.Global.csproj", "{63BB7B99-0E00-414B-8AF4-780921C28ABB}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{8A9537D2-58B7-4A53-9B53-3E0C0B119508}"
+	ProjectSection(SolutionItems) = preProject
+		SharedAssemblyInfo.cs = SharedAssemblyInfo.cs
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Linked Projects", "Linked Projects", "{6C6F4308-7A1A-4D8E-8FD2-9355E89BAE87}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -19,7 +26,8 @@ Global
 		{DED7E66A-772F-4A0A-957E-01CA9895B07C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DED7E66A-772F-4A0A-957E-01CA9895B07C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DED7E66A-772F-4A0A-957E-01CA9895B07C}.Release|Any CPU.Build.0 = Release|Any CPU
-		{256C278A-66AC-40CD-BB71-598586F6FA1C}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{256C278A-66AC-40CD-BB71-598586F6FA1C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{256C278A-66AC-40CD-BB71-598586F6FA1C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{256C278A-66AC-40CD-BB71-598586F6FA1C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{256C278A-66AC-40CD-BB71-598586F6FA1C}.Release|Any CPU.Build.0 = Release|Any CPU
 		{87F40C72-2AA5-4011-BAB2-29C6AD5C5B45}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -34,7 +42,11 @@ Global
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{63BB7B99-0E00-414B-8AF4-780921C28ABB} = {6C6F4308-7A1A-4D8E-8FD2-9355E89BAE87}
+	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
+		BuildVersion_AssemblyInfoFilename = SharedAssemblyInfo.cs
 		BuildVersion_UseGlobalSettings = True
 	EndGlobalSection
 EndGlobal

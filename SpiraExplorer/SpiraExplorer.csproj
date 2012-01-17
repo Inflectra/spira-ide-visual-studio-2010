@@ -136,6 +136,9 @@
     </COMReference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\SharedAssemblyInfo.cs">
+      <Link>Properties\SharedAssemblyInfo.cs</Link>
+    </Compile>
     <Compile Include="Forms\cntlDiscussionFrame\wpfDiscussionFrame.xaml.cs">
       <DependentUpon>wpfDiscussionFrame.xaml</DependentUpon>
     </Compile>
@@ -354,12 +357,12 @@
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v10.0\VSSDK\Microsoft.VsSDK.targets" />
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties BuildVersion_UseGlobalSettings="False" BuildVersion_UpdateAssemblyVersion="True" BuildVersion_UpdateFileVersion="True" BuildVersion_AssemblyInfoFilename="Properties\AssemblyInfo.cs" BuildVersion_BuildVersioningStyle="None.None.None.Increment" BuildVersion_IncrementBeforeBuild="False" />
+      <UserProperties BuildVersion_UseGlobalSettings="True" BuildVersion_UpdateAssemblyVersion="False" BuildVersion_UpdateFileVersion="False" BuildVersion_AssemblyInfoFilename="Properties\AssemblyInfo.cs" BuildVersion_BuildVersioningStyle="None.None.None.None" BuildVersion_IncrementBeforeBuild="True" />
     </VisualStudio>
   </ProjectExtensions>
   <PropertyGroup>
-    <PreBuildEvent>"C:\Subversion\Projects\Internal Applications\VSIPVersionUpdater\VSIPVersionUpdater\bin\Debug\VSIPVersionUpdater.exe" "$(ProjectDir)Properties\AssemblyInfo.cs" "$(ProjectDir)Properties\source.extension.vsixmanifest"
-rmdir /s /q "C:\Users\mike\AppData\Local\Microsoft\VisualStudio\10.0Exp\Extensions"</PreBuildEvent>
+    <PreBuildEvent>
+    </PreBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

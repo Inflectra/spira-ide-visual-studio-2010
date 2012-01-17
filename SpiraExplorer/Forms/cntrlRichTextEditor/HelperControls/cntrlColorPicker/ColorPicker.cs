@@ -503,7 +503,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Controls
                     updateMarkerPosition(m_color);
                 }
             }
-            catch (FormatException Exception)
+            catch (FormatException)
             {
                 SetValue(HexadecimalStringProperty, oldValue);
             }

@@ -18,11 +18,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 	//[Guid("3ae79031-e1bc-11d0-8f78-00a0c9110057")]
 	public class toolSpiraExplorer : ToolWindowPane
 	{
-		private SpiraExplorerPackage _Package;
-
-		/// <summary>
-		/// Standard constructor for the tool window.
-		/// </summary>
+		/// <summary>Standard constructor for the tool window.</summary>
 		public toolSpiraExplorer() :
 			base(null)
 		{

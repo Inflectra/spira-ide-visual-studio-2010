@@ -569,8 +569,6 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 		{
 			try
 			{
-				const string METHOD = "save_GetFromFields()";
-
 				RemoteTask retTask = null;
 				try
 				{
