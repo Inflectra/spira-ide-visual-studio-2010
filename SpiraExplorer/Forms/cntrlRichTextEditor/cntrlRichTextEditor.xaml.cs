@@ -331,7 +331,10 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Controls
 
 					try
 					{
-						doc = (XamlReader.Load(new XmlTextReader(new StringReader(strFlow)))) as FlowDocument;
+						using (StringReader strRead = new StringReader(strFlow))
+						{
+							doc = (XamlReader.Load(new XmlTextReader(strRead))) as FlowDocument;
+						}
 					}
 					catch { }
 
