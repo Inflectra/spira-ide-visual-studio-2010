@@ -11,8 +11,11 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business.Forms
 	{
 		private TreeViewArtifact _dataitem;
 
-		public cntlTTipTask()
+		public cntlTTipTask(TreeViewArtifact dataItem)
 		{
+			this._dataitem = dataItem;
+
+			//Initialize.
 			InitializeComponent();
 
 			//Set images.
@@ -33,13 +36,13 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business.Forms
 			this.tstRemEff.Text = StaticFuncs.getCultureResource.GetString("app_General_RemEffort") + ":";
 		}
 
-		/// <summary>Creates a new instance of the control, setting the data item.</summary>
-		/// <param name="ArtifactData">The TreeViewArtifact data item.</param>
-		public cntlTTipTask(TreeViewArtifact ArtifactData)
-			: base()
-		{
-			this.DataItem = ArtifactData;
-		}
+		///// <summary>Creates a new instance of the control, setting the data item.</summary>
+		///// <param name="ArtifactData">The TreeViewArtifact data item.</param>
+		//public cntlTTipTask(TreeViewArtifact ArtifactData)
+		//    : base()
+		//{
+		//    this.DataItem = ArtifactData;
+		//}
 
 		/// <summary>Holds a reference to the treeviewitem we're displaying.</summary>
 		public TreeViewArtifact DataItem
@@ -58,38 +61,41 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business.Forms
 		/// <summary>Loads values from our Artifact item into the display fields.</summary>
 		private void loadDisplayData()
 		{
-			try
+			if (this.DataItem != null)
 			{
-				this.dataArtifactId.Text = this.DataItem.ArtifactId.ToString();
-				this.dataProjectName.Text = this.DataItem.ArtifactParentProject.ArtifactName;
-				this.dataOwnerName.Text = ((dynamic)this.DataItem.ArtifactTag).OwnerName;
-				this.dataPriorityName.Text = ((dynamic)this.DataItem.ArtifactTag).TaskPriorityName;
-				this.dataRel.Text = ((dynamic)this.DataItem.ArtifactTag).ReleaseVersionNumber + " " + this.getIdNumber(((dynamic)this.DataItem.ArtifactTag).ReleaseId, "RL");
-				this.dataStatusPerName.Text = ((dynamic)this.DataItem.ArtifactTag).TaskStatusName + " " + this.getPercent(((dynamic)this.DataItem.ArtifactTag).CompletionPercent);
-				this.dataStartDate.Text = this.getDate(((dynamic)this.DataItem.ArtifactTag).StartDate);
-				this.dataEndDate.Text = this.getDate(((dynamic)this.DataItem.ArtifactTag).EndDate);
-				this.dataPrjEffort.Text = this.getTime(((dynamic)this.DataItem.ArtifactTag).ProjectedEffort);
-				this.dataActEffort.Text = this.getTime(((dynamic)this.DataItem.ArtifactTag).ActualEffort);
-				this.dataRemEffort.Text = this.getTime(((dynamic)this.DataItem.ArtifactTag).RemainingEffort);
-
-				//Set any flag colors.
-				//- Start Date
-				if (this.isDateTimePast(((dynamic)this.DataItem.ArtifactTag).StartDate))
+				try
 				{
-					if ((int)(((dynamic)this.DataItem.ArtifactTag).TaskStatusId) == 1)
+					this.dataArtifactId.Text = this.DataItem.ArtifactId.ToString();
+					this.dataProjectName.Text = this.DataItem.ArtifactParentProject.ArtifactName;
+					this.dataOwnerName.Text = ((dynamic)this.DataItem.ArtifactTag).OwnerName;
+					this.dataPriorityName.Text = ((dynamic)this.DataItem.ArtifactTag).TaskPriorityName;
+					this.dataRel.Text = ((dynamic)this.DataItem.ArtifactTag).ReleaseVersionNumber + " " + this.getIdNumber(((dynamic)this.DataItem.ArtifactTag).ReleaseId, "RL");
+					this.dataStatusPerName.Text = ((dynamic)this.DataItem.ArtifactTag).TaskStatusName + " " + this.getPercent(((dynamic)this.DataItem.ArtifactTag).CompletionPercent);
+					this.dataStartDate.Text = this.getDate(((dynamic)this.DataItem.ArtifactTag).StartDate);
+					this.dataEndDate.Text = this.getDate(((dynamic)this.DataItem.ArtifactTag).EndDate);
+					this.dataPrjEffort.Text = this.getTime(((dynamic)this.DataItem.ArtifactTag).ProjectedEffort);
+					this.dataActEffort.Text = this.getTime(((dynamic)this.DataItem.ArtifactTag).ActualEffort);
+					this.dataRemEffort.Text = this.getTime(((dynamic)this.DataItem.ArtifactTag).RemainingEffort);
+
+					//Set any flag colors.
+					//- Start Date
+					if (this.isDateTimePast(((dynamic)this.DataItem.ArtifactTag).StartDate))
 					{
-						this.dataStartDate.FontWeight = FontWeights.Bold;
-						this.dataStartDate.Foreground = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Colors.DarkRed);
+						if ((int)(((dynamic)this.DataItem.ArtifactTag).TaskStatusId) == 1)
+						{
+							this.dataStartDate.FontWeight = FontWeights.Bold;
+							this.dataStartDate.Foreground = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Colors.DarkRed);
+						}
+					}
+					//- End Date
+					if (this.isDateTimePast(((dynamic)this.DataItem.ArtifactTag).EndDate))
+					{
+						this.dataEndDate.FontWeight = FontWeights.Bold;
+						this.dataEndDate.Foreground = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Colors.DarkRed);
 					}
 				}
-				//- End Date
-				if (this.isDateTimePast(((dynamic)this.DataItem.ArtifactTag).EndDate))
-				{
-					this.dataEndDate.FontWeight = FontWeights.Bold;
-					this.dataEndDate.Foreground = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Colors.DarkRed);
-				}
+				catch { }
 			}
-			catch { }
 		}
 
 		/// <summary>Catches when we're actually ready to display the data.</summary>

@@ -10,8 +10,11 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business.Forms
 	{
 		private TreeViewArtifact _dataitem;
 
-		public cntlTTipRequirement()
+		public cntlTTipRequirement(TreeViewArtifact dataItem)
 		{
+			this._dataitem = dataItem;
+
+			//Initialize.
 			InitializeComponent();
 
 			//Set images.
@@ -27,13 +30,13 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business.Forms
 			this.txtAssRel.Text = StaticFuncs.getCultureResource.GetString("app_General_Release") + ":";
 		}
 
-		/// <summary>Creates a new instance of the control, setting the data item.</summary>
-		/// <param name="ArtifactData">The TreeViewArtifact data item.</param>
-		public cntlTTipRequirement(TreeViewArtifact ArtifactData)
-			: base()
-		{
-			this.DataItem = ArtifactData;
-		}
+		///// <summary>Creates a new instance of the control, setting the data item.</summary>
+		///// <param name="ArtifactData">The TreeViewArtifact data item.</param>
+		//public cntlTTipRequirement(TreeViewArtifact ArtifactData)
+		//    : base()
+		//{
+		//    this.DataItem = ArtifactData;
+		//}
 
 		/// <summary>Holds a reference to the treeviewitem we're displaying.</summary>
 		public TreeViewArtifact DataItem

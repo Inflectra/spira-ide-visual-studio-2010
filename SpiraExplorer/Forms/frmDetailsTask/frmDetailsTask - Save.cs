@@ -21,10 +21,15 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 		/// <param name="e">RoutedEventArgs</param>
 		private void btnSave_Click(object sender, RoutedEventArgs e)
 		{
-			e.Handled = true;
+			try
+			{
+				e.Handled = true;
+			}
+			catch { }
 
 			try
 			{
+
 				this.barSavingTask.Value = -5;
 				this.barSavingTask.Maximum = 0;
 				this.barSavingTask.Minimum = -5;

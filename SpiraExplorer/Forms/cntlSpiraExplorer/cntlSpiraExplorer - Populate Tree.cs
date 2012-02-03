@@ -773,6 +773,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 								newNode.ArtifactIsFolder = false;
 								newNode.ArtifactId = requirement.RequirementId.Value;
 								newNode.Parent = parentNode;
+								newNode.DetailsOpenRequested += new EventHandler(newNode_DetailsOpenRequested);
 
 								parentNode.Items.Add(newNode);
 							}
@@ -833,6 +834,8 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 							newNode.ArtifactIsFolder = false;
 							newNode.ArtifactId = task.TaskId.Value;
 							newNode.Parent = parentNode;
+							newNode.DetailsOpenRequested += new EventHandler(newNode_DetailsOpenRequested);
+							newNode.WorkTimerChanged += new EventHandler(newNode_WorkTimerChanged);
 
 							parentNode.Items.Add(newNode);
 						}

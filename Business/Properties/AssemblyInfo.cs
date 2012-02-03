@@ -5,5 +5,5 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyDescription("Helper functions for SpiraExplorer")]
 [assembly: ComVisible(false)]
 [assembly: Guid("510cbc66-5b07-4d22-99a0-f28709d9453d")]
-[assembly: AssemblyVersion("3.2.0.14416")]
-[assembly: AssemblyFileVersion("3.2.0.14416")]
+[assembly: AssemblyVersion("3.2.0.14502")]
+[assembly: AssemblyFileVersion("3.2.0.14502")]

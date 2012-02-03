@@ -11,8 +11,11 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business.Forms
 		private TreeViewArtifact _dataitem;
 
 		/// <summary>Creates a new instance of the control.</summary>
-		public cntlTTipIncident()
+		public cntlTTipIncident(TreeViewArtifact dataItem)
 		{
+			this._dataitem = dataItem;
+
+			//Initialize.
 			InitializeComponent();
 
 			//Set images.
@@ -33,13 +36,13 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business.Forms
 			this.txtVerified.Text = StaticFuncs.getCultureResource.GetString("app_Incident_VerifiedRelease") + ":";
 		}
 
-		/// <summary>Creates a new instance of the control, setting the data item.</summary>
-		/// <param name="ArtifactData">The TreeViewArtifact data item.</param>
-		public cntlTTipIncident(TreeViewArtifact ArtifactData)
-			: base()
-		{
-			this.DataItem = ArtifactData;
-		}
+		///// <summary>Creates a new instance of the control, setting the data item.</summary>
+		///// <param name="ArtifactData">The TreeViewArtifact data item.</param>
+		//public cntlTTipIncident(TreeViewArtifact ArtifactData)
+		//    : base()
+		//{
+		//    this.DataItem = ArtifactData;
+		//}
 
 		/// <summary>Holds a reference to the treeviewitem we're displaying.</summary>
 		public TreeViewArtifact DataItem

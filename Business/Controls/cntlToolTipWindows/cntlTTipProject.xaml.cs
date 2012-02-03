@@ -10,8 +10,11 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business.Forms
 		private SpiraProject _dataitem;
 
 		/// <summary>Creates a new instance of the control.</summary>
-		public cntlTTipProject()
+		public cntlTTipProject(SpiraProject dataItem)
 		{
+			this._dataitem = dataItem;
+
+			//Initialize.
 			InitializeComponent();
 
 			//Set images.
@@ -22,13 +25,13 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business.Forms
 			this.txtServerUser.Text = StaticFuncs.getCultureResource.GetString("app_Project_ServerLogin");
 		}
 
-		/// <summary>Creates a new instance of the control, setting the data item.</summary>
-		/// <param name="ArtifactData">The TreeViewArtifact data item.</param>
-		public cntlTTipProject(SpiraProject ArtifactData)
-			: base()
-		{
-			this.DataItem = ArtifactData;
-		}
+		///// <summary>Creates a new instance of the control, setting the data item.</summary>
+		///// <param name="ArtifactData">The TreeViewArtifact data item.</param>
+		//public cntlTTipProject(SpiraProject ArtifactData)
+		//    : base()
+		//{
+		//    this.DataItem = ArtifactData;
+		//}
 
 		/// <summary>Holds a reference to the treeviewitem we're displaying.</summary>
 		public SpiraProject DataItem

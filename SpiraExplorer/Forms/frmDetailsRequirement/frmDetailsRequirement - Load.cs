@@ -882,8 +882,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 						tskTrv.ArtifactTag = reqTask;
 						tskTrv.ArtifactType = TreeViewArtifact.ArtifactTypeEnum.Task;
 						tskTrv.Parent = this._ArtifactDetails;
-						txtTaskName.ToolTip = new Business.Forms.cntlTTipTask();
-						((Business.Forms.cntlTTipTask)txtTaskName.ToolTip).DataItem = tskTrv;
+						txtTaskName.ToolTip = new Business.Forms.cntlTTipTask(tskTrv);
 						txtTaskName.Style = (Style)this.FindResource("PaddedLabel");
 						txtTaskName.HorizontalAlignment = System.Windows.HorizontalAlignment.Left;
 

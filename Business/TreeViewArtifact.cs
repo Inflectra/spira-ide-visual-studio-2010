@@ -306,18 +306,15 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business
 					switch (this.ArtifactType)
 					{
 						case ArtifactTypeEnum.Incident:
-							tipReturn = new cntlTTipIncident();
-							((cntlTTipIncident)tipReturn).DataItem = this;
+							tipReturn = new cntlTTipIncident(this);
 							break;
 
 						case ArtifactTypeEnum.Requirement:
-							tipReturn = new cntlTTipRequirement();
-							((cntlTTipRequirement)tipReturn).DataItem = this;
+							tipReturn = new cntlTTipRequirement(this);
 							break;
 
 						case ArtifactTypeEnum.Task:
-							tipReturn = new cntlTTipTask();
-							((cntlTTipTask)tipReturn).DataItem = this;
+							tipReturn = new cntlTTipTask(this);
 							break;
 					}
 				}
@@ -386,8 +383,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Business
 						case ArtifactTypeEnum.Project:
 							if (this.ArtifactTag.GetType() == typeof(SpiraProject))
 							{
-								tipReturn = new cntlTTipProject();
-								((cntlTTipProject)tipReturn).DataItem = (SpiraProject)this.ArtifactTag;
+								tipReturn = new cntlTTipProject((SpiraProject)this.ArtifactTag);
 							}
 							break;
 					}
