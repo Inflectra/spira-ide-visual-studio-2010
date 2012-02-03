@@ -606,6 +606,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 						else
 						{
 							this.imgReqLink.Visibility = System.Windows.Visibility.Collapsed;
+							this._client.Connection_DisconnectAsync();
 						}
 
 						//See if we're ready to get the actual data.
@@ -614,6 +615,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 					else
 					{
 						Logger.LogMessage(e.Error);
+						this._clientNumRunning++;
 						this._client.Connection_DisconnectAsync();
 
 						//Display the error panel.
@@ -662,6 +664,12 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 						//Not a major error.
 						Logger.LogMessage(e.Error, "Pulling requirement data for task.");
 						this.imgReqLink.Visibility = System.Windows.Visibility.Collapsed;
+					}
+					//Disconnect..
+					if (this._clientNumRunning == 0)
+					{
+						this._clientNumRunning++;
+						this._client.Connection_DisconnectAsync();
 					}
 
 					//See if the rest of the data can be displayed.
@@ -836,16 +844,6 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 		}
 		#endregion
 
-
-
-
-
-
-
-
-
-
-
 		/// <summary>Load the specified task into the data fields.</summary>
 		/// <param name="task">The task details to load into fields.</param>
 		private void loadItem_DisplayInformation(RemoteTask task)
@@ -1010,21 +1008,6 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 				//Get actual effort..
 				int existingH = 0;
 				int existingM = 0;
-				bool updatedTime = false;
-				if (this._tempHoursWorked.HasValue)
-				{
-					existingH += this._tempHoursWorked.Value;
-					this._tempHoursWorked = null;
-					//Mark as being changed..
-					updatedTime = true;
-				}
-				if (this._tempMinutedWorked.HasValue)
-				{
-					existingM += this._tempMinutedWorked.Value;
-					this._tempMinutedWorked = null;
-					//Mark as being changed..
-					updatedTime = true;
-				}
 				if (task.ActualEffort.HasValue)
 				{
 					existingH += (int)Math.Floor((double)task.ActualEffort / 60D);
@@ -1120,7 +1103,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 
 				//Set the tab title.
 				this.ParentWindowPane.Caption = this.TabTitle;
-				this.display_SetWindowChanged(updatedTime || this._isDescChanged || this._isResChanged || this._isFieldChanged);
+				this.display_SetWindowChanged(false || this._isDescChanged || this._isResChanged || this._isFieldChanged);
 			}
 			catch (Exception ex)
 			{

@@ -15,9 +15,10 @@ Changelog:
 ! Fixed issue where 'Available Projects' may be lost without solution open.
 + Added code to import settings from a previous version.
 
-3.2.1.14502 (2/3/2012)
+3.2.1.14503 (2/3/2012)
 -----------
 ! Fixed incompatibility issue with Spira v3.2
 ! Fixed crash when right-clicking and selecting 'Details' on Req & Task.
 ! Fixed crash when right-clicking and selecting 'Timer' on Task.
 ! Improved loading stability of Treeview on new project load.
+! Fixed issue where recording time could double actual value.

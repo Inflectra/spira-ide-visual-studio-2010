@@ -1408,21 +1408,6 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 					//Get actual effort..
 					int existingH = 0;
 					int existingM = 0;
-					bool updatedTime = false;
-					if (this._tempHoursWorked.HasValue)
-					{
-						existingH += this._tempHoursWorked.Value;
-						this._tempHoursWorked = null;
-						//Mark as being changed..
-						updatedTime = true;
-					}
-					if (this._tempMinutedWorked.HasValue)
-					{
-						existingM += this._tempMinutedWorked.Value;
-						this._tempMinutedWorked = null;
-						//Mark as being changed..
-						updatedTime = true;
-					}
 					if (incident.ActualEffort.HasValue)
 					{
 						existingH += (int)Math.Floor((double)incident.ActualEffort / 60D);
@@ -1518,7 +1503,7 @@ namespace Inflectra.SpiraTest.IDEIntegration.VisualStudio2010.Forms
 
 					//Set the tab title.
 					this.ParentWindowPane.Caption = this.TabTitle;
-					this.display_SetWindowChanged(updatedTime || this._isWkfChanged || this._isDescChanged || this._isResChanged || this._isFieldChanged);
+					this.display_SetWindowChanged(false || this._isWkfChanged || this._isDescChanged || this._isResChanged || this._isFieldChanged);
 				}
 				catch (Exception ex)
 				{
